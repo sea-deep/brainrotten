@@ -44,6 +44,14 @@ Brainrotten turns agent context or a topic into a short explanation: a two-chara
 - `pnpm mcp`: Starts the MCP stdio server bridge.
 
 
+## Hosted
+
+- Website: https://main.d21cxkcmjm7x19.amplifyapp.com
+- API: https://fqfewiusg8.execute-api.ap-south-1.amazonaws.com/api/v1 (OpenAPI at `/openapi.json`)
+- Sign-in: Google through Amazon Cognito. Five free hosted videos per account.
+- Coding agents: `pnpm brainrotten login --api-url <API>` then `pnpm brainrotten mcp --account`.
+- Android: see [ANDROID-INTEGRATION.md](ANDROID-INTEGRATION.md).
+
 ## Learning sessions
 
 An agent can save what it changed and why as a learning **session**, then publish a lesson for it. The learner predicts (or skips), watches, answers, practises a small transfer task and reflects in Studio under "Learn from your agent". MCP tools: `get_learning_guide`, `record_learning_session`, `list_learning_sessions`, `get_learning_session`, `publish_session_lesson`. Learner responses can only be written by the learner, never by the agent token. For a hosted account, run `pnpm brainrotten login --api-url …` once and start MCP with `--account`. [Session API](docs/CLIENT-INTEGRATION.md#learning-sessions-openapi-13) · [Account connection](docs/MCP-SETUP.md#hosted-account-connection-recommended).

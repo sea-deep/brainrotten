@@ -20,11 +20,12 @@ Spec revision: 2026-11-01. Requirement numbers refer to `requirements.md`.
   - [x] 10.4 MCP connection playbook (`SERVER_INSTRUCTIONS`)
 - [x] 11. Editor setup: Kiro, Antigravity, Claude Code, Codex, OpenCode, Cursor; upgrade-proof Node path (Req 1)
 - [x] 12. Verification: `pnpm check` and `pnpm verify:e2e` for every creatable format (Req 6.1)
-- [ ] 13. Deploy the hosted backend with SAM (Req 6.3, 7)
-  - [ ] 13.1 Cognito user pool with Google, web and agent app clients
-  - [ ] 13.2 Provider secret in Secrets Manager; enable the hosted trial
-  - [ ] 13.3 Live test: Google sign-in, quota reservation, one hosted video
+- [x] 13. Deploy the hosted backend with SAM (Req 6.3, 7)
+  - [x] 13.1 Cognito user pool with Google, web, agent and Android app clients
+  - [x] 13.2 Provider secret in Secrets Manager; enable the hosted trial
+  - [x] 13.3 Live test: Google sign-in, quota reservation, one hosted video (61 s end to end)
+  - [x] 13.4 Website on AWS Amplify Hosting (CloudFront waits on account verification)
 - [ ] 14. BrainRotGram Android app against the hosted API (Req 7)
-  - [ ] 14.1 Native Cognito app client via `AdditionalClientIds`
+  - [x] 14.1 Native Cognito app client (`AndroidClient`, `brainrotgram://` callbacks)
   - [ ] 14.2 Sessions, library, player, predictions and reflections
 - [ ] 15. Demo: an agent explains its own change in each format, recorded end to end
