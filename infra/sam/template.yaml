@@ -37,7 +37,6 @@ Parameters:
     Default: 'false'
     AllowedValues: ['true', 'false']
 Conditions:
-  HasAdditionalClients: !Not [!Equals [!Join ['', !Ref AdditionalClientIds], '']]
   HasGoogleSecretArn: !Not [!Equals [!Ref GoogleOAuthSecretArn, '']]
   HasGoogle: !And [!Not [!Equals [!Ref GoogleClientId, '']], !Or [!Condition HasGoogleSecretArn, !Not [!Equals [!Ref GoogleClientSecret, '']]]]
   HasProvider: !Not [!Equals [!Ref ProviderSecretArn, '']]
@@ -46,7 +45,7 @@ Globals:
   Function:
     MemorySize: 512
     Timeout: 30
-    Architectures: [x86_64]
+    Architectures: [arm64]
     Environment:
       Variables:
         NODE_ENV: production
@@ -61,6 +60,7 @@ Globals:
         COGNITO_ISSUER: !Sub 'https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}'
         COGNITO_CLIENT_ID: !Ref WebClient
         COGNITO_AGENT_CLIENT_ID: !Ref AgentClient
+        COGNITO_ANDROID_CLIENT_ID: !Ref AndroidClient
         COGNITO_ADDITIONAL_CLIENT_IDS: !Join [',', !Ref AdditionalClientIds]
 Resources:
   UserPool:
@@ -127,6 +127,24 @@ Resources:
         Feature: ENABLED
         RetryGracePeriodSeconds: 10
       PreventUserExistenceErrors: ENABLED
+  AndroidClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      GenerateSecret: false
+      SupportedIdentityProviders: !If [HasGoogle, [!Ref GoogleProvider], [COGNITO]]
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows: [code]
+      AllowedOAuthScopes: [openid, email, profile]
+      CallbackURLs: ['brainrotgram://auth/callback']
+      LogoutURLs: ['brainrotgram://auth/signout']
+      AccessTokenValidity: 1
+      RefreshTokenValidity: 30
+      TokenValidityUnits:
+        AccessToken: hours
+        RefreshToken: days
+      EnableTokenRevocation: true
+      PreventUserExistenceErrors: ENABLED
   Api:
     Type: AWS::Serverless::HttpApi
     Properties:
@@ -146,7 +164,10 @@ Resources:
             IdentitySource: $request.header.Authorization
             JwtConfiguration:
               issuer: !Sub 'https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}'
-              audience: !If [HasAdditionalClients, !Split [',', !Join [',', [!Ref WebClient, !Ref AgentClient, !Join [',', !Ref AdditionalClientIds]]]], [!Ref WebClient, !Ref AgentClient]]
+              audience:
+                - !Ref WebClient
+                - !Ref AgentClient
+                - !Ref AndroidClient
   ApiFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -154,7 +175,6 @@ Resources:
       ImageUri: !Ref RuntimeImageUri
       ImageConfig:
         Command: [cloud/dist/api.handler]
-      ReservedConcurrentExecutions: 10
       LoggingConfig:
         LogGroup: !Ref ApiLogs
       Policies:
@@ -305,10 +325,9 @@ Resources:
       ImageConfig:
         Command: [cloud/dist/worker.handler]
       Timeout: 900
-      MemorySize: 4096
+      MemorySize: 3008
       EphemeralStorage:
         Size: 2048
-      ReservedConcurrentExecutions: 2
       Environment:
         Variables:
           PROVIDER_SECRET_ARN: !Ref ProviderSecretArn
@@ -410,6 +429,8 @@ Outputs:
     Value: !Ref WebClient
   CognitoAgentClientId:
     Value: !Ref AgentClient
+  CognitoAndroidClientId:
+    Value: !Ref AndroidClient
   CognitoUserPoolId:
     Value: !Ref UserPool
   CognitoDomain:

@@ -39,3 +39,67 @@ describe('account-owned session learning',()=>{
   it('saves versioned learner reflections and rejects agent writes and another account',async()=>{const created=await handler(event('alice','POST','/api/v1/sessions',checkpoint)) as {body:string};const session=JSON.parse(created.body),route='/api/v1/sessions/'+session.sessionId+'/review';const body={kind:'predict',expectedVersion:0,text:'The new key permits another operation.',confidence:4,skipped:false};expect((await handler(event('alice','PUT',route,body)) as {statusCode:number}).statusCode).toBe(200);expect((await handler(event('alice','PUT',route,body)) as {statusCode:number}).statusCode).toBe(409);expect((await handler(event('bob','PUT',route,body)) as {statusCode:number}).statusCode).toBe(404);vi.stubEnv('COGNITO_AGENT_CLIENT_ID','agent123456789');const agent=event('alice','PUT',route,{...body,expectedVersion:1});(agent.requestContext as unknown as {authorizer:{jwt:{claims:{client_id:string}}}}).authorizer.jwt.claims.client_id='agent123456789';expect((await handler(agent) as {statusCode:number}).statusCode).toBe(403);});
   it('rejects publishing to an unowned session before any quota reservation',async()=>{const result=await handler(event('alice','POST','/api/v1/sessions/'+id+'/videos',{prompt:'Explain retries'})) as {statusCode:number};expect(result.statusCode).toBe(404);expect(vi.mocked(db.send).mock.calls.every(([command])=>command instanceof GetCommand)).toBe(true);});
 });
+
+
+describe('AndroidClient allowlist and learner-write access', () => {
+  const androidClientId = 'androidclient0001';
+
+  function androidEvent(sub: string, method: string, path: string, body?: unknown): APIGatewayProxyEventV2 {
+    return {
+      rawPath: path,
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+      requestContext: {
+        requestId: 'android-test',
+        http: { method },
+        authorizer: { jwt: { claims: {
+          iss: process.env['COGNITO_ISSUER'],
+          client_id: androidClientId,
+          token_use: 'access',
+          sub,
+        } } },
+      },
+    } as unknown as APIGatewayProxyEventV2;
+  }
+
+  it('accepts an AndroidClient token via COGNITO_ANDROID_CLIENT_ID', async () => {
+    vi.stubEnv('COGNITO_ANDROID_CLIENT_ID', androidClientId);
+    const { authenticatedSubject } = await import('./api.js');
+    expect(authenticatedSubject(androidEvent('alice', 'GET', '/api/v1/library'))).toBe('alice');
+  });
+
+  it('rejects the Android client ID when COGNITO_ANDROID_CLIENT_ID is not set', async () => {
+    vi.stubEnv('COGNITO_ANDROID_CLIENT_ID', '');
+    const { authenticatedSubject } = await import('./api.js');
+    expect(authenticatedSubject(androidEvent('alice', 'GET', '/api/v1/library'))).toBeUndefined();
+  });
+
+  it('does NOT block AndroidClient from learner-write routes (only agent client is blocked)', async () => {
+    vi.stubEnv('COGNITO_ANDROID_CLIENT_ID', androidClientId);
+    // agent client guard checks COGNITO_AGENT_CLIENT_ID specifically; Android is a different ID
+    vi.stubEnv('COGNITO_AGENT_CLIENT_ID', 'agentclient00001');
+    // Create a session first using the primary web client
+    const session = await handler(event('alice', 'POST', '/api/v1/sessions', {
+      requestId: 'android-learner-01',
+      title: 'Android learner write access test',
+      projectName: 'BrainRotGram',
+      agent: 'MCP',
+      objective: 'Verify that the Android client can write learner prediction responses.',
+      context: { task: 'Verify Android write access', summary: 'Android should not be blocked from learner-write routes by the agent guard.' },
+      activity: {
+        predictionPrompt: 'Will the Android client be blocked from writing a prediction?',
+        practice: { prompt: 'Submit a prediction using the Android client token.', successCriteria: 'Response is not 403 Forbidden.' },
+      },
+    })) as { statusCode: number; body: string };
+    expect(session.statusCode).toBe(201);
+    const { sessionId } = JSON.parse(session.body);
+    // Attempt learner write with Android client — must NOT return 403
+    const result = await handler(androidEvent('alice', 'PUT', '/api/v1/sessions/' + sessionId + '/review', {
+      kind: 'predict',
+      expectedVersion: 0,
+      text: 'It will succeed.',
+      confidence: 4,
+      skipped: false,
+    })) as { statusCode: number };
+    expect(result.statusCode).not.toBe(403);
+  });
+});

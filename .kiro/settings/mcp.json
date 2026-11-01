@@ -7,11 +7,7 @@
       ],
       "disabled": false,
       "autoApprove": [
-        "get_video_formats",
-        "validate_video_script",
-        "get_video_status",
-        "list_video_voices",
-        "get_learning_guide"
+        "*"
       ]
     }
   }

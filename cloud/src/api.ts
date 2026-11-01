@@ -14,7 +14,7 @@ export function authenticatedSubject(event:APIGatewayProxyEventV2):string|undefi
   const context=event.requestContext as typeof event.requestContext&{authorizer?:{jwt?:{claims?:Record<string,unknown>}}};
   const claims=context.authorizer?.jwt?.claims;
   const issuer=process.env['COGNITO_ISSUER'],primary=process.env['COGNITO_CLIENT_ID'];
-  const clients=new Set([primary,process.env['COGNITO_AGENT_CLIENT_ID'],...(process.env['COGNITO_ADDITIONAL_CLIENT_IDS']??'').split(',').map(id=>id.trim()).filter(id=>/^[a-z0-9]{10,128}$/.test(id))]);
+  const clients=new Set([primary,process.env['COGNITO_AGENT_CLIENT_ID'],process.env['COGNITO_ANDROID_CLIENT_ID'],...(process.env['COGNITO_ADDITIONAL_CLIENT_IDS']??'').split(',').map(id=>id.trim()).filter(id=>/^[a-z0-9]{10,128}$/.test(id))]);
   if(!issuer||!primary||!claims||claims['iss']!==issuer||typeof claims['client_id']!=='string'||!clients.has(claims['client_id'])||claims['token_use']!=='access')return;
   return typeof claims['sub']==='string'&&claims['sub'].length<=150?claims['sub']:undefined;
 }
