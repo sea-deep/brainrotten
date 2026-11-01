@@ -11,7 +11,7 @@ export const AGENT_CALLBACK='http://localhost:43891/callback';
 export function accountApiUrl(raw:string){const url=new URL(raw);if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash)throw new Error('Use the hosted HTTPS API URL without credentials or query parameters.');return url.toString().replace(/\/$/,'');}
 function file(dataDir:string){return path.join(dataDir,'account-connection.json');}
 export function readAccountProfile(dataDir:string):AccountProfile{
-  try{const profile=ProfileSchema.parse(JSON.parse(fs.readFileSync(file(dataDir),'utf8')));accountApiUrl(profile.apiUrl);const domain=new URL(profile.domain);if(domain.protocol!=='https:'||domain.username||domain.password||domain.search||domain.hash||domain.pathname!=='/')throw new Error();if(!/^https:\/\/cognito-idp\.[a-z0-9-]+\.amazonaws\.com\/[a-z0-9_-]+$/.test(profile.issuer))throw new Error();return profile;}
+  try{const profile=ProfileSchema.parse(JSON.parse(fs.readFileSync(file(dataDir),'utf8')));accountApiUrl(profile.apiUrl);const domain=new URL(profile.domain);if(domain.protocol!=='https:'||domain.username||domain.password||domain.search||domain.hash||domain.pathname!=='/')throw new Error();if(!/^https:\/\/cognito-idp\.[a-z0-9-]+\.amazonaws\.com\/[a-z]{2}(?:-[a-z]+)+-\d_[A-Za-z0-9]+$/.test(profile.issuer))throw new Error();return profile;}
   catch{throw new Error('Sign in first with pnpm brainrotten login --api-url https://YOUR_API/api/v1.');}
 }
 function writeProfile(dataDir:string,profile:AccountProfile){fs.mkdirSync(dataDir,{recursive:true,mode:0o700});const target=file(dataDir),temp=target+'.tmp';fs.writeFileSync(temp,JSON.stringify(ProfileSchema.parse(profile)),{mode:0o600});fs.chmodSync(temp,0o600);fs.renameSync(temp,target);}
@@ -46,7 +46,7 @@ export async function accountLogin(api:string,dataDir:string,openBrowser=true):P
   if(!response.ok)throw new Error('Cannot read the hosted sign-in configuration.');
   const config=await response.json() as {auth?:{configured?:boolean;domain?:string;issuer?:string;agentClientId?:string}};
   const auth=config.auth;if(!auth?.configured||!auth.domain||!auth.issuer||!auth.agentClientId)throw new Error('Configure the hosted Cognito agent app client first; see the account setup guide.');
-  const domain=new URL(auth.domain);if(domain.protocol!=='https:'||domain.username||domain.password||domain.pathname!=='/'||domain.search||domain.hash||!/^https:\/\/cognito-idp\.[a-z0-9-]+\.amazonaws\.com\/[a-z0-9_-]+$/.test(auth.issuer)||!/^[a-z0-9]{10,128}$/.test(auth.agentClientId))throw new Error('Invalid Cognito sign-in configuration.');
+  const domain=new URL(auth.domain);if(domain.protocol!=='https:'||domain.username||domain.password||domain.pathname!=='/'||domain.search||domain.hash||!/^https:\/\/cognito-idp\.[a-z0-9-]+\.amazonaws\.com\/[a-z]{2}(?:-[a-z]+)+-\d_[A-Za-z0-9]+$/.test(auth.issuer)||!/^[a-z0-9]{10,128}$/.test(auth.agentClientId))throw new Error('Invalid Cognito sign-in configuration.');
   const state=randomBytes(32).toString('hex'),verifier=randomBytes(48).toString('base64url');
   const authorize=new URL(domain.origin+'/oauth2/authorize');
   authorize.search=new URLSearchParams({client_id:auth.agentClientId,response_type:'code',scope:'openid email profile',redirect_uri:AGENT_CALLBACK,state,code_challenge:createHash('sha256').update(verifier).digest('base64url'),code_challenge_method:'S256'}).toString();
