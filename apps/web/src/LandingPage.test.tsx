@@ -30,4 +30,8 @@ describe('production landing page',()=>{
     expect(config.mcpServers.brainrotten.args).toEqual(['/installed/brainrotten/apps/companion/dist/mcp.js']);
     expect(JSON.parse(editorConfig('standard','node','/mcp.js','synthetic-token')).mcpServers.brainrotten.env.BRAINROTTEN_MCP_TOKEN).toBe('synthetic-token');
   });
+  it('writes an OpenCode local MCP entry',()=>{
+    const config=JSON.parse(editorConfig('opencode','/opt/homebrew/bin/node','/mcp.js','synthetic-token'));
+    expect(config.mcp.brainrotten).toEqual({type:'local',command:['/opt/homebrew/bin/node','/mcp.js'],enabled:true,environment:{BRAINROTTEN_MCP_TOKEN:'synthetic-token'}});
+  });
 });

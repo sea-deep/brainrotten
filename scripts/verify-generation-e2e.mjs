@@ -27,9 +27,52 @@ Object.assign(process.env,{
 const originalFetch=globalThis.fetch;
 let server,storage,client,transport;
 let scriptCalls=0,speechCalls=0,unexpectedNetworkCalls=0;
-const formats=['skit','casefile','whiteboard','pov'];
+const formats=['skit','groupchat','prreview','sketch','tierlist'];
 const question={id:'purchase-key',prompt:'Which key should the retry reuse?',choices:['The purchase key','A fresh key'],answer:0,explanation:'One operation keeps one stable key.',turnIndices:[2,3]};
 function scriptFor(format){
+  if(format==='tierlist')return{
+    title:'Payment retry — tierlist',narrator:'jhatka',takeaway:'Keep one stable key per purchase.',
+    tierlist:{criterion:'one charge when the reply is lost',items:[{id:'same-key',label:'Same key',icon:'key-round'},{id:'backoff',label:'Backoff',icon:'timer'},{id:'new-key',label:'New key',icon:'shuffle'}]},
+    dialogue:[
+      {speaker:'jhatka',text:'Ranking retry fixes by one rule: one charge when the reply is lost.'},
+      {speaker:'jhatka',text:'A new key per retry charges again. F tier.',tier:{place:{item:'new-key',tier:'F'}}},
+      {speaker:'jhatka',text:'Where does a stable purchase key go?',tier:{focus:'same-key'},pause:{prompt:'Where does a stable purchase key go?',choices:['S tier','F tier'],answer:0}},
+      {speaker:'jhatka',text:'S tier. The retry returns the first result.',tier:{place:{item:'same-key',tier:'S'}}},
+      {speaker:'jhatka',text:'Backoff lowers load but does not stop it. C tier.',tier:{place:{item:'backoff',tier:'C'}}},
+    ],questions:[question],
+  };
+  if(format==='sketch')return{
+    title:'Payment retry — sketch',narrator:'jhatka',takeaway:'Keep one stable key per purchase.',
+    sketch:{nodes:[{id:'app',label:'Checkout app',kind:'actor',icon:'smartphone'},{id:'api',label:'Payment API',kind:'service',icon:'server'},{id:'db',label:'Postgres',kind:'store',icon:'postgresql'}],edges:[{from:'app',to:'api',label:'POST /pay'},{from:'api',to:'db',label:'insert'}]},
+    dialogue:[
+      {speaker:'jhatka',text:'The app sends a payment to the API.',sketch:{show:['app','api','app>api']}},
+      {speaker:'jhatka',text:'The API stores the purchase in Postgres.',sketch:{show:['db','api>db']}},
+      {speaker:'jhatka',text:'The reply is lost and the app retries with a new key. What happens?',sketch:{focus:['app>api']},pause:{prompt:'What does the retry with a new key do?',choices:['Charges again','Returns the first result'],answer:0}},
+      {speaker:'jhatka',text:'It charges again. Reuse the purchase key so Postgres finds the first result.',sketch:{focus:['db'],mark:'fix',note:{text:'same key',near:'db'}}},
+    ],questions:[question],
+  };
+  if(format==='prreview')return{
+    title:'Payment retry — prreview',takeaway:'Keep one stable key per purchase.',
+    pr:{title:'Reuse purchase key on retry',repo:'acme/checkout',author:{name:'claude-code',icon:'anthropic'},reviewers:[{speaker:'jhatka',name:'senior-dev',icon:'user'},{speaker:'jack',name:'dba',icon:'postgresql'}],
+      files:[{path:'src/retry.ts',language:'ts',lines:[{kind:'ctx',code:'function retry(order) {'},{kind:'del',code:'  const key = uuid();'},{kind:'add',code:'  const key = order.purchaseKey;'},{kind:'ctx',code:'}'}]}],verdict:'approve'},
+    dialogue:[
+      {speaker:'jhatka',text:'Let us review the retry fix for double charges.',pr:{file:0,lines:[0,3],tone:'question'}},
+      {speaker:'jhatka',text:'The old code made a new key on every retry.',pr:{file:0,lines:[1,1],tone:'roast'}},
+      {speaker:'jack',text:'The reply is lost and the app retries. What happens?',pr:{file:0,lines:[1,1],tone:'question'},pause:{prompt:'Response lost, app retries. What happens?',choices:['Charged twice','Same result'],answer:0}},
+      {speaker:'jhatka',text:'The card is charged twice. Reusing the purchase key fixes it.',pr:{file:0,lines:[2,2],tone:'praise'}},
+      {speaker:'jhatka',text:'Approved.',pr:{tone:'praise',display:'LGTM 🚀'}},
+    ],questions:[question],
+  };
+  if(format==='groupchat')return{
+    title:'Payment retry — groupchat',takeaway:'Keep one stable key per purchase.',
+    chat:{title:'checkout-prod 💀',members:[{speaker:'motu',name:'Client',icon:'smartphone',you:true},{speaker:'jack',name:'Payment API',icon:'server'},{speaker:'jhatka',name:'Postgres',icon:'postgresql'}]},
+    dialogue:[
+      {speaker:'motu',text:'Did my payment go through? I got no response.',chat:{display:'did my payment go through?? 😭'}},
+      {speaker:'jack',text:'The charge succeeded but the response was lost.'},
+      {speaker:'jhatka',text:'A fresh retry key would look like a new purchase to me.',chat:{reaction:'💀'}},
+      {speaker:'jack',text:'Reuse the purchase key and I return the saved result.'},
+    ],questions:[question],
+  };
   const texts=format==='skit'?[
     'The payment ran twice after I retried.',
     'The charge succeeded but its response was lost.',
@@ -63,7 +106,7 @@ try{
     if(url.href==='https://api.paperinstruments.com/v1/chat/completions'){
       scriptCalls++;
       const body=JSON.parse(options.body),system=body.messages[0].content;
-      const format=system.includes('first-person POV journey')?'pov':system.includes('whiteboard explanation')?'whiteboard':system.includes('narrated case-file')?'casefile':'skit';
+      const format=system.includes('TierMaker-style tier list')?'tierlist':system.includes('Excalidraw-style sketch board')?'sketch':system.includes('GitHub pull request review')?'prreview':system.includes('WhatsApp group chat')?'groupchat':system.includes('first-person POV journey')?'pov':system.includes('whiteboard explanation')?'whiteboard':system.includes('narrated case-file')?'casefile':'skit';
       return Response.json({choices:[{message:{content:JSON.stringify(scriptFor(format))}}]});
     }
     if(url.origin==='https://api.elevenlabs.io'&&url.pathname==='/v1/text-to-dialogue/with-timestamps'){
@@ -116,7 +159,7 @@ try{
   assert.equal((await originalFetch(base+'/api/v1/library')).status,401);
   const jobs=[];
   for(const [index,format]of formats.entries()){
-    const input=GenerateVideoInputSchema.parse({requestId:`connected-${format}`,format,prompt:'Explain a lost payment response and a retry using the same purchase key.',scriptProvider:'paper',voiceBackend:'elevenlabs',speechSpeed:1,broll:false,quizCount:1,language:'en',...(format==='skit'?{participants:{learner:'motu',expert:'jack'},background:'minecraft-lava'}:{narrator:'jhatka'})});
+    const input=GenerateVideoInputSchema.parse({requestId:`connected-${format}`,format,prompt:'Explain a lost payment response and a retry using the same purchase key.',scriptProvider:'paper',voiceBackend:'elevenlabs',speechSpeed:1,broll:false,quizCount:1,language:'en',...(format==='skit'?{participants:{learner:'motu',expert:'jack'},background:'minecraft-lava'}:format==='groupchat'?{background:'subway-surfers'}:format==='prreview'?{background:'gta-stunts'}:format==='sketch'?{narrator:'jhatka',background:'minecraft-end'}:format==='tierlist'?{narrator:'jhatka',background:'minecraft-lava'}:{narrator:'jhatka'})});
     const checked=await call('validate_video_script',{request:{...input,script:scriptFor(format)}});
     assert.equal(checked.valid,true);assert.equal(checked.generationReady,true);
     // Exercise both public entry points. Both must reach the actual queue and engine.
@@ -124,7 +167,7 @@ try{
     assert.ok(submitted.jobId);assert.ok(['queued','processing'].includes(submitted.state));
     const job=await waitForReady(submitted.jobId);
     assert.equal(job.state,'ready',`${format} did not finish`);
-    assert.equal(job.format,format);assert.equal(job.learning.questions.length,1);
+    assert.equal(job.format,format);assert.equal(job.learning.questions.length,['prreview','sketch','tierlist'].includes(format)?2:1,'pauses add a graded question');
     for(const kind of ['video','poster','audio','manifest','learning','notes','captions','flashcards']){
       const response=await request(`/videos/${job.jobId}/${kind}`);
       assert.equal(response.status,200,`${format}/${kind}`);
@@ -151,22 +194,22 @@ try{
     assert.equal(review.answers[question.id].correct,true);
     assert.equal((await request(`/videos/${job.jobId}/review`,'PUT',{kind:'bookmark',value:false,expectedVersion:0})).status,409);
     assert.equal((await call('get_video_review',{jobId:job.jobId})).bookmarked,true);
-    assert.equal((await call('get_video_learning_pack',{jobId:job.jobId})).questions.length,1);
+    assert.equal((await call('get_video_learning_pack',{jobId:job.jobId})).questions.length,['prreview','sketch','tierlist'].includes(format)?2:1);
     jobs.push({jobId:job.jobId,format,studioUrl:`${base}/studio?video=${job.jobId}`});
   }
-  const first=await call('list_videos',{limit:2,review:'bookmarked'});
-  assert.equal(first.jobs.length,2);assert.ok(first.nextCursor);
-  const second=await call('list_videos',{limit:2,review:'bookmarked',cursor:first.nextCursor});
+  const first=await call('list_videos',{limit:3,review:'bookmarked'});
+  assert.equal(first.jobs.length,3);assert.ok(first.nextCursor);
+  const second=await call('list_videos',{limit:3,review:'bookmarked',cursor:first.nextCursor});
   assert.equal(second.jobs.length,2);assert.equal(second.nextCursor,null);
-  assert.equal(new Set([...first.jobs,...second.jobs].map(job=>job.jobId)).size,4);
+  assert.equal(new Set([...first.jobs,...second.jobs].map(job=>job.jobId)).size,5);
   // A fresh agent-authored job must work with every script-provider key absent.
   process.env.PAPER_API_KEY='';
-  const agentInput={requestId:'connected-agent-pov',format:'pov',narrator:'jhatka',script:scriptFor('pov'),speechSpeed:1,broll:false,quizCount:1,language:'en',voiceBackend:'elevenlabs'};
+  const agentInput={requestId:'connected-agent-prreview',format:'prreview',script:scriptFor('prreview'),speechSpeed:1,broll:false,quizCount:1,language:'en',voiceBackend:'elevenlabs'};
   assert.equal(studio.config().scriptConfigured,false);
   assert.equal((await call('validate_video_script',{request:agentInput})).generationReady,true);
   const agentJob=await waitForReady((await call('generate_short_video',agentInput)).jobId);
-  assert.equal(agentJob.format,'pov');
-  jobs.push({jobId:agentJob.jobId,format:'pov',source:'agent script without a model key',studioUrl:`${base}/studio?video=${agentJob.jobId}`});
+  assert.equal(agentJob.format,'prreview');assert.ok(agentJob.learning.questions.some(q=>q.id==='pause-2'),'pause question is graded');
+  jobs.push({jobId:agentJob.jobId,format:'prreview',source:'agent script without a model key',studioUrl:`${base}/studio?video=${agentJob.jobId}`});
   process.env.PAPER_API_KEY='synthetic-e2e-paper';
   const checkpoint=await call('record_learning_session',{
     requestId:'connected-session-checkpoint',title:'The retried purchase',projectName:'Checkout',agent:'Connected MCP fixture',intent:'debugging',
@@ -174,7 +217,7 @@ try{
     context:{task:'Trace a request through the payment pipeline',summary:'The charge succeeded before its response was lost.',changes:['Keep one purchase-scoped idempotency key.'],decisions:[{choice:'Reuse the purchase key',reason:'A delivery attempt must not create a new operation.',tradeoff:'The operation result needs durable storage.'}],uncertainties:['The fixture does not claim an actual payment ran.']},
     activity:{predictionPrompt:'What happens if the retry uses a new purchase key?',practice:{prompt:'Trace the same purchase after two lost responses.',successCriteria:'One charge; both retries receive the saved result.',hint:'Separate operation identity from delivery attempts.'},reflectionPrompt:'Which assumption would you test before accepting the change?'},
   });
-  assert.equal(checkpoint.recommendation.format,'pov');
+  assert.equal(checkpoint.recommendation.format,'groupchat');
   assert.equal((await call('get_learning_guide',{sessionId:checkpoint.sessionId})).version,'BrainrottenTeachingGuideV1');
   const linked=await waitForReady((await call('publish_session_lesson',{sessionId:checkpoint.sessionId,video:{...agentInput,requestId:'connected-session-lesson'}})).jobId);
   assert.equal(linked.sessionId,checkpoint.sessionId);
@@ -185,14 +228,14 @@ try{
     const response=await fetch(learningRoute,{method:'PUT',headers:{authorization:'Bearer '+auth.getToken(),'content-type':'application/json'},body:JSON.stringify({...action,expectedVersion:version})});assert.equal(response.status,200);version=(await response.json()).version;
   }
   assert.equal((await call('get_learning_session',{sessionId:checkpoint.sessionId})).videos[0].jobId,linked.jobId);
-  jobs.push({jobId:linked.jobId,format:'pov',source:'account-owned session lesson',studioUrl:`${base}/studio?session=${checkpoint.sessionId}`});
+  jobs.push({jobId:linked.jobId,format:'prreview',source:'account-owned session lesson',studioUrl:`${base}/studio?session=${checkpoint.sessionId}`});
   const restored=new VideoStudio(directory);
-  assert.equal(restored.list().length,6);
+  assert.equal(restored.list().length,7);
   assert.equal(restored.sessions.review(checkpoint.sessionId).reflection.confidence,3);
   assert.equal(restored.review(jobs[0].jobId).positionMs,1500);
   assert.equal(restored.review(jobs[0].jobId).answers[question.id].correct,true);
-  assert.equal(scriptCalls,4);assert.equal(speechCalls,4);assert.equal(unexpectedNetworkCalls,0);
-  console.log(JSON.stringify({ok:true,scope:'real local application; synthetic model/speech responses',formats,jobs,scriptCalls,speechCalls,paidRequests:0,unexpectedNetworkCalls,checks:['real stdio MCP','real HTTP queue','four topic MP4s plus fresh agent-script job','agent script without a model key','eight downloads per format','range playback','retry idempotency','request conflicts','server grading','review conflict','restart persistence','private paginated library']},null,2));
+  assert.equal(scriptCalls,5);assert.equal(speechCalls,5);assert.equal(unexpectedNetworkCalls,0);
+  console.log(JSON.stringify({ok:true,scope:'real local application; synthetic model/speech responses',formats,jobs,scriptCalls,speechCalls,paidRequests:0,unexpectedNetworkCalls,checks:['real stdio MCP','real HTTP queue','skit, groupchat, prreview, sketch and tierlist topic MP4s plus a fresh agent PR review with Pause & Predict','agent script without a model key','eight downloads per format','range playback','retry idempotency','request conflicts','server grading','review conflict','restart persistence','private paginated library']},null,2));
   if(process.argv.includes('--serve')){
     console.log(`Isolated browser QA server: ${base}/studio`);
     await new Promise(resolve=>{process.once('SIGINT',resolve);process.once('SIGTERM',resolve);});

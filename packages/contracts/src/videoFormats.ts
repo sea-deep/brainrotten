@@ -1,13 +1,23 @@
 import {z} from 'zod/v4';
 
-export const VideoFormatSchema=z.enum(['skit','casefile','whiteboard','pov']);
+export const VideoFormatSchema=z.enum(['skit','casefile','whiteboard','pov','groupchat','prreview','sketch','tierlist']);
 export type VideoFormat=z.infer<typeof VideoFormatSchema>;
 export const VIDEO_FORMATS=[
   {id:'skit' as const,name:'Character skit',description:'Two characters work through a situation, with connected follow-up questions.',speakers:2,visuals:'Supplied gameplay, speaking character and reference inserts.'},
   {id:'casefile' as const,name:'Case file',description:'Follow a failure from symptom to investigation, consequence and fix.',speakers:1,visuals:'Code, reference images and a timed investigation outline.'},
   {id:'whiteboard' as const,name:'Whiteboard',description:'A narrator explains the mechanism with animated diagrams.',speakers:1,visuals:'Script-defined nodes and connections, code and reference inserts.'},
   {id:'pov' as const,name:'POV journey',description:'Follow one request, write or allocation through the system.',speakers:1,visuals:'A request passport with checkpoints, live state and explanatory inserts.'},
+  {id:'groupchat' as const,name:'Group chat',description:'The stack texts each other: the app, the API, Redis or Postgres become members of a WhatsApp-style group.',speakers:4,visuals:'WhatsApp-style group thread with icon avatars over supplied gameplay.'},
+  {id:'sketch' as const,name:'Sketch board',description:'A presenter sketches the system in Excalidraw style while explaining it: boxes, arrows, a red marker on the problem and the fix.',speakers:1,visuals:'Hand-drawn Excalidraw-style diagram that builds up beat by beat, over supplied gameplay.'},
+  {id:'tierlist' as const,name:'Tier list',description:'A presenter ranks the options against one stated criterion, S to F, one placement and reason at a time.',speakers:1,visuals:'TierMaker-style S–F board with icon tiles and an unranked tray, over supplied gameplay.'},
+  {id:'prreview' as const,name:'PR review',description:'A reviewer roasts the actual change, line by line, in a GitHub-style pull request.',speakers:2,visuals:'GitHub-style diff with focused lines, inline review comments and a verdict, over supplied gameplay.'},
 ] as const;
+/** Slide-style narrated formats stay readable for existing videos but are no longer offered for new ones. */
+export const RETIRED_FORMATS=new Set<string>(['casefile','whiteboard','pov']);
+export const CREATABLE_FORMATS=VIDEO_FORMATS.filter(format=>!RETIRED_FORMATS.has(format.id));
+export function retiredFormatMessage(format:string):string|undefined{
+  return RETIRED_FORMATS.has(format)?`The ${format} format is retired for new videos. Use ${CREATABLE_FORMATS.map(f=>f.id).join(', ')}.`:undefined;
+}
 export const DiagramSchema=z.object({
   nodes:z.array(z.object({id:z.string().regex(/^[a-z][a-z0-9_-]{0,31}$/),label:z.string().trim().min(1).max(64)})).min(2).max(4),
   edges:z.array(z.object({from:z.string(),to:z.string()})).min(1).max(6),

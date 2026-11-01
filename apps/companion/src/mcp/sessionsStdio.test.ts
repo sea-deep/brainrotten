@@ -30,11 +30,12 @@ describe('learning sessions over real MCP stdio and companion routes',()=>{
   });
   afterAll(async()=>{await client?.close();server?.closeAllConnections();await new Promise<void>(resolve=>server?server.close(()=>resolve()):resolve());await fs.rm(directory,{recursive:true,force:true});vi.unstubAllEnvs();});
 
+  it('sends every agent the format playbook on connect',()=>{const instructions=client.getInstructions()??'';expect(instructions).toContain('PICK THE FORMAT');expect(instructions).toContain('validate_video_script');expect(instructions).toContain('prreview');});
   it('records, lists and reads a checkpoint, then serves its contextual guide',async()=>{
     const recorded=await client.callTool({name:'record_learning_session',arguments:checkpoint});
     expect(recorded.isError).not.toBe(true);
     const session=LearningSessionSchema.parse(JSON.parse(text(recorded)));
-    expect(session).toMatchObject({evidenceTrust:'agent-supplied',recommendation:{format:'casefile',chosenBy:'routing-guide'}});
+    expect(session).toMatchObject({evidenceTrust:'agent-supplied',recommendation:{format:'groupchat',chosenBy:'routing-guide'}});
     // Same requestId is idempotent; changed context with the same ID is rejected.
     expect(JSON.parse(text(await client.callTool({name:'record_learning_session',arguments:checkpoint}))).sessionId).toBe(session.sessionId);
     expect((await client.callTool({name:'record_learning_session',arguments:{...checkpoint,title:'Different context'}})).isError).toBe(true);
@@ -43,7 +44,7 @@ describe('learning sessions over real MCP stdio and companion routes',()=>{
     const detail=SessionDetailSchema.parse(JSON.parse(text(await client.callTool({name:'get_learning_session',arguments:{sessionId:session.sessionId}}))));
     expect(detail.review.version).toBe(0);expect(detail.videos).toEqual([]);
     const guide=JSON.parse(text(await client.callTool({name:'get_learning_guide',arguments:{sessionId:session.sessionId}})));
-    expect(guide.recommendation.format).toBe('casefile');
+    expect(guide.recommendation.format).toBe('groupchat');
     await expect(fs.stat(path.join(directory,'learning-sessions',session.sessionId+'.json'))).resolves.toBeTruthy();
   });
 

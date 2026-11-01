@@ -4,11 +4,13 @@ export const EDITORS=[
   {id:'kiro',name:'Kiro',file:'~/.kiro/settings/mcp.json',instructions:'Open MCP Servers from Kiro’s agent panel, choose User configuration, and add this entry. Save, then reconnect Brainrotten.',docs:'https://kiro.dev/docs/mcp/configuration/'},
   {id:'antigravity',name:'Antigravity',file:'~/.gemini/config/mcp_config.json',instructions:'In the agent panel, open ⋯ → MCP Servers → Manage MCP Servers → View raw config. Add this entry, save, and refresh the server list.',docs:'https://antigravity.google/docs/mcp'},
   {id:'cursor',name:'Cursor',file:'~/.cursor/mcp.json',instructions:'Open your personal ~/.cursor/mcp.json, add this entry, then open Cursor Settings → Tools & MCP and enable Brainrotten.',docs:'https://cursor.com/docs/mcp'},
+  {id:'opencode',name:'OpenCode',file:'~/.config/opencode/opencode.json',instructions:'Add the brainrotten entry under "mcp" in your global or project opencode.json, then restart OpenCode.',docs:'https://opencode.ai/docs/mcp-servers/'},
   {id:'codex',name:'Codex',file:'~/.codex/config.toml',instructions:'Add this TOML to your personal ~/.codex/config.toml. Trust your project and reconnect the MCP server in Codex.',docs:'https://developers.openai.com/codex/mcp/'},
 ] as const;
 export type EditorId=typeof EDITORS[number]['id'];
 export function editorConfig(editor:EditorId,command:string,entryPath:string,token:string):string{
   const credential=token;
   if(editor==='codex')return `[mcp_servers.brainrotten]\ncommand = ${JSON.stringify(command)}\nargs = [${JSON.stringify(entryPath)}]${credential?`\n\n[mcp_servers.brainrotten.env]\nBRAINROTTEN_MCP_TOKEN = ${JSON.stringify(credential)}`:''}`;
+  if(editor==='opencode')return JSON.stringify({$schema:'https://opencode.ai/config.json',mcp:{brainrotten:{type:'local',command:[command,entryPath],enabled:true,...(credential?{environment:{BRAINROTTEN_MCP_TOKEN:credential}}:{})}}},null,2);
   return JSON.stringify({mcpServers:{brainrotten:{...(editor==='claude'?{type:'stdio'}:{}),command,args:[entryPath],...(credential?{env:{BRAINROTTEN_MCP_TOKEN:credential}}:{}),...(editor==='kiro'?{disabled:false,autoApprove:[]}:{})}}},null,2);
 }

@@ -18,12 +18,19 @@
   },
   "dependencies": {
     "@brainrot/contracts": "workspace:*",
+    "@dagrejs/dagre": "1.1.8",
     "@resvg/resvg-js": "2.6.2",
+    "@twemoji/svg": "15.0.0",
     "ipaddr.js": "^2.5.0",
+    "lucide-static": "1.66.0",
     "prettier": "^3.9.10",
+    "roughjs": "4.6.6",
+    "satori": "0.63.2",
     "sharp": "^0.35.5",
     "shiki-image": "^0.1.4",
+    "simple-icons": "16.36.0",
     "undici": "^8.12.3",
+    "wawoff2": "2.0.1",
     "zod": "4.6.7"
   },
   "devDependencies": {

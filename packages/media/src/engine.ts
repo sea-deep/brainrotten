@@ -9,6 +9,7 @@ import {searchBrollImage,downloadBrollReference} from './imageSearch.js';
 import {speechBackend} from './localVoice.js';
 import {createCodeCards} from './codeImage.js';
 import {createLearningPack,learningNotes,subtitlesFor,flashcardsCsv} from './learning.js';
+import {insertPauses,pauseQuestions} from './pause.js';
 export const BACKGROUNDS=[
   {id:'auto' as const,name:'Random'},
   {id:'minecraft-lava' as const,name:'Minecraft · Lava'},
@@ -56,7 +57,7 @@ export function timeVisuals(items:ResolvedBroll[],voice:VoiceResult):PreparedBro
 export async function prepareBroll(script:VideoScript,voice:VoiceResult,outputDir:string,cachedImages?:ReadonlyMap<number|string,string>):Promise<{cues:PreparedBroll[];credits:NonNullable<VideoJob['sourceCredits']>}>{const resolved=await resolveVisuals(script,outputDir,undefined,cachedImages);return{cues:timeVisuals(resolved.items,voice),credits:resolved.credits};}
 export async function generateVideoArtifact(input:ValidatedVideoInput,options:{jobId:string;dataDir:string;outputDir:string;onUpdate?:(update:Partial<VideoJob>)=>void}):Promise<EngineResult>{
   // Resolve supplied footage before either paid script or speech generation. Never synthesize a background.
-  const background=input.format==='skit'?resolveBackground(input.background,options.jobId):undefined;
+  const background=['skit','groupchat','prreview','sketch','tierlist'].includes(input.format)?resolveBackground(input.background,options.jobId):undefined;
   const update=options.onUpdate??(()=>{});
   await fs.mkdir(options.outputDir,{recursive:true});
   update({state:'processing',stage:'scripting',progress:5});
@@ -64,11 +65,12 @@ export async function generateVideoArtifact(input:ValidatedVideoInput,options:{j
   const script=await createScript(input,ready),title=input.title??script.title;
   if(input.imageBroll&&input.broll){const line=script.dialogue.find(item=>item.brollSequence?.some(cue=>cue.kind==='image')||item.broll?.kind==='image')??script.dialogue[0]!;if(line.brollSequence){const position=line.brollSequence.findIndex(cue=>cue.kind==='image');if(position>=0)line.brollSequence[position]=input.imageBroll;else line.brollSequence=[input.imageBroll,...line.brollSequence].slice(0,4);}else line.brollSequence=[input.imageBroll,...(line.broll?.kind==='code'?[line.broll]:[])];}
   let resolved:{items:ResolvedBroll[];credits:NonNullable<VideoJob['sourceCredits']>}={items:[],credits:[]};
-  if(input.broll){try{resolved=await resolveVisuals(script,options.outputDir,options.dataDir);}catch(error){throw new GenerationError(error instanceof Error?error.message:'Could not prepare B-roll. No speech was generated.');}}
+  if(input.broll&&!['groupchat','prreview','sketch','tierlist'].includes(input.format)){try{resolved=await resolveVisuals(script,options.outputDir,options.dataDir);}catch(error){throw new GenerationError(error instanceof Error?error.message:'Could not prepare B-roll. No speech was generated.');}}
   update({title,script,format:input.format,narrator:script.narrator,participants:script.participants,voiceBackend:input.voiceBackend??speechBackend(),stage:'voicing',progress:22});
-  const voice=await synthesizeDialogue(script,input,options.dataDir);
+  const voice=await insertPauses(await synthesizeDialogue(script,input,options.dataDir),script,options.outputDir);
   await fs.copyFile(voice.audioPath,path.join(options.outputDir,'audio.mp3'));
-  const learning=createLearningPack(options.jobId,{...script,title},voice,input.format,input.language);
+  // Pause & Predict questions join the graded quiz (up to the pack's three questions).
+  const learning=createLearningPack(options.jobId,{...script,title,...(pauseQuestions(script).length?{questions:[...(script.questions??[]),...pauseQuestions(script)].slice(0,3)}:{})},voice,input.format,input.language);
   await Promise.all([fs.writeFile(path.join(options.outputDir,'learning.json'),JSON.stringify(learning,null,2)),fs.writeFile(path.join(options.outputDir,'notes.md'),learningNotes(learning)),fs.writeFile(path.join(options.outputDir,'captions.srt'),subtitlesFor(voice)),fs.writeFile(path.join(options.outputDir,'flashcards.csv'),flashcardsCsv(learning))]);
   update({stage:'rendering',progress:48,durationSeconds:voice.durationSeconds,learning});
   const sourceCredits:NonNullable<VideoJob['sourceCredits']>=[...(background?.credits??[])];

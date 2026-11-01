@@ -1,6 +1,6 @@
 # Brainrotten
 
-Brainrotten turns agent context or a topic into a short explanation: a two-character skit, narrated case file, or animated whiteboard explanation, or a first-person POV journey. Studio, MCP and the REST API share the same generation pipeline, cloned voices, reference inserts and portable learning packs.
+Brainrotten turns agent context or a topic into a short explanation: a two-character skit, a WhatsApp-style group chat where the components (with real icons) text each other, a GitHub-style PR review of the real diff, an Excalidraw-style sketch board, or a TierMaker-style tier list. Any format can pause for a Pause & Predict question. Studio, MCP and the REST API share the same generation pipeline, cloned voices, reference inserts and portable learning packs.
 
 ## Requirements
 
@@ -56,3 +56,7 @@ New completed videos include chapters, a quiz with replay links when requested, 
 
 
 The shared API now includes `/library`, `/videos/validate` and `/videos/{jobId}/review`. MCP adds `list_videos`, `validate_video_script` and `get_video_review`. Study packs include flashcards; CSV, MP3, SRT, JSON and Markdown outputs are available without another inference request. [Client integration and review contract](docs/CLIENT-INTEGRATION.md).
+
+## Credits
+
+Group chat emoji use [Twemoji](https://github.com/jdecked/twemoji) graphics by Twitter, Inc. and contributors, licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/), via the MIT-licensed `@twemoji/svg` package. Sketch boards use the [Virgil](https://github.com/excalidraw/virgil) font (OFL-1.1, Ellinor Rapp), [rough.js](https://github.com/rough-stuff/rough) (MIT) and [dagre](https://github.com/dagrejs/dagre) (MIT). Member icons come from [Lucide](https://lucide.dev) (ISC) and [Simple Icons](https://simpleicons.org) (CC0; brand logos remain their owners' trademarks). Chat panels are laid out with [Satori](https://github.com/vercel/satori) (MPL-2.0).

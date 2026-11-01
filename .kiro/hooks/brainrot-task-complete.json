@@ -1,0 +1,19 @@
+{
+  "version": "v1",
+  "_disabled": true,
+  "_notes": [
+    "DISABLED BY DEFAULT. Enable deliberately by removing the '_disabled' field.",
+    "Only acts when BRAINROT_AUTO_LESSON=true, so finishing a task never spends speech credits by surprise.",
+    "Missing Brainrotten companion must NOT block coding work."
+  ],
+  "hooks": [
+    {
+      "name": "Brainrot lesson on task completion (disabled)",
+      "trigger": "PostTaskExec",
+      "action": {
+        "type": "agent",
+        "prompt": "A spec task was just completed. Only if BRAINROT_AUTO_LESSON=true is set (or the task explicitly asks for a video), explain this task's change as a Brainrotten video using the brainrotten MCP server: pick the format (code changed -> prreview, parts interacting -> groupchat, architecture -> sketch, options weighed -> tierlist, concept -> skit), call get_video_formats for that format and copy its storyExample structure, write the full script from the real change, call validate_video_script and fix every issue, then call generate_short_video once and report the job id. Otherwise do nothing. If the companion is not reachable, skip silently."
+      }
+    }
+  ]
+}

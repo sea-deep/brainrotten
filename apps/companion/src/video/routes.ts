@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { Router, json, type Request, type Response, type NextFunction } from 'express';
 import type { SessionAuth } from '../auth.js';
 import { VideoStudio } from './runtime.js';
@@ -35,7 +36,7 @@ export function createStudioRouter(studio: VideoStudio, auth: SessionAuth): Rout
   });
   router.post('/studio/script-provider',auth.requireOwner,(req,res)=>{const parsed=ScriptSettingsSchema.safeParse(req.body);if(!parsed.success){res.status(422).json({message:'Choose Auto, Gemini or Paper.'});return;}try{saveScriptProvider(parsed.data.provider);res.json(studio.config());}catch{res.status(403).json({message:'Script provider settings are local-only.'});}});
   router.post('/studio/voice',auth.requireOwner,(req,res)=>{const parsed=SpeechSettingsSchema.safeParse(req.body);if(!parsed.success){res.status(422).json({message:'Choose a supported voice engine.'});return;}try{saveSpeechBackend(parsed.data.backend);res.json(studio.config());}catch(error){res.status(422).json({message:error instanceof Error?error.message:'Could not change the voice engine.'});}});
-  router.get('/studio/setup',auth.requireOwner,(_req,res)=>{res.json({command:process.execPath,entryPath:path.join(workspaceRoot,'apps/companion/dist/mcp.js'),projectPath:workspaceRoot,owner:'Cflash',tokenConfigured:true});});
+  router.get('/studio/setup',auth.requireOwner,(_req,res)=>{res.json({command:stableNodePath(),entryPath:path.join(workspaceRoot,'apps/companion/dist/mcp.js'),projectPath:workspaceRoot,owner:'Cflash',tokenConfigured:true});});
   router.post('/studio/mcp-token',auth.requireOwner,(req,res)=>{const parsed=z.object({action:z.enum(['reveal','rotate'])}).safeParse(req.body);if(!parsed.success){res.status(422).json({message:'Choose reveal or rotate.'});return;}res.setHeader('Cache-Control','no-store');res.json({token:parsed.data.action==='rotate'?auth.rotateMcpToken():auth.getMcpToken()});});
   router.post('/studio/auth/config',auth.requireOwner,(req,res)=>{try{saveCognitoSettings(localDataDir(),req.body);res.json(studio.config());}catch{res.status(422).json({message:'Check the Cognito domain, user pool ID, and public app client ID.'});}});
   router.post('/studio/auth/session',auth.requireOwner,async(req,res)=>{const parsed=z.object({accessToken:z.string().min(20).max(12000)}).safeParse(req.body),settings=readCognitoSettings(localDataDir());if(!parsed.success||!settings){res.status(422).json({message:'Configure AWS Cognito first.'});return;}try{res.json(await verifyCognitoSession(settings,parsed.data.accessToken));}catch{res.status(401).json({message:'The Google/Cognito session is invalid or expired. Sign in again.'});}});
@@ -71,4 +72,11 @@ export function createStudioRouter(studio: VideoStudio, auth: SessionAuth): Rout
   });
   router.use((error:unknown,_req:Request,res:Response,_next:NextFunction)=>{const kind=typeof error==='object'&&error?('type' in error?String(error.type):''):'';res.status(kind==='entity.too.large'?413:kind==='entity.parse.failed'?400:500).json({message:kind==='entity.too.large'?'The request is too large.':kind==='entity.parse.failed'?'Invalid JSON.':'The service could not complete this request.',retryable:false});});
   return router;
+}
+
+/** A Node path that survives upgrades: prefer the package-manager symlink over the versioned Cellar path. */
+export function stableNodePath(execPath=process.execPath):string{
+  let real=execPath;try{real=fs.realpathSync(execPath);}catch{/* keep the given path */}
+  for(const candidate of['/opt/homebrew/bin/node','/usr/local/bin/node','/usr/bin/node']){try{if(fs.realpathSync(candidate)===real)return candidate;}catch{/* not installed here */}}
+  return execPath;
 }

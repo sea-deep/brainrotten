@@ -19,7 +19,6 @@ samconfig.toml
 # Agentic documentation & configurations
 AGENTS.md
 .agents/
-.kiro/
 .claude/
 .codex/
 .taste-skill/

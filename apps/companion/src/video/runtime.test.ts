@@ -1,3 +1,4 @@
+import {prReviewExample} from '@brainrot/media';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -17,7 +18,7 @@ describe('new-video pair preflight',()=>{
 
 
 describe('narrated job preflight and retry compatibility',()=>{
-  it('queues a single-voice story and lists format capabilities',()=>{const studio=new VideoStudio(directory);const job=studio.submit({prompt:'Why did the payment run twice?',format:'whiteboard',narrator:'motu',quizCount:2});expect(job).toMatchObject({state:'queued',format:'whiteboard',narrator:'motu'});expect(studio.config().formats?.map(format=>format.id)).toEqual(['skit','casefile','whiteboard','pov']);});
-  it('rejects an unavailable narrator before enqueueing',()=>{const studio=new VideoStudio(directory);expect(()=>studio.submit({prompt:'A payment mystery',format:'casefile',narrator:'patlu'})).toThrow('ready cloned voice');expect(studio.list()).toHaveLength(0);});
+  it('refuses retired formats, queues interface formats and lists only creatable ones',()=>{const studio=new VideoStudio(directory);expect(()=>studio.submit({prompt:'Why did the payment run twice?',format:'whiteboard',narrator:'motu',quizCount:2})).toThrow('retired');const job=studio.submit({prompt:'Why did the payment run twice?',format:'groupchat',quizCount:2});expect(job).toMatchObject({state:'queued',format:'groupchat'});expect(studio.config().formats?.map(format=>format.id)).toEqual(['skit','groupchat','sketch','tierlist','prreview']);});
+  it('rejects an unavailable narrator before enqueueing',()=>{const studio=new VideoStudio(directory);expect(()=>studio.submit({...prReviewExample('en',['patlu']),requestId:'unready-reviewer'})).toThrow('ready cloned voice');expect(studio.list()).toHaveLength(0);});
   it('recognizes the fingerprint saved before format and quiz defaults existed',async()=>{const {GenerateVideoInputSchema,videoRequestPayload}=await import('@brainrot/contracts');const {createHash}=await import('node:crypto');const input=GenerateVideoInputSchema.parse({requestId:'old-request',prompt:'Explain retries'}),old=videoRequestPayload(input);const id='11111111-1111-4111-8111-111111111111',dir=path.join(directory,'videos-v2',id);fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'job.json'),JSON.stringify({input:old,inputHash:createHash('sha256').update(JSON.stringify(old)).digest('hex'),job:{jobId:id,state:'failed',stage:'failed',progress:0,prompt:'Explain retries',title:null,videoUrl:null,error:'Offline fixture',createdAt:'2026-10-27T12:00:00.000Z',updatedAt:'2026-10-27T12:00:00.000Z'}}));const studio=new VideoStudio(directory);expect(studio.submit({requestId:'old-request',prompt:'Explain retries'}).jobId).toBe(id);expect(studio.list()).toHaveLength(1);});
 });

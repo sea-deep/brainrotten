@@ -8,6 +8,11 @@ import {Resvg} from '@resvg/resvg-js';
 import type {CharacterId,VideoFormat,VideoScript,VideoDiagram} from '@brainrot/contracts';
 import {characterImage} from './characters.js';
 import {workspaceRoot} from './env.js';
+import {prepareChatPanels,chatStateAt,CHAT_PANEL,type ChatPanels} from './chatFrames.js';
+import {preparePrPanels,PR_PANEL,type PrPanels} from './prFrames.js';
+import {preparePauseOverlay,type PauseOverlay} from './pause.js';
+import {buildSketch,sketchFont,type SketchBoard} from './sketchFrames.js';
+import {prepareTierPanels,type TierPanels} from './tierFrames.js';
 export type VideoSpeaker=CharacterId;
 export interface VideoSegment{speaker:VideoSpeaker;turnIndex?:number;text:string;startMs:number;endMs:number}
 export interface VideoWord{text:string;turnIndex?:number;startMs:number;endMs:number;speaker:VideoSpeaker}
@@ -16,12 +21,23 @@ export interface RenderVideoInput{
   jobId:string;title:string;format?:VideoFormat;script?:VideoScript;style:'brainrot'|'calm';audioPath:string;durationSeconds:number;
   segments:VideoSegment[];words:VideoWord[];outputDir:string;backgroundPath?:string|undefined;broll?:PreparedBroll[];
   onProgress?:(progress:number)=>void;
+  /** Pre-rendered group chat states; prepared by renderVideo for the groupchat format. */
+  chatPanels?:ChatPanels;
+  /** Pre-rendered PR review states; prepared by renderVideo for the prreview format. */
+  prPanels?:PrPanels;
+  /** Pause & Predict cards; prepared by renderVideo when the script has pauses. */
+  pauseOverlay?:PauseOverlay;
+  /** Laid-out sketch board; prepared by renderVideo for the sketch format. */
+  sketchBoard?:SketchBoard;
+  /** Pre-rendered tier boards; prepared by renderVideo for the tierlist format. */
+  tierPanels?:TierPanels;
 }
 const WIDTH=720,HEIGHT=1280,FPS=24;
 const FONT='Roboto,Arial,sans-serif';
 const fontFiles=[path.join(workspaceRoot,'apps/web/public/fonts/Roboto.ttf'),path.join(workspaceRoot,'apps/web/public/fonts/RobotoMono.ttf'),'/System/Library/Fonts/Supplemental/Arial Bold.ttf','/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'].filter(existsSync);
 const FONT_OPTIONS={loadSystemFonts:fontFiles.length===0,fontFiles,defaultFontFamily:'Roboto'};
-export function escapeXml(text:string):string{return text.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'})[c]??c).split('').filter(c=>c.charCodeAt(0)>=32||'\t\n\r'.includes(c)).join('');}
+export {escapeXml} from './xml.js';
+import {escapeXml} from './xml.js';
 function binary(name:'ffmpeg'|'ffprobe'):string|null{
   for(const candidate of[process.env[name==='ffmpeg'?'FFMPEG_PATH':'FFPROBE_PATH'],name,`/opt/homebrew/bin/${name}`,`/usr/local/bin/${name}`,`/usr/bin/${name}`]){
     if(!candidate)continue;const result=spawnSync(candidate,['-version'],{stdio:'ignore',timeout:5000});if(result.status===0)return candidate;
@@ -70,7 +86,12 @@ function procedural(time:number):string{
   let tiles='';for(let i=0;i<13;i++){const p=((i/13+time*.16)%1);const y=330+p*p*950,w=80+p*700;tiles+=`<path d="M${360-w/2},${y}h${w}" stroke="#ffb793" stroke-opacity=".45" stroke-width="3"/>`;}
   return `<rect width="720" height="1280" fill="#8572c4"/><circle cx="570" cy="210" r="120" fill="#f5bd9a"/><path d="M275 350h170l275 930H0Z" fill="#5d4d98"/>${tiles}`;
 }
-function frameSvg(input:Pick<RenderVideoInput,'title'|'style'|'durationSeconds'|'segments'|'backgroundPath'|'broll'|'format'|'script'>,groups:CaptionGroup[],timeSeconds:number):string{
+function frameSvg(input:Pick<RenderVideoInput,'title'|'style'|'durationSeconds'|'segments'|'backgroundPath'|'broll'|'format'|'script'|'chatPanels'|'prPanels'|'pauseOverlay'|'sketchBoard'|'tierPanels'>,groups:CaptionGroup[],timeSeconds:number):string{
+  const svg=formatFrameSvg(input,groups,timeSeconds),overlay=input.pauseOverlay?.at(timeSeconds*1000);
+  const region=input.pauseOverlay?.region;
+  return overlay&&region?svg.replace(/<\/svg>\s*$/,`<image x="0" y="${region.top}" width="${WIDTH}" height="${region.height}" href="${overlay}" data-pause="true"/></svg>`):svg;
+}
+function formatFrameSvg(input:Pick<RenderVideoInput,'title'|'style'|'durationSeconds'|'segments'|'backgroundPath'|'broll'|'format'|'script'|'chatPanels'|'prPanels'|'pauseOverlay'|'sketchBoard'|'tierPanels'>,groups:CaptionGroup[],timeSeconds:number):string{
   const timeMs=timeSeconds*1000;
   const timedSegmentIndex=input.segments.findIndex((s,i)=>timeMs>=s.startMs&&timeMs<Math.min(s.endMs,input.segments[i+1]?.startMs??Infinity));
   const segmentIndex=timedSegmentIndex>=0?timedSegmentIndex:input.format&&input.format!=='skit'?input.segments.reduce((found,s,i)=>timeMs>=s.startMs?i:found,-1):-1;
@@ -79,13 +100,49 @@ function frameSvg(input:Pick<RenderVideoInput,'title'|'style'|'durationSeconds'|
   const speaker=segment?.speaker;
   const cue=input.broll?.find(item=>timeMs>=item.startMs&&timeMs<item.endMs);
   const bob=input.style==='calm'||!segment?0:Math.round(Math.sin(Math.min(1,(timeMs-segment.startMs)/180)*Math.PI)*-8);
+  if(input.format==='groupchat')return chatFrame(input,timeMs);
+  if(input.format==='prreview')return prFrame(input,timeMs);
+  if(input.format==='sketch')return sketchFrame(input,timeMs);
+  if(input.format==='tierlist')return tierFrame(input,timeMs);
   if(input.format==='pov')return povFrame(input,segmentIndex,group,cue,timeMs);
   if(input.format&&input.format!=='skit')return storyFrame(input,segmentIndex,group,cue,timeMs);
   const character=speaker?imageData(characterImage(speaker)):'';
   const active=character?`<g transform="translate(0 ${bob})"><image x="182" y="${cue?720:660}" width="356" height="${cue?452:512}" href="${character}" preserveAspectRatio="xMidYMax meet"/></g>`:'';
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 720 1280"><defs><linearGradient id="bottom" x2="0" y2="1"><stop stop-color="#15101d" stop-opacity="0"/><stop offset="1" stop-color="#15101d" stop-opacity=".62"/></linearGradient></defs>${input.backgroundPath?'<rect width="720" height="1280" fill="#13101a" fill-opacity=".08"/>':procedural(timeSeconds)}<rect y="760" width="720" height="520" fill="url(#bottom)"/>${brollVisual(cue)}${active}${captions(group,timeMs,cue?590:550)}</svg>`;
 }
-export function renderFrameSvg(input:Pick<RenderVideoInput,'title'|'style'|'durationSeconds'|'segments'|'words'|'backgroundPath'|'broll'|'format'|'script'>,timeSeconds:number):string{return frameSvg(input,captionGroups(input.words,input.segments),timeSeconds);}
+export function renderFrameSvg(input:Pick<RenderVideoInput,'title'|'style'|'durationSeconds'|'segments'|'words'|'backgroundPath'|'broll'|'format'|'script'|'chatPanels'|'prPanels'|'pauseOverlay'|'sketchBoard'|'tierPanels'>,timeSeconds:number):string{return frameSvg(input,captionGroups(input.words,input.segments),timeSeconds);}
+// Interface formats (group chat, PR review): the interface on top, supplied gameplay below.
+// No captions or characters: the interface already carries the words.
+// Interface formats (group chat, PR review): the interface is a rounded card centered over the gameplay,
+// at ~92% width with equal gameplay above and below. During Pause & Predict it glides up so the
+// question card fits underneath while the content stays visible.
+const CARD_WIDTH=664,PAUSE_CARD_MIN=380;
+export function panelLayout(height:number,mode=0):{x:number;y:number;width:number;height:number}{
+  const normal=CARD_WIDTH/720,paused=Math.min(normal,(HEIGHT-28-14-PAUSE_CARD_MIN-16)/height);
+  const scale=normal+(paused-normal)*mode,y=(HEIGHT-height*normal)/2+(28-(HEIGHT-height*normal)/2)*mode;
+  const width=720*scale;return{x:(720-width)/2,y,width,height:height*scale};
+}
+export function pauseRegionFor(height:number){const layout=panelLayout(height,1),top=Math.round(layout.y+layout.height+14);return{top,height:HEIGHT-top-16};}
+function panelFrame(format:string,panel:string,height:number,fallback:string,mode:number,markup?:string):string{
+  const l=panelLayout(height,mode),r=(n:number)=>Math.round(n*10)/10,box=`x="${r(l.x)}" y="${r(l.y)}" width="${r(l.width)}" height="${r(l.height)}"`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 720 1280" data-format="${format}"><defs><clipPath id="card"><rect ${box} rx="24"/></clipPath><filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000" flood-opacity=".5"/></filter></defs><rect ${box} rx="24" fill="${fallback}" filter="url(#shadow)"/>${markup?`<g clip-path="url(#card)"><g transform="translate(${r(l.x)} ${r(l.y)}) scale(${Math.round(l.width/720*10000)/10000})">${markup}</g></g>`:panel?`<image ${box} href="${panel}" preserveAspectRatio="none" clip-path="url(#card)"/>`:''}</svg>`;
+}
+function chatFrame(input:Pick<RenderVideoInput,'segments'|'chatPanels'|'pauseOverlay'>,timeMs:number):string{
+  return panelFrame('groupchat',input.chatPanels?.panel(chatStateAt(input.segments,timeMs))??'',CHAT_PANEL.height,'#efeae2',input.pauseOverlay?.mode(timeMs)??0);
+}
+function prFrame(input:Pick<RenderVideoInput,'segments'|'prPanels'|'pauseOverlay'>,timeMs:number):string{
+  const index=input.segments.reduce((found,segment,i)=>timeMs>=segment.startMs?i:found,-1);
+  return panelFrame('prreview',input.prPanels?.panel(index)??'',input.prPanels?.height??PR_PANEL.height,'#0d1117',input.pauseOverlay?.mode(timeMs)??0);
+}
+function tierFrame(input:Pick<RenderVideoInput,'segments'|'tierPanels'|'pauseOverlay'>,timeMs:number):string{
+  const index=input.segments.reduce((found,segment,i)=>timeMs>=segment.startMs?i:found,-1);
+  return panelFrame('tierlist',input.tierPanels?.panel(index)??'',input.tierPanels?.height??850,'#1a1a17',input.pauseOverlay?.mode(timeMs)??0);
+}
+function sketchFrame(input:Pick<RenderVideoInput,'segments'|'sketchBoard'|'pauseOverlay'>,timeMs:number):string{
+  const board=input.sketchBoard;if(!board)return panelFrame('sketch','',700,'#ffffff',0);
+  const index=input.segments.reduce((found,segment,i)=>timeMs>=segment.startMs?i:found,-1);
+  return panelFrame('sketch','',board.height,'#ffffff',input.pauseOverlay?.mode(timeMs)??0,board.markup(index,i=>timeMs-(input.segments[i]?.startMs??0)));
+}
 function wrapLabel(text:string,limit=23):string[]{
   const words=text.split(/\s+/).flatMap(word=>word.match(new RegExp(`.{1,${limit}}`,'gu'))??[]),rows:string[]=[''];
   for(const word of words){const last=rows.length-1;if(rows[last]!.length+word.length>limit&&rows[last])rows.push(word);else rows[last]+=(rows[last]?' ':'')+word;}
@@ -157,6 +214,15 @@ export async function renderVideo(input: RenderVideoInput): Promise<{ videoPath:
   const videoPath = path.resolve(input.outputDir, 'video.mp4');
   const posterPath = path.resolve(input.outputDir, 'poster.png');
   const groups = captionGroups(input.words,input.segments);
+  if(input.format==='groupchat'&&input.script&&!input.chatPanels)input={...input,chatPanels:await prepareChatPanels(input.script)};
+  if(input.format==='prreview'&&input.script&&!input.prPanels)input={...input,prPanels:await preparePrPanels(input.script)};
+  if(input.format==='sketch'&&input.script?.sketch&&!input.sketchBoard){const font=await sketchFont();if(!FONT_OPTIONS.fontFiles.includes(font))FONT_OPTIONS.fontFiles.push(font);input={...input,sketchBoard:buildSketch(input.script)};}
+  if(input.format==='tierlist'&&input.script&&!input.tierPanels)input={...input,tierPanels:await prepareTierPanels(input.script)};
+  if(input.script&&!input.pauseOverlay){
+    // Keep the chat/PR panel visible: the question sits over the gameplay below it.
+    const panelHeight=input.format==='groupchat'?CHAT_PANEL.height:input.format==='prreview'?input.prPanels?.height??PR_PANEL.height:input.format==='sketch'?input.sketchBoard?.height:input.format==='tierlist'?input.tierPanels?.height:undefined;
+    const pauseOverlay=await preparePauseOverlay(input.script,input.segments,panelHeight?pauseRegionFor(panelHeight):{top:80,height:600});if(pauseOverlay)input={...input,pauseOverlay};
+  }
   const posterTime = Math.min(input.durationSeconds / 3, (input.segments[0]?.startMs ?? 0) / 1000 + 0.8);
   const poster = new Resvg(frameSvg(input, groups, posterTime), { font: FONT_OPTIONS }).render().asPng();
   if (input.backgroundPath) {
