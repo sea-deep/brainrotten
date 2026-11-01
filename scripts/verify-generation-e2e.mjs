@@ -217,7 +217,7 @@ try{
     context:{task:'Trace a request through the payment pipeline',summary:'The charge succeeded before its response was lost.',changes:['Keep one purchase-scoped idempotency key.'],decisions:[{choice:'Reuse the purchase key',reason:'A delivery attempt must not create a new operation.',tradeoff:'The operation result needs durable storage.'}],uncertainties:['The fixture does not claim an actual payment ran.']},
     activity:{predictionPrompt:'What happens if the retry uses a new purchase key?',practice:{prompt:'Trace the same purchase after two lost responses.',successCriteria:'One charge; both retries receive the saved result.',hint:'Separate operation identity from delivery attempts.'},reflectionPrompt:'Which assumption would you test before accepting the change?'},
   });
-  assert.equal(checkpoint.recommendation.format,'groupchat');
+  assert.equal(checkpoint.recommendation.format,'sketch');
   assert.equal((await call('get_learning_guide',{sessionId:checkpoint.sessionId})).version,'BrainrottenTeachingGuideV1');
   const linked=await waitForReady((await call('publish_session_lesson',{sessionId:checkpoint.sessionId,video:{...agentInput,requestId:'connected-session-lesson'}})).jobId);
   assert.equal(linked.sessionId,checkpoint.sessionId);

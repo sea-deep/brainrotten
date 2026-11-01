@@ -7,8 +7,8 @@ import path from 'node:path';
 import {saveProviderKeys,saveScriptProvider,saveSpeechBackend,searchBrollImage,workspaceRoot,localDataDir,LibraryCursorError,flashcardsCsv,GenerationError} from '@brainrot/media';
 import {ImageSearchInputSchema,LibraryQuerySchema,VideoReviewPatchSchema,ReviewConflictError,ReviewInputError,SpeechSettingsSchema,ScriptSettingsSchema,ProviderKeysSchema,videoOpenApi} from '@brainrot/contracts';
 import {readCognitoSettings,saveCognitoSettings,verifyCognitoSession} from '../authSettings.js';
-import {CreateLearningSessionSchema,SessionReviewPatchSchema,SessionReviewConflictError} from '@brainrot/contracts';
-import {learningGuide,prepareSessionLesson} from '@brainrot/media';
+import {CreateLearningSessionSchema,SessionReviewPatchSchema,SessionReviewConflictError,VideoLanguageSchema} from '@brainrot/contracts';
+import {learningGuide,prepareSessionLesson,formatGuide} from '@brainrot/media';
 import {SessionRequestConflictError} from './sessions.js';
 
 export function createStudioRouter(studio: VideoStudio, auth: SessionAuth): Router {
@@ -24,6 +24,8 @@ export function createStudioRouter(studio: VideoStudio, auth: SessionAuth): Rout
   router.put('/sessions/:id/review',auth.requireOwner,(req,res)=>{const id=String(req.params['id']);if(!studio.sessions.get(id)){res.status(404).json({message:'Learning session not found.'});return;}const input=SessionReviewPatchSchema.safeParse(req.body);if(!input.success){res.status(422).json({message:'Check the learning response, confidence and version.'});return;}try{res.json(studio.sessions.saveReview(id,input.data));}catch(error){if(error instanceof SessionReviewConflictError){res.status(409).json({message:error.message,sessionReview:error.review});return;}res.status(500).json({message:'Could not save the learning response.'});}});
   router.post('/sessions/:id/videos',(req,res)=>{const session=studio.sessions.get(String(req.params['id']));if(!session){res.status(404).json({message:'Learning session not found.'});return;}try{res.status(202).json(studio.submit(prepareSessionLesson(session,req.body)));}catch(error){res.status(error instanceof GenerationError&&error.message==='Request ID already used for different content.'?409:422).json({message:error instanceof GenerationError?error.message:error instanceof z.ZodError?'Check the selected format and script.':'Provide a complete script and comprehension questions for this session.'});}});
   router.get('/studio/config', (_req, res) => { res.json(studio.config()); });
+  // Format rules and a complete example; the same answer MCP and the Python SDK use.
+  router.get('/formats/guide',(req,res)=>{const format=typeof req.query['format']==='string'?req.query['format']:undefined;const language=VideoLanguageSchema.safeParse(req.query['language']??'hinglish');if(!language.success){res.status(400).json({code:'VALIDATION_ERROR',message:'language must be en, hinglish or benglish',retryable:false});return;}res.json(formatGuide(format,language.data,studio.config().characters.filter(c=>c.voiceReady).map(c=>c.id)));});
   router.get('/characters/:id/image', (req,res)=>{
     const file=studio.characterAsset(String(req.params['id']));
     if(!file){res.sendStatus(404);return;}res.sendFile(file,{dotfiles:'allow'});

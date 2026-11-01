@@ -5,8 +5,8 @@ import {getSignedUrl} from '@aws-sdk/s3-request-presigner';
 import {GenerateVideoInputSchema,scriptForFormat,CREATABLE_FORMATS,retiredFormatMessage,LibraryQuerySchema,VideoReviewPatchSchema,ReviewConflictError,ReviewInputError,ImageSearchInputSchema,videoOpenApi,type VideoJob,type StudioConfig} from '@brainrot/contracts';
 import {CHARACTERS,CASTS,BACKGROUNDS,searchBrollImage,imageSearchProvider,videoLibrary,validateVideoRequest,LibraryCursorError} from '@brainrot/media';
 import {reserveJob,findJob,listJobs,getReview,listReviews,saveReview,quota,markQueueUncertain,TrialLimitError,RequestConflictError} from './store.js';
-import {CreateLearningSessionSchema,SessionListQuerySchema,SessionReviewPatchSchema,SessionReviewConflictError} from '@brainrot/contracts';
-import {learningGuide,prepareSessionLesson} from '@brainrot/media';
+import {CreateLearningSessionSchema,SessionListQuerySchema,SessionReviewPatchSchema,SessionReviewConflictError,VideoLanguageSchema} from '@brainrot/contracts';
+import {learningGuide,prepareSessionLesson,formatGuide} from '@brainrot/media';
 import {createSession,findSession,listSessions,getSessionReview,saveSessionReview} from './store.js';
 const sqs=new SQSClient({}),s3=new S3Client({});
 const reply=(statusCode:number,body:unknown):APIGatewayProxyResultV2=>({statusCode,headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(body)});
@@ -32,12 +32,15 @@ function hostedConfig(enabled:boolean):StudioConfig{
   return config;
 }
 export async function handler(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV2>{
+  // Scheduled keep-warm ping: keeps a container ready so users skip the large-image cold start.
+  if((event as unknown as {warmup?:boolean}).warmup)return{statusCode:200,body:'warm'};
   const enabled=process.env['HOSTED_ENABLED']==='true';
   const route=event.rawPath.replace(/^.*\/api\/v1/,'');
   const method=event.requestContext.http.method;
   if(route==='/openapi.json'&&method==='GET')return reply(200,videoOpenApi('hosted'));
   if(route==='/health'&&method==='GET')return reply(200,{status:'ok',service:'brainrotten-api',hostedEnabled:enabled});
   if(route==='/studio/config')return reply(200,hostedConfig(enabled));
+  if(route==='/formats/guide'&&method==='GET'){const language=VideoLanguageSchema.safeParse(event.queryStringParameters?.['language']??'hinglish');if(!language.success)return reply(400,{message:'language must be en, hinglish or benglish'});return reply(200,formatGuide(event.queryStringParameters?.['format'],language.data,enabled?(Object.keys(CHARACTERS) as Array<keyof typeof CHARACTERS>):[]));}
   if(!enabled||!process.env['DYNAMODB_TABLE']||!process.env['JOB_QUEUE_URL'])return reply(503,{message:'The hosted trial is not configured. Use local Studio or MCP.'});
   const sub=authenticatedSubject(event);if(!sub)return reply(401,{message:'Sign in with Google to use the trial.'});
   try{

@@ -15,7 +15,7 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint apps packages cloud eslint.config.js --max-warnings 0",
     "test": "node --test scripts/release.test.mjs && pnpm -r test",
-    "check": "pnpm build && pnpm typecheck && pnpm lint && pnpm test",
+    "check": "pnpm build && pnpm typecheck && pnpm lint && pnpm test && pnpm test:python",
     "demo:seed": "node apps/companion/dist/cli.js seed",
     "mcp": "node apps/companion/dist/mcp.js",
     "start": "pnpm build && node apps/companion/dist/server.js",
@@ -28,7 +28,8 @@
     "brainrotten": "node scripts/brainrotten.mjs",
     "build:site": "pnpm build && pnpm build:demo",
     "release:verify": "node scripts/verify-release.mjs",
-    "verify:e2e": "pnpm build && node scripts/verify-generation-e2e.mjs"
+    "verify:e2e": "pnpm build && node scripts/verify-generation-e2e.mjs",
+    "test:python": "python3 -m unittest discover -s sdk/python/tests -t sdk/python"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

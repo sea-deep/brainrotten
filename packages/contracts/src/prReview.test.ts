@@ -54,7 +54,7 @@ describe('Pause & Predict',()=>{
 
 describe('retired formats',()=>{
   it('stay readable but are not offered for new videos',()=>{
-    expect(CREATABLE_FORMATS.map(f=>f.id)).toEqual(['skit','groupchat','sketch','tierlist','prreview']);
+    expect(CREATABLE_FORMATS.map(f=>f.id)).toEqual(['skit','sketch','prreview','tierlist','groupchat']);
     expect([...RETIRED_FORMATS]).toEqual(['casefile','whiteboard','pov']);
     expect(retiredFormatMessage('pov')).toContain('retired');expect(retiredFormatMessage('skit')).toBeUndefined();
   });

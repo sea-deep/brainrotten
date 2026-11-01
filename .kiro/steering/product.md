@@ -13,7 +13,7 @@ Brainrotten turns what a coding agent just did into a short learning video. The 
 
 ## Making a video with the MCP
 
-- Pick the format from what happened: code changed -> `prreview`; parts interacting / bug between systems -> `groupchat`; architecture or data flow -> `sketch`; several options weighed -> `tierlist`; a concept or misconception -> `skit`. `casefile`, `whiteboard` and `pov` are retired.
+- Sketch and skit are the defaults: systems, architecture, data flow, bugs or changes across components -> `sketch`; a concept, misconception or decision -> `skit`. Use `prreview` for an explicit review of a real diff, `tierlist` when options were weighed, and `groupchat` only when the story is literally a conversation. `casefile`, `whiteboard` and `pov` are retired.
 - Call `get_video_formats` with that format and copy the structure of its `storyExample`. Write the whole script from your real context. Never invent code, test results or metrics.
 - Call `validate_video_script`, fix every issue, then `generate_short_video` (or `record_learning_session` + `publish_session_lesson`). It returns a job id immediately; keep working.
 - Language: English, Romanized Hinglish or Romanized Benglish (Latin letters only).

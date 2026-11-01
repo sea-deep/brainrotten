@@ -185,6 +185,11 @@ Resources:
         - S3ReadPolicy:
             BucketName: !Ref MediaBucket
       Events:
+        KeepWarm:
+          Type: Schedule
+          Properties:
+            Schedule: rate(5 minutes)
+            Input: '{"warmup":true}'
         LearningGuide:
           Type: HttpApi
           Properties:
@@ -255,6 +260,14 @@ Resources:
             ApiId: !Ref Api
             Method: GET
             Path: /api/v1/studio/config
+            Auth:
+              Authorizer: NONE
+        FormatsGuide:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/formats/guide
             Auth:
               Authorizer: NONE
         Account:
@@ -353,6 +366,11 @@ Resources:
             FunctionResponseTypes: [ReportBatchItemFailures]
             ScalingConfig:
               MaximumConcurrency: 2
+        KeepWarm:
+          Type: Schedule
+          Properties:
+            Schedule: rate(5 minutes)
+            Input: '{"warmup":true}'
   VideoQueue:
     Type: AWS::SQS::Queue
     Properties:

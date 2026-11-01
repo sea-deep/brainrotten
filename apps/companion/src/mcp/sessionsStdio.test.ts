@@ -31,11 +31,20 @@ describe('learning sessions over real MCP stdio and companion routes',()=>{
   afterAll(async()=>{await client?.close();server?.closeAllConnections();await new Promise<void>(resolve=>server?server.close(()=>resolve()):resolve());await fs.rm(directory,{recursive:true,force:true});vi.unstubAllEnvs();});
 
   it('sends every agent the format playbook on connect',()=>{const instructions=client.getInstructions()??'';expect(instructions).toContain('PICK THE FORMAT');expect(instructions).toContain('validate_video_script');expect(instructions).toContain('prreview');});
+  it('offers one-step format skills as MCP prompts with rules and a complete example',async()=>{
+    const prompts=(await client.listPrompts()).prompts.map(p=>p.name).sort();
+    expect(prompts).toEqual(['explain-with-sketch','explain-with-skit','group-chat','rank-the-options','review-my-diff']);
+    const sketch=await client.getPrompt({name:'explain-with-sketch',arguments:{focus:'the cache bug'}});
+    const text=(sketch.messages[0]!.content as {text:string}).text;
+    expect(text).toContain('sketch');expect(text).toContain('the cache bug');expect(text).toContain('"format":"sketch"');expect(text).toContain('validate_video_script');
+    const guide=JSON.parse(text.split('replace its content with ours:\n')[1]!.split('\n\nThen call')[0]!);
+    expect(guide.script.sketch.nodes.length).toBeGreaterThan(1);
+  });
   it('records, lists and reads a checkpoint, then serves its contextual guide',async()=>{
     const recorded=await client.callTool({name:'record_learning_session',arguments:checkpoint});
     expect(recorded.isError).not.toBe(true);
     const session=LearningSessionSchema.parse(JSON.parse(text(recorded)));
-    expect(session).toMatchObject({evidenceTrust:'agent-supplied',recommendation:{format:'groupchat',chosenBy:'routing-guide'}});
+    expect(session).toMatchObject({evidenceTrust:'agent-supplied',recommendation:{format:'sketch',chosenBy:'routing-guide'}});
     // Same requestId is idempotent; changed context with the same ID is rejected.
     expect(JSON.parse(text(await client.callTool({name:'record_learning_session',arguments:checkpoint}))).sessionId).toBe(session.sessionId);
     expect((await client.callTool({name:'record_learning_session',arguments:{...checkpoint,title:'Different context'}})).isError).toBe(true);
@@ -44,7 +53,7 @@ describe('learning sessions over real MCP stdio and companion routes',()=>{
     const detail=SessionDetailSchema.parse(JSON.parse(text(await client.callTool({name:'get_learning_session',arguments:{sessionId:session.sessionId}}))));
     expect(detail.review.version).toBe(0);expect(detail.videos).toEqual([]);
     const guide=JSON.parse(text(await client.callTool({name:'get_learning_guide',arguments:{sessionId:session.sessionId}})));
-    expect(guide.recommendation.format).toBe('groupchat');
+    expect(guide.recommendation.format).toBe('sketch');
     await expect(fs.stat(path.join(directory,'learning-sessions',session.sessionId+'.json'))).resolves.toBeTruthy();
   });
 

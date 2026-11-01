@@ -1,4 +1,6 @@
 import type {CharacterId,GenerateVideoInput} from '@brainrot/contracts';
+import {GENERIC_CHAT_ICONS,BRAND_CHAT_ICON_EXAMPLES} from './chatIcons.js';
+import {characterGuide} from './characters.js';
 
 /** What an agent must know to write a good group chat. The renderer handles every visual decision. */
 export const GROUP_CHAT_RULES=[
@@ -144,12 +146,12 @@ export const SERVER_INSTRUCTIONS=`Brainrotten turns what you just did in this co
 
 WHEN: only when the user asks for a video or explanation, or at a meaningful milestone if they turned that on. Never after every reply. Generating spends the user's speech credits.
 
-PICK THE FORMAT from what actually happened:
-- code changed -> prreview (review the real diff line by line)
-- several parts interacting, or a bug between systems -> groupchat (the components text each other)
-- architecture or data flow -> sketch (Excalidraw-style diagram that builds up)
+PICK THE FORMAT (sketch and skit are the defaults):
+- systems, architecture, data flow, a request path, a bug or a change across components -> sketch (Excalidraw-style diagram that builds up, problem in red, fix in green)
+- a concept, a misconception or a decision -> skit (two cartoon characters, a concrete question and connected follow-ups)
+- an explicit code review of a real diff -> prreview
 - several options were weighed -> tierlist (rank them S-F by one criterion)
-- a concept or misconception -> skit (two cartoon characters, question and answer)
+- only when the story is literally a conversation between parts of the system -> groupchat
 
 STEPS:
 1. get_video_formats with {format} -> read its rules and copy the structure of storyExample exactly.
@@ -157,4 +159,51 @@ STEPS:
 3. validate_video_script with {request} -> fix every issue it lists; warnings show what Brainrotten auto-fixed.
 4. generate_short_video (or record_learning_session then publish_session_lesson for the learning flow). It returns a jobId at once; keep working and check get_video_status later.
 
+FASTER (fewer tokens): if you can run Python, do all four steps in one script with the Brainrotten SDK (pip install <repo>/sdk/python):
+  from brainrotten import Brainrotten; br = Brainrotten()  # or Brainrotten(account=True) for the hosted account
+  req = br.format_guide("sketch")["storyExample"]  # replace its content with yours
+  print(br.make_video(req))  # validate + generate + wait, prints a small summary
+
 RULES: one idea per line. Optional Pause & Predict only from the third line on, on a line that asks the question aloud without giving the answer; the next line reveals it. Use ready voices from list_video_voices. Never send colors, coordinates, fonts, sizes or timings: Brainrotten draws everything.`;
+
+/** What an agent must know to write a character skit. */
+export const SKIT_RULES=[
+  'Two ready cartoon characters: participants.learner asks, participants.expert answers. Turns alternate learner, expert, learner, expert; at least 4 turns.',
+  'Open with a concrete situation in the learner’s own voice ("I retried and got charged twice"), not a "what is X" question. Every later learner turn asks a real follow-up that builds on the previous answer.',
+  'Keep each character in character: use get_character_guide or this guide’s characterGuide for their personality and signature phrases, but only where they fit the moment.',
+  'Optional B-roll: a small real code snippet ({kind:"code"}) or one image ({kind:"image",query}) on the turn it explains.',
+  PAUSE_RULE,
+  'Never send colors, positions, fonts or timings. Brainrotten shows the speaking character over gameplay with word-timed captions.',
+];
+
+/** A complete, valid skit request with real characters. */
+export function skitExample(language:GenerateVideoInput['language'],ready:CharacterId[]):GenerateVideoInput{
+  const pick=(preferred:CharacterId[])=>preferred.find(id=>ready.includes(id));
+  const learner=pick(['motu','oggy','badri'])??ready[0]??'motu',expert=pick(['patlu','jack','budhdev'].filter(id=>id!==learner) as CharacterId[])??ready.find(id=>id!==learner)??'patlu';
+  return{format:'skit',cast:'auto',language,quizCount:1,participants:{learner,expert},script:{
+    title:'Retry kiya, paise do baar kat gaye',participants:{learner,expert},
+    takeaway:'A retry must reuse the same idempotency key, so the server returns the first result instead of charging again.',
+    dialogue:[
+      {speaker:learner,text:'Patlu, maine payment ka retry button dabaya aur paise do baar kat gaye. Khaali pet mere dimaag ki batti nahi jalti!'},
+      {speaker:expert,text:'Motu, pehla payment ho gaya tha, bas jawab raste mein kho gaya. Retry pe app ne naya key bheja, toh server ko laga naya order hai.',broll:{kind:'code',language:'ts',code:'const key = crypto.randomUUID();\nawait pay(order, key);'}},
+      {speaker:learner,text:'Toh agar main wahi purana key bhejun, toh kya server pehla result wapas de dega?'},
+      {speaker:expert,text:'Bilkul. Same key matlab same order. Server pehla result yaad rakhta hai aur dobara charge nahi karta.'},
+      {speaker:learner,text:'Aur agar do retry ek saath pahunch gaye toh? Dono naye lagenge kya?'},
+      {speaker:expert,text:'Isliye database mein us key pe unique constraint lagate hain. Doosra insert reject ho jaata hai, race mein bhi.'},
+    ],
+    questions:[{prompt:'Why did the retry charge twice?',choices:['The retry sent a new key, so it looked like a new order','The bank failed the first payment','The app sent the request twice by mistake'],answer:0,explanation:'The first payment succeeded; only the reply was lost. A new key made the retry a separate order.',turnIndices:[0,1]}],
+  }} as GenerateVideoInput;
+}
+
+/** One answer for "how do I write this format?", shared by MCP, the API and the Python SDK. */
+export function formatGuide(format:string|undefined,language:GenerateVideoInput['language'],ready:CharacterId[]){
+  const base={language,languageRule:'Use everyday English, Hinglish or Benglish in Latin letters. Keep code and technical vocabulary exact.',readyVoices:ready,pauseAndPredict:PAUSE_RULE,icons:{generic:GENERIC_CHAT_ICONS,brandExamples:BRAND_CHAT_ICON_EXAMPLES}};
+  switch(format){
+    case 'sketch':return{format,...base,rules:SKETCH_RULES,storyExample:sketchExample(language,ready)};
+    case 'groupchat':return{format,...base,rules:GROUP_CHAT_RULES,storyExample:groupChatExample(language,ready)};
+    case 'prreview':return{format,...base,rules:PR_REVIEW_RULES,storyExample:prReviewExample(language,ready)};
+    case 'tierlist':return{format,...base,rules:TIER_RULES,storyExample:tierListExample(language,ready)};
+    case 'skit':return{format,...base,rules:SKIT_RULES,characterGuide:characterGuide('auto',language),storyExample:skitExample(language,ready)};
+    default:return{format:'overview',...base,defaults:'Sketch and skit are the defaults. Call again with format=sketch|skit|prreview|tierlist|groupchat for its rules and a complete example.',playbook:SERVER_INSTRUCTIONS};
+  }
+}

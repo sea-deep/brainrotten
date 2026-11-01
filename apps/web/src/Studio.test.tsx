@@ -43,12 +43,12 @@ describe('Brainrotten Studio',()=>{
 describe('Studio format selection',()=>{
   it('queues a narrated format using one ready voice and an explicit quiz count',async()=>{
     vi.mocked(getStudioConfig).mockResolvedValue({...config,characters:config.characters.filter(c=>c.id==='oggy')});
-    render(<App/>);await screen.findByText('No videos yet.');fireEvent.click(screen.getByRole('button',{name:'Case file'}));
-    expect(screen.queryByLabelText('Background')).toBeNull();expect(screen.queryByRole('button',{name:'Choose speakers'})).toBeNull();expect(screen.getByLabelText('Narrator')).toHaveValue('oggy');
+    render(<App/>);await screen.findByText('No videos yet.');fireEvent.click(screen.getByRole('button',{name:'Sketch board'}));
+    expect(screen.queryByLabelText('Background')).toBeNull();expect(screen.queryByRole('button',{name:'Choose speakers'})).toBeNull();expect(screen.getByLabelText('Presenter voice')).toHaveValue('oggy');
     fireEvent.change(screen.getByLabelText('Review questions'),{target:{value:'3'}});fireEvent.change(screen.getByLabelText('Topic or context'),{target:{value:'Why did my payment run twice?'}});fireEvent.click(screen.getByRole('button',{name:'Generate'}));
-    await waitFor(()=>expect(generateVideo).toHaveBeenCalledWith(expect.objectContaining({format:'casefile',narrator:'oggy',quizCount:3,cast:'auto'})));expect(vi.mocked(generateVideo).mock.calls[0]![0]).not.toHaveProperty('participants');
+    await waitFor(()=>expect(generateVideo).toHaveBeenCalledWith(expect.objectContaining({format:'sketch',narrator:'oggy',quizCount:3,cast:'auto'})));expect(vi.mocked(generateVideo).mock.calls[0]![0]).not.toHaveProperty('participants');
   });
-  it('keeps the existing two-speaker form when switching back from a whiteboard',async()=>{render(<App/>);await screen.findByText('No videos yet.');fireEvent.click(screen.getByRole('button',{name:'Whiteboard'}));expect(screen.getByLabelText('Narrator')).toBeInTheDocument();fireEvent.click(screen.getByRole('button',{name:'Character skit'}));expect(screen.getByLabelText('Background')).toBeInTheDocument();expect(screen.queryByLabelText('Narrator')).toBeNull();});
+  it('keeps the existing two-speaker form when switching back from a sketch board',async()=>{render(<App/>);await screen.findByText('No videos yet.');fireEvent.click(screen.getByRole('button',{name:'Sketch board'}));expect(screen.getByLabelText('Presenter voice')).toBeInTheDocument();fireEvent.click(screen.getByRole('button',{name:'Character skit'}));expect(screen.getByLabelText('Background')).toBeInTheDocument();expect(screen.queryByLabelText('Presenter voice')).toBeNull();});
   it('disables a format reported as unavailable',async()=>{vi.mocked(getStudioConfig).mockResolvedValue({...config,formats:[{id:'whiteboard',name:'Whiteboard',description:'Animated diagrams',speakers:1,visuals:'Nodes and connections',ready:false}]});render(<App/>);await screen.findByText('No videos yet.');expect(screen.getByRole('button',{name:'Whiteboard'})).toBeDisabled();});
 });
 

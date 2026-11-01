@@ -17,6 +17,8 @@ async function archiveRecovery(directory:string,prefix:string):Promise<void>{
   await upload(directory);
 }
 export const handler:SQSHandler=async event=>{
+  // Scheduled keep-warm ping: no queue records, nothing to render.
+  if(!Array.isArray((event as {Records?:unknown}).Records))return{batchItemFailures:[]};
   const batchItemFailures:Array<{itemIdentifier:string}>=[];
   for(const message of event.Records){
     let payload:{sub:string;jobId:string};try{payload=z.object({sub:z.string().regex(/^[\w-]{1,150}$/),jobId:z.string().uuid()}).parse(JSON.parse(message.body));}catch{console.error('Invalid queue message',{messageId:message.messageId});continue;}
