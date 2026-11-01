@@ -1,0 +1,2 @@
+mlx-audio @ git+https://github.com/Blaizzy/mlx-audio.git@6ce7283be6f15f0cba37e839e73bfa4a08bbf040
+soundfile==0.13.1

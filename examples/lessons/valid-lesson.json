@@ -1,0 +1,50 @@
+{
+  "_comment": "Example valid LessonDraftV1. Replace projectId, snapshotId, and citationIds with real server-issued values before submitting.",
+  "schemaVersion": "LessonDraftV1",
+  "projectId": "00000000-0000-0000-0000-000000000001",
+  "snapshotId": "00000000-0000-0000-0000-000000000002",
+  "submissionId": "example-lesson-v1-001",
+  "title": "Understanding the Fibonacci function",
+  "language": "en",
+  "objective": "Learn how the recursive Fibonacci implementation works and its trade-offs.",
+  "scene": "default",
+  "dialogue": [
+    {
+      "id": "seg-1",
+      "speaker": "rookie",
+      "text": "Why is this Fibonacci function using recursion?",
+      "citationIds": ["00000000-0000-0000-0000-000000000010"]
+    },
+    {
+      "id": "seg-2",
+      "speaker": "debugger",
+      "text": "Recursion mirrors the mathematical definition: F(n) = F(n-1) + F(n-2). It is simple but has exponential time complexity.",
+      "citationIds": ["00000000-0000-0000-0000-000000000010"]
+    },
+    {
+      "id": "seg-3",
+      "speaker": "rookie",
+      "text": "So what would happen if we called fibonacci of 50?",
+      "citationIds": ["00000000-0000-0000-0000-000000000010"]
+    },
+    {
+      "id": "seg-4",
+      "speaker": "debugger",
+      "text": "It would be extremely slow. Memoization or dynamic programming would fix that.",
+      "citationIds": ["00000000-0000-0000-0000-000000000010"]
+    }
+  ],
+  "question": {
+    "id": "q-1",
+    "text": "What is the time complexity of the naive recursive Fibonacci implementation?",
+    "choices": [
+      { "id": "c-a", "text": "O(n) linear time" },
+      { "id": "c-b", "text": "O(n²) quadratic time" },
+      { "id": "c-c", "text": "O(2ⁿ) exponential time" },
+      { "id": "c-d", "text": "O(log n) logarithmic time" }
+    ],
+    "correctChoiceId": "c-c",
+    "explanation": "Each call to fibonacci(n) makes two recursive calls, resulting in a binary tree of calls with O(2ⁿ) growth.",
+    "citationIds": ["00000000-0000-0000-0000-000000000010"]
+  }
+}

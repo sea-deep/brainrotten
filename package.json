@@ -1,0 +1,41 @@
+{
+  "name": "brainrot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Brainrotten Studio and MCP",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=26.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @brainrot/contracts build && pnpm --filter @brainrot/core build && pnpm --filter @brainrot/media build && pnpm --parallel --filter @brainrot/companion --filter @brainrot/web dev",
+    "build": "pnpm --filter @brainrot/contracts build && pnpm --filter @brainrot/core build && pnpm --filter @brainrot/media build && pnpm --filter @brainrot/companion build && node scripts/export-openapi.mjs && pnpm --filter @brainrot/web build && pnpm --filter @brainrot/cloud build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint apps packages cloud eslint.config.js --max-warnings 0",
+    "test": "node --test scripts/release.test.mjs && pnpm -r test",
+    "check": "pnpm build && pnpm typecheck && pnpm lint && pnpm test",
+    "demo:seed": "node apps/companion/dist/cli.js seed",
+    "mcp": "node apps/companion/dist/mcp.js",
+    "start": "pnpm build && node apps/companion/dist/server.js",
+    "voices:setup": "node scripts/setup-character-voices.mjs",
+    "video:rerender": "pnpm --filter @brainrot/media build && node scripts/rerender-video.mjs",
+    "mcp:setup": "node scripts/configure-mcp.mjs",
+    "build:demo": "node scripts/build-demo.mjs",
+    "voices:local": "pnpm --filter @brainrot/contracts build && pnpm --filter @brainrot/media build && node scripts/setup-local-voice.mjs",
+    "release:preflight": "node scripts/release-preflight.mjs",
+    "brainrotten": "node scripts/brainrotten.mjs",
+    "build:site": "pnpm build && pnpm build:demo",
+    "release:verify": "node scripts/verify-release.mjs",
+    "verify:e2e": "pnpm build && node scripts/verify-generation-e2e.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@typescript-eslint/eslint-plugin": "8.72.1",
+    "@typescript-eslint/parser": "8.72.1",
+    "eslint": "10.13.0",
+    "@typescript/native": "npm:typescript@7.0.2",
+    "typescript": "npm:@typescript/typescript6@6.0.2"
+  }
+}

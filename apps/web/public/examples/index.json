@@ -1,0 +1,605 @@
+[
+  {
+    "jobId": "a998b76b-a0fa-4a66-aba3-48f991025ab5",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Natural conversational Hinglish ML shortcut-learning skit. Source: https://arxiv.org/abs/2004.07780 . A hypothetical cow classifier can exploit background-label correlation. Same-distribution random tests may miss that; evaluate held-out environments and inspect controlled background changes. No invented measured accuracy claim.",
+    "title": "Gaay pehchaani, ya ghaas?",
+    "createdAt": "2026-10-28T14:20:27.175Z",
+    "updatedAt": "2026-10-28T14:38:19.195Z",
+    "videoUrl": "/examples/hinglish-ml-shortcut-eleven/video.mp4",
+    "downloadUrl": "/examples/hinglish-ml-shortcut-eleven/video.mp4",
+    "posterUrl": "/examples/hinglish-ml-shortcut-eleven/poster.png",
+    "audioUrl": null,
+    "error": null,
+    "script": {
+      "title": "Gaay pehchaani, ya ghaas?",
+      "participants": {
+        "learner": "badri",
+        "expert": "budhdev"
+      },
+      "dialogue": [
+        {
+          "speaker": "badri",
+          "text": "Partner, apna AI cows pehchaan raha tha. Snow mein cow ki photo di, toh fail! Aur training photos daal doon?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "cow on green grass",
+              "url": "https://i.pinimg.com/736x/03/d6/3a/03d63aa183f4f50d565966b1c9af7ef8.jpg",
+              "caption": "",
+              "sourceUrl": "https://www.pinterest.com/pin/hd-group-of-cows-grazing-on-green-grass-field--299841287707724095/",
+              "title": "hd group of cows grazing on green grass field 299841287707724095 \u2014 pinterest.com"
+            }
+          ]
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Haan dost, par wahi green grass wali daaloge, toh shortcut aur strong hoga. Shayad model cow se zyada background dekh raha hai. Same cow ka background badalkar test kar.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "cow in snow",
+              "url": "https://media.gettyimages.com/id/1194247561/photo/portrait-of-a-scottish-highland-cow-in-the-snow.jpg?s=612x612&w=gi&k=20&c=e0V8ezMxPlVhEbZGg0l6J-rXr8YdQ06UD1itkiEVdBY=",
+              "caption": "",
+              "sourceUrl": "https://www.gettyimages.in/photos/snow-cow",
+              "title": "snow cow \u2014 gettyimages.in"
+            },
+            {
+              "kind": "image",
+              "query": "cow transparent background",
+              "url": "https://png.pngtree.com/png-clipart/20250309/original/pngtree-holstein-cow-png-image_20610191.png",
+              "caption": "",
+              "sourceUrl": "https://pngtree.com/so/cow",
+              "title": "cow transparent background \u2014 pngtree.com"
+            }
+          ]
+        },
+        {
+          "speaker": "badri",
+          "text": "Arre, background badla toh prediction bhi badal gaya! Par train aur test photos toh alag rakhi thi?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "machine learning train test split diagram",
+              "url": "https://machinelearningplus.com/wp-content/uploads/2022/12/train_test_split-procedure.jpg",
+              "caption": "",
+              "sourceUrl": "https://machinelearningplus.com/machine-learning/train-test-split/",
+              "title": "train test split \u2014 machinelearningplus.com"
+            }
+          ]
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Photos alag thi, par dono sets mein cows aur green grass ka wahi connection tha. Kuch poore farms training se bahar rakh. Unseen locations par test kar, tab is shortcut ka andaaza lagega.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "different cattle farms",
+              "url": "https://royalfarms.co.in/wp-content/uploads/2026/03/cattle-farming.webp",
+              "caption": "",
+              "sourceUrl": "https://royalfarms.co.in/future-of-cattle-farming-in-india/",
+              "title": "future of cattle farming in india \u2014 royalfarms.co.in"
+            },
+            {
+              "kind": "image",
+              "query": "machine learning out of distribution diagram",
+              "url": "https://media.springernature.com/lw1200/springer-static/image/art%3A10.1038%2Fs41598-024-79934-7/MediaObjects/41598_2024_79934_Fig2_HTML.png",
+              "caption": "",
+              "sourceUrl": "https://www.nature.com/articles/s41598-024-79934-7",
+              "title": "s41598 024 79934 7 \u2014 nature.com"
+            },
+            {
+              "kind": "code",
+              "code": "train_farms = {\"north\", \"west\"}\ntest_farms = {\"snowy_hill\"}\nassert train_farms.isdisjoint(test_farms)",
+              "language": "python"
+            }
+          ]
+        },
+        {
+          "speaker": "badri",
+          "text": "Toh unseen farm pe achha score aaya, ab model ko har jagah launch kar doon?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "cow at night",
+              "url": "https://www.shutterstock.com/shutterstock/videos/3918170499/thumb/12.jpg?ip=x480",
+              "caption": "",
+              "sourceUrl": "https://www.shutterstock.com/video/clip-3918170499-cows-rest-pasture-night",
+              "title": "clip 3918170499 cows rest pasture night \u2014 shutterstock.com"
+            }
+          ]
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Itni jaldi trophy mat baant. Lighting, breeds aur backgrounds bhi badal kar test kar. Training data diversify kar aur har group ka result alag dekh. Ek test pass hona poori duniya ki guarantee nahi.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "different cow breeds",
+              "url": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=773319872115510",
+              "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:mettoAP-HUHr9M",
+              "caption": "",
+              "sourceUrl": "https://www.facebook.com/gardeningloversunited/posts/cows-come-in-many-breeds-each-with-its-own-unique-characteristics-and-contributi/773319888782175/",
+              "title": "cows come in many breeds each with its own unique characteristics and contributi \u2014 facebook.com"
+            },
+            {
+              "kind": "image",
+              "query": "machine learning confusion matrix",
+              "url": "https://media.geeksforgeeks.org/wp-content/uploads/20240708132251/confusion-Matrix.PNG",
+              "caption": "",
+              "sourceUrl": "https://www.geeksforgeeks.org/machine-learning/confusion-matrix-machine-learning/",
+              "title": "confusion matrix machine learning \u2014 geeksforgeeks.org"
+            }
+          ]
+        }
+      ]
+    },
+    "durationSeconds": 52.83898,
+    "cast": "auto",
+    "language": "hinglish",
+    "participants": {
+      "learner": "badri",
+      "expert": "budhdev"
+    },
+    "voiceBackend": "elevenlabs",
+    "voiceNames": {
+      "badri": "Badri",
+      "budhdev": "Budhdev"
+    },
+    "backgroundName": "Subway Surfers",
+    "sourceCredits": [
+      {
+        "title": "Subway Surfers (2026) - Gameplay [4K 16x9] No Copyright",
+        "url": "https://www.youtube.com/watch?v=i0M4ARe9v0Y",
+        "attribution": "Subway Surfers gameplay \u2014 Subway Surfers, https://www.youtube.com/watch?v=i0M4ARe9v0Y. Excerpted, muted, cropped, resized and overlaid."
+      },
+      {
+        "title": "hd group of cows grazing on green grass field 299841287707724095 \u2014 pinterest.com",
+        "url": "https://www.pinterest.com/pin/hd-group-of-cows-grazing-on-green-grass-field--299841287707724095/",
+        "attribution": "hd group of cows grazing on green grass field 299841287707724095 \u2014 pinterest.com"
+      },
+      {
+        "title": "snow cow \u2014 gettyimages.in",
+        "url": "https://www.gettyimages.in/photos/snow-cow",
+        "attribution": "snow cow \u2014 gettyimages.in"
+      },
+      {
+        "title": "cow transparent background \u2014 pngtree.com",
+        "url": "https://pngtree.com/so/cow",
+        "attribution": "cow transparent background \u2014 pngtree.com"
+      },
+      {
+        "title": "train test split \u2014 machinelearningplus.com",
+        "url": "https://machinelearningplus.com/machine-learning/train-test-split/",
+        "attribution": "train test split \u2014 machinelearningplus.com"
+      },
+      {
+        "title": "future of cattle farming in india \u2014 royalfarms.co.in",
+        "url": "https://royalfarms.co.in/future-of-cattle-farming-in-india/",
+        "attribution": "future of cattle farming in india \u2014 royalfarms.co.in"
+      },
+      {
+        "title": "s41598 024 79934 7 \u2014 nature.com",
+        "url": "https://www.nature.com/articles/s41598-024-79934-7",
+        "attribution": "s41598 024 79934 7 \u2014 nature.com"
+      },
+      {
+        "title": "clip 3918170499 cows rest pasture night \u2014 shutterstock.com",
+        "url": "https://www.shutterstock.com/video/clip-3918170499-cows-rest-pasture-night",
+        "attribution": "clip 3918170499 cows rest pasture night \u2014 shutterstock.com"
+      },
+      {
+        "title": "cows come in many breeds each with its own unique characteristics and contributi \u2014 facebook.com",
+        "url": "https://www.facebook.com/gardeningloversunited/posts/cows-come-in-many-breeds-each-with-its-own-unique-characteristics-and-contributi/773319888782175/",
+        "attribution": "cows come in many breeds each with its own unique characteristics and contributi \u2014 facebook.com"
+      },
+      {
+        "title": "confusion matrix machine learning \u2014 geeksforgeeks.org",
+        "url": "https://www.geeksforgeeks.org/machine-learning/confusion-matrix-machine-learning/",
+        "attribution": "confusion matrix machine learning \u2014 geeksforgeeks.org"
+      }
+    ]
+  },
+  {
+    "jobId": "0207c905-933d-46c5-acc4-1bf993235a15",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Natural conversational Hinglish database stale-read skit. Reference: https://www.postgresql.org/docs/17/high-availability.html . Hypothetical asynchronous primary/read-replica architecture; replica can lag. Read after own write from authoritative primary for the relevant operation, balancing load. Polling a lagging replica is not evidence a purchase failed.",
+    "title": "Paise kat gaye, khareed gayab!",
+    "createdAt": "2026-10-28T14:22:27.406Z",
+    "updatedAt": "2026-10-28T14:38:44.613Z",
+    "videoUrl": "/examples/hinglish-database-replica-eleven/video.mp4",
+    "downloadUrl": "/examples/hinglish-database-replica-eleven/video.mp4",
+    "posterUrl": "/examples/hinglish-database-replica-eleven/poster.png",
+    "audioUrl": null,
+    "error": null,
+    "script": {
+      "title": "Paise kat gaye, khareed gayab!",
+      "participants": {
+        "learner": "jhaplu",
+        "expert": "paplu"
+      },
+      "dialogue": [
+        {
+          "speaker": "jhaplu",
+          "text": "Mamu, samose ka payment ho gaya, par order history khaali! Apun buy wala button dobara daba de?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "online shopping order confirmation",
+              "url": "https://www.drip.com/hs-fs/hubfs/Imported_Blog_Media/ASOS-Order-Confirmation-Email-1-542x1024-1.png?width=542&height=1024&name=ASOS-Order-Confirmation-Email-1-542x1024-1.png",
+              "caption": "",
+              "sourceUrl": "https://www.drip.com/blog/order-confirmation-emails",
+              "title": "order confirmation emails \u2014 drip.com"
+            }
+          ]
+        },
+        {
+          "speaker": "paplu",
+          "text": "Re baba, pehle payment aur order verify kar! Write primary database pe gaya, par history read replica se aa rahi hai. Replica ko update milne mein delay ho sakta hai. Empty history ka matlab failed order nahi.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "database primary replica diagram",
+              "url": "https://assets.qlik.com/image/upload/w_1408/q_auto/qlik/glossary/data-replication/seo-hero-database-replication_abgbrk.jpg",
+              "caption": "",
+              "sourceUrl": "https://www.qlik.com/us/data-replication/database-replication",
+              "title": "database replication \u2014 qlik.com"
+            },
+            {
+              "kind": "image",
+              "query": "database replication lag diagram",
+              "url": "https://substackcdn.com/image/fetch/$s_!Bj1H!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3cec7ec6-383c-4bdf-bd55-8ec456b6ff08_1938x1116.png",
+              "caption": "",
+              "sourceUrl": "https://blog.bytebytego.com/p/a-guide-to-database-replication-key",
+              "title": "a guide to database replication key \u2014 blog.bytebytego.com"
+            }
+          ]
+        },
+        {
+          "speaker": "jhaplu",
+          "text": "Primary pe order mil gaya! Toh saari reads bhi primary pe bhej dein, tension khatam?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "PostgreSQL database server",
+              "url": "https://learn.microsoft.com/en-us/azure/postgresql/media/overview/overview-flexible-server.png",
+              "caption": "",
+              "sourceUrl": "https://learn.microsoft.com/en-us/azure/postgresql/overview",
+              "title": "overview \u2014 learn.microsoft.com"
+            }
+          ]
+        },
+        {
+          "speaker": "paplu",
+          "text": "Phir saara load udhar jayega. Abhi purchase confirmation aur apne recent order ko primary se read kara. Jahan thoda stale data chale, wahan replica ka benefit le. Har read ko same consistency nahi chahiye.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "read replica load balancing diagram",
+              "url": "https://d2908q01vomqb2.cloudfront.net/887309d048beef83ad3eabf2a79a64a389ab1c9f/2024/09/24/dbblog-3604-archdiagram.jpg",
+              "caption": "",
+              "sourceUrl": "https://aws.amazon.com/blogs/database/load-balancing-strategies-for-amazon-rds-for-sql-server-read-replicas-to-scale-read-workloads-and-reduce-latency/",
+              "title": "load balancing strategies for amazon rds for sql server read replicas to scale read workloads and reduce latency \u2014 aws.amazon.com"
+            },
+            {
+              "kind": "image",
+              "query": "order confirmation receipt",
+              "url": "https://cdn.dribbble.com/userupload/6502918/file/original-4ed03cb87ee2adb2804af53f3f2c51a8.jpg",
+              "caption": "",
+              "sourceUrl": "https://dribbble.com/shots/21283991-Order-Confirmation-Email-Receipt-Daily-UI-017",
+              "title": "21283991 Order Confirmation Email Receipt Daily UI 017 \u2014 dribbble.com"
+            },
+            {
+              "kind": "code",
+              "code": "await primary.save(order);\nconst saved = await primary.get(order.id);\nreturn saved;",
+              "language": "javascript"
+            }
+          ]
+        },
+        {
+          "speaker": "jhaplu",
+          "text": "Aur replica lag bahut badh gaya, toh refresh dabaate rehna padega?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "database replication lag graph",
+              "url": "https://a.storyblok.com/f/187930/640x480/e3bc9d2d83/replication_lag_plot.png",
+              "caption": "",
+              "sourceUrl": "https://www.pgedge.com/blog/understanding-and-reducing-postgresql-replication-lag",
+              "title": "understanding and reducing postgresql replication lag \u2014 pgedge.com"
+            }
+          ]
+        },
+        {
+          "speaker": "paplu",
+          "text": "Refresh se replica catch up hone ki guarantee nahi. Lag monitor kar, replication ki problem check kar aur critical reads ke liye reliable route rakh. Order dobara banana alag problem paida karega: do bill, ek plate samose!",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "server monitoring dashboard",
+              "url": "https://miro.medium.com/v2/resize:fit:2000/1*pqwUp0uPpr4EcfD9iM0iCQ.png",
+              "caption": "",
+              "sourceUrl": "https://medium.com/swlh/intro-to-server-monitoring-b782fc82911e",
+              "title": "intro to server monitoring b782fc82911e \u2014 medium.com"
+            },
+            {
+              "kind": "image",
+              "query": "duplicate payment receipt",
+              "url": "https://trison.in/cdn/shop/files/B0DPG2MGBF_IN01_jpg.jpg?v=1733214517&width=1445",
+              "caption": "",
+              "sourceUrl": "https://trison.in/products/trison-cash-receipt-book-duplicate",
+              "title": "trison cash receipt book duplicate \u2014 trison.in"
+            }
+          ]
+        }
+      ]
+    },
+    "durationSeconds": 50.350408,
+    "cast": "auto",
+    "language": "hinglish",
+    "participants": {
+      "learner": "jhaplu",
+      "expert": "paplu"
+    },
+    "voiceBackend": "elevenlabs",
+    "voiceNames": {
+      "jhaplu": "Jhaplu",
+      "paplu": "Paplu"
+    },
+    "backgroundName": "GTA Stunts",
+    "sourceCredits": [
+      {
+        "title": "GTA 5 - Jump Stunts EP.27 Free To Use NO COPYRIGHT GAMEPLAY",
+        "url": "https://www.youtube.com/watch?v=KvS0MLj5IIE",
+        "attribution": "GTA 5 - Jump Stunts EP.27 \u2014 RipstaStylez, https://www.youtube.com/watch?v=KvS0MLj5IIE, Creative Commons Attribution. Muted, cropped, resized and overlaid. Original soundtrack is not included."
+      },
+      {
+        "title": "order confirmation emails \u2014 drip.com",
+        "url": "https://www.drip.com/blog/order-confirmation-emails",
+        "attribution": "order confirmation emails \u2014 drip.com"
+      },
+      {
+        "title": "database replication \u2014 qlik.com",
+        "url": "https://www.qlik.com/us/data-replication/database-replication",
+        "attribution": "database replication \u2014 qlik.com"
+      },
+      {
+        "title": "a guide to database replication key \u2014 blog.bytebytego.com",
+        "url": "https://blog.bytebytego.com/p/a-guide-to-database-replication-key",
+        "attribution": "a guide to database replication key \u2014 blog.bytebytego.com"
+      },
+      {
+        "title": "overview \u2014 learn.microsoft.com",
+        "url": "https://learn.microsoft.com/en-us/azure/postgresql/overview",
+        "attribution": "overview \u2014 learn.microsoft.com"
+      },
+      {
+        "title": "load balancing strategies for amazon rds for sql server read replicas to scale read workloads and reduce latency \u2014 aws.amazon.com",
+        "url": "https://aws.amazon.com/blogs/database/load-balancing-strategies-for-amazon-rds-for-sql-server-read-replicas-to-scale-read-workloads-and-reduce-latency/",
+        "attribution": "load balancing strategies for amazon rds for sql server read replicas to scale read workloads and reduce latency \u2014 aws.amazon.com"
+      },
+      {
+        "title": "21283991 Order Confirmation Email Receipt Daily UI 017 \u2014 dribbble.com",
+        "url": "https://dribbble.com/shots/21283991-Order-Confirmation-Email-Receipt-Daily-UI-017",
+        "attribution": "21283991 Order Confirmation Email Receipt Daily UI 017 \u2014 dribbble.com"
+      },
+      {
+        "title": "understanding and reducing postgresql replication lag \u2014 pgedge.com",
+        "url": "https://www.pgedge.com/blog/understanding-and-reducing-postgresql-replication-lag",
+        "attribution": "understanding and reducing postgresql replication lag \u2014 pgedge.com"
+      },
+      {
+        "title": "intro to server monitoring b782fc82911e \u2014 medium.com",
+        "url": "https://medium.com/swlh/intro-to-server-monitoring-b782fc82911e",
+        "attribution": "intro to server monitoring b782fc82911e \u2014 medium.com"
+      },
+      {
+        "title": "trison cash receipt book duplicate \u2014 trison.in",
+        "url": "https://trison.in/products/trison-cash-receipt-book-duplicate",
+        "attribution": "trison cash receipt book duplicate \u2014 trison.in"
+      }
+    ]
+  },
+  {
+    "jobId": "73407710-7270-4635-845e-b320d7b4d4e8",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Natural conversational Hinglish AI reliability skit. Source: https://arxiv.org/abs/2005.11401 . Retrieval-augmented generation supplies external evidence but doesn't guarantee correctness. Diagnose retrieval coverage, require attributable support, verify outputs and allow abstention. A confident generated claim or invented citation is not evidence.",
+    "title": "AI ne jawaab bhi banaya, saboot bhi!",
+    "createdAt": "2026-10-28T14:28:28.023Z",
+    "updatedAt": "2026-10-28T14:40:28.002Z",
+    "videoUrl": "/examples/hinglish-ai-evidence-eleven/video.mp4",
+    "downloadUrl": "/examples/hinglish-ai-evidence-eleven/video.mp4",
+    "posterUrl": "/examples/hinglish-ai-evidence-eleven/poster.png",
+    "audioUrl": null,
+    "error": null,
+    "script": {
+      "title": "AI ne jawaab bhi banaya, saboot bhi!",
+      "participants": {
+        "learner": "john",
+        "expert": "jhatka"
+      },
+      "dialogue": [
+        {
+          "speaker": "john",
+          "text": "Mere AI ne confident answer aur book ka reference de diya. John banega don! Par book mein woh fact mil hi nahi raha?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "ChatGPT answer sources screenshot",
+              "url": "https://www.researchgate.net/publication/371651458/figure/fig2/AS:11431281169324303@1687296535237/A-screenshot-of-ChatGPTs-response-to-reading-the-datacsv-file-and-writing-an-R-code.ppm",
+              "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:7DBhXps9gOGXsM",
+              "caption": "",
+              "sourceUrl": "https://www.researchgate.net/figure/A-screenshot-of-ChatGPTs-response-to-reading-the-datacsv-file-and-writing-an-R-code_fig2_371651458",
+              "title": "A screenshot of ChatGPTs response to reading the datacsv file and writing an R code fig2 371651458 \u2014 researchgate.net"
+            }
+          ]
+        },
+        {
+          "speaker": "jhatka",
+          "text": "Oye mere yaar, confidence evidence nahi hota! Pehle check kar model ko relevant passage mila bhi tha? Ho sakta hai answer ke saath citation bhi bana diya ho.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "open reference book library",
+              "url": "https://thumbs.dreamstime.com/b/open-book-library-23266127.jpg",
+              "caption": "",
+              "sourceUrl": "https://www.dreamstime.com/photos-images/library-open-book.html",
+              "title": "library open book \u2014 dreamstime.com"
+            },
+            {
+              "kind": "image",
+              "query": "book index page",
+              "url": "https://i.pinimg.com/736x/60/44/46/604446bb71b270f44196c799effec83b.jpg",
+              "caption": "",
+              "sourceUrl": "https://in.pinterest.com/pin/index-page-layout-designs--145100419228743941/",
+              "title": "index page layout designs 145100419228743941 \u2014 in.pinterest.com"
+            }
+          ]
+        },
+        {
+          "speaker": "john",
+          "text": "Relevant passage bheja hi nahi tha. Ab poori book prompt mein daal doon, hallucination band?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "stack of books",
+              "url": "https://plus.unsplash.com/premium_photo-1669652639337-c513cc42ead6?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
+              "caption": "",
+              "sourceUrl": "https://unsplash.com/s/photos/stack-of-books",
+              "title": "stack of books \u2014 unsplash.com"
+            }
+          ]
+        },
+        {
+          "speaker": "jhatka",
+          "text": "Aisa hota toh meri har machine first try mein chalti! Relevant passage retrieve kar, phir answer ke claims ko us passage se verify kar. Retrieval fail hua ya answer generation, dono ko alag test kar.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "retrieval augmented generation diagram",
+              "url": "https://cdn.educba.com/academy/wp-content/uploads/2024/12/Retrieval-Augmented-Generation-RAG.png",
+              "caption": "",
+              "sourceUrl": "https://www.educba.com/retrieval-augmented-generation/",
+              "title": "retrieval augmented generation \u2014 educba.com"
+            },
+            {
+              "kind": "image",
+              "query": "document search results",
+              "url": "https://cdn.logicaldoc.com/images/stories/search_results.gif",
+              "caption": "",
+              "sourceUrl": "https://www.logicaldoc.com/software-features/document-searching",
+              "title": "document searching \u2014 logicaldoc.com"
+            }
+          ]
+        },
+        {
+          "speaker": "john",
+          "text": "Aur retrieved passage mein bhi answer na ho toh? Jaldi bolo, time kam hai!",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "no search results found",
+              "url": "https://cdn.coveo.com/images/w_1000,h_563,c_scale/f_auto,q_auto:good/v1707312974/blogprod/NoSearchResults-XeroCentral_98338075be87/NoSearchResults-XeroCentral_98338075be87.jpg?_i=AA",
+              "caption": "",
+              "sourceUrl": "https://www.coveo.com/blog/avoid-no-search-results-found/",
+              "title": "avoid no search results found \u2014 coveo.com"
+            }
+          ]
+        },
+        {
+          "speaker": "jhatka",
+          "text": "Tab insufficient evidence bolna valid answer hai. Question clarify kar ya aur sources dhoondh. Citation ka naam dekhkar trust mat kar; claim support hota hai ya nahi, woh check kar. Kasam mere mareezon ki, RAG bhi truth ki magic stamp nahi!",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "fact checking source document",
+              "url": "https://s3.amazonaws.com/libapps/accounts/3013/images/Fact_Check_graphic2.jpg",
+              "caption": "",
+              "sourceUrl": "https://libguides.niagaracc.suny.edu/c.php?g=600825&p=8175808",
+              "title": "fact checking source document \u2014 libguides.niagaracc.suny.edu"
+            },
+            {
+              "kind": "image",
+              "query": "retrieval augmented generation evaluation diagram",
+              "url": "https://media.geeksforgeeks.org/wp-content/uploads/20251212162328624857/rag_system_evaluation_cycle.webp",
+              "caption": "",
+              "sourceUrl": "https://www.geeksforgeeks.org/nlp/evaluation-metrics-for-retrieval-augmented-generation-rag-systems/",
+              "title": "evaluation metrics for retrieval augmented generation rag systems \u2014 geeksforgeeks.org"
+            }
+          ]
+        }
+      ]
+    },
+    "durationSeconds": 54.101995,
+    "cast": "auto",
+    "language": "hinglish",
+    "participants": {
+      "learner": "john",
+      "expert": "jhatka"
+    },
+    "voiceBackend": "elevenlabs",
+    "voiceNames": {
+      "john": "John",
+      "jhatka": "Dr Jhatka"
+    },
+    "backgroundName": "Minecraft \u00b7 Lava",
+    "sourceCredits": [
+      {
+        "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
+        "url": "https://www.youtube.com/watch?v=LofyMQts7hY",
+        "attribution": "Minecraft Parkour Gameplay \u2014 BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=LofyMQts7hY. Muted, cropped, resized and overlaid."
+      },
+      {
+        "title": "A screenshot of ChatGPTs response to reading the datacsv file and writing an R code fig2 371651458 \u2014 researchgate.net",
+        "url": "https://www.researchgate.net/figure/A-screenshot-of-ChatGPTs-response-to-reading-the-datacsv-file-and-writing-an-R-code_fig2_371651458",
+        "attribution": "A screenshot of ChatGPTs response to reading the datacsv file and writing an R code fig2 371651458 \u2014 researchgate.net"
+      },
+      {
+        "title": "library open book \u2014 dreamstime.com",
+        "url": "https://www.dreamstime.com/photos-images/library-open-book.html",
+        "attribution": "library open book \u2014 dreamstime.com"
+      },
+      {
+        "title": "index page layout designs 145100419228743941 \u2014 in.pinterest.com",
+        "url": "https://in.pinterest.com/pin/index-page-layout-designs--145100419228743941/",
+        "attribution": "index page layout designs 145100419228743941 \u2014 in.pinterest.com"
+      },
+      {
+        "title": "stack of books \u2014 unsplash.com",
+        "url": "https://unsplash.com/s/photos/stack-of-books",
+        "attribution": "stack of books \u2014 unsplash.com"
+      },
+      {
+        "title": "retrieval augmented generation \u2014 educba.com",
+        "url": "https://www.educba.com/retrieval-augmented-generation/",
+        "attribution": "retrieval augmented generation \u2014 educba.com"
+      },
+      {
+        "title": "document searching \u2014 logicaldoc.com",
+        "url": "https://www.logicaldoc.com/software-features/document-searching",
+        "attribution": "document searching \u2014 logicaldoc.com"
+      },
+      {
+        "title": "avoid no search results found \u2014 coveo.com",
+        "url": "https://www.coveo.com/blog/avoid-no-search-results-found/",
+        "attribution": "avoid no search results found \u2014 coveo.com"
+      },
+      {
+        "title": "fact checking source document \u2014 libguides.niagaracc.suny.edu",
+        "url": "https://libguides.niagaracc.suny.edu/c.php?g=600825&p=8175808",
+        "attribution": "fact checking source document \u2014 libguides.niagaracc.suny.edu"
+      },
+      {
+        "title": "evaluation metrics for retrieval augmented generation rag systems \u2014 geeksforgeeks.org",
+        "url": "https://www.geeksforgeeks.org/nlp/evaluation-metrics-for-retrieval-augmented-generation-rag-systems/",
+        "attribution": "evaluation metrics for retrieval augmented generation rag systems \u2014 geeksforgeeks.org"
+      }
+    ]
+  }
+]

@@ -1,0 +1,62 @@
+node_modules/
+dist/
+data/
+*.local
+
+# Environment variables & secrets (NEVER commit)
+.env
+.env.*
+!.env.example
+!apps/web/.env.hosted.example
+*.key
+*.pem
+*.pfx
+*secrets*.json
+*credentials*.json
+samconfig.toml
+.aws-sam/
+
+# Agentic documentation & configurations
+AGENTS.md
+.agents/
+.kiro/
+.claude/
+.codex/
+.taste-skill/
+.mcp.json
+docs/
+
+# Build artifacts & test outputs
+apps/*/dist/
+packages/*/dist/
+cloud/dist/
+apps/web/demo-dist/
+coverage/
+.vitest/
+.artifacts/
+*.log
+
+# OS & Python scratch
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+
+# Heavy recordings, model checkpoints & scratch archives
+archive/
+*.wav
+*.mp3
+*.m4a
+*.flac
+*.safetensors
+*.pt
+*.ckpt
+*.ogg
+*.aac
+*.opus
+*.webm
+*.mov
+*.mp4
+!apps/companion/assets/gameplay/*.mp4
+!apps/web/public/examples/**/*.mp4
+apps/web/public/openapi.*.json

@@ -1,0 +1,30 @@
+{
+  "_comment": "Example INVALID lesson — valid schema but citation IDs not from the snapshot.",
+  "schemaVersion": "LessonDraftV1",
+  "projectId": "00000000-0000-0000-0000-000000000001",
+  "snapshotId": "00000000-0000-0000-0000-000000000002",
+  "submissionId": "invalid-citation-test",
+  "title": "Invalid citation IDs",
+  "language": "en",
+  "objective": "Test that unknown citation IDs are rejected.",
+  "scene": "default",
+  "dialogue": [
+    {
+      "id": "seg-1",
+      "speaker": "rookie",
+      "text": "What does this code do?",
+      "citationIds": ["ffffffff-ffff-ffff-ffff-ffffffffffff"]
+    }
+  ],
+  "question": {
+    "id": "q-1",
+    "text": "What is the effect?",
+    "choices": [
+      { "id": "c-a", "text": "Nothing" },
+      { "id": "c-b", "text": "Something" }
+    ],
+    "correctChoiceId": "c-b",
+    "explanation": "This should be rejected due to unknown citation ID.",
+    "citationIds": ["ffffffff-ffff-ffff-ffff-ffffffffffff"]
+  }
+}

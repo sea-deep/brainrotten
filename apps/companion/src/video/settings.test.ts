@@ -1,0 +1,13 @@
+import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
+import express from 'express';import fs from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import type {Server} from 'node:http';
+import {SessionAuth} from '../auth.js';import {createStudioRouter} from './routes.js';import type {VideoStudio} from './runtime.js';import {saveProviderKeys,saveScriptProvider} from '@brainrot/media';
+vi.mock('@brainrot/media',async original=>({...await original<typeof import('@brainrot/media')>(),saveProviderKeys:vi.fn(),saveScriptProvider:vi.fn()}));
+let directory:string,server:Server,auth:SessionAuth,base:string;
+beforeEach(async()=>{directory=await fs.mkdtemp(path.join(os.tmpdir(),'brainrotten-provider-settings-'));auth=new SessionAuth(directory);const app=express();app.use(createStudioRouter({config:()=>({geminiConfigured:true,scriptProvider:'gemini'})} as unknown as VideoStudio,auth));server=await new Promise<Server>(resolve=>{const value=app.listen(0,'127.0.0.1',()=>resolve(value));});base='http://127.0.0.1:'+(server.address() as {port:number}).port;vi.clearAllMocks();});
+afterEach(async()=>{server.closeAllConnections();await new Promise<void>(resolve=>server.close(()=>resolve()));await fs.rm(directory,{recursive:true,force:true});});
+const post=(route:string,token:string,body:unknown)=>fetch(base+route,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(body)});
+describe('owner-only Gemini settings',()=>{
+  it('denies the MCP token permission to replace keys or select a provider',async()=>{expect((await post('/studio/keys',auth.getMcpToken(),{gemini:'synthetic-gemini-key'})).status).toBe(401);expect((await post('/studio/script-provider',auth.getMcpToken(),{provider:'gemini'})).status).toBe(401);expect(saveProviderKeys).not.toHaveBeenCalled();expect(saveScriptProvider).not.toHaveBeenCalled();});
+  it('accepts owner Gemini keys and returns only public configuration',async()=>{const response=await post('/studio/keys',auth.getToken(),{gemini:'synthetic-gemini-key'});expect(response.status).toBe(200);expect(saveProviderKeys).toHaveBeenCalledWith({gemini:'synthetic-gemini-key'});expect(await response.text()).not.toContain('synthetic-gemini-key');});
+  it('validates provider choices before saving owner settings',async()=>{expect((await post('/studio/script-provider',auth.getToken(),{provider:'unknown'})).status).toBe(422);expect(saveScriptProvider).not.toHaveBeenCalled();expect((await post('/studio/script-provider',auth.getToken(),{provider:'gemini'})).status).toBe(200);expect(saveScriptProvider).toHaveBeenCalledWith('gemini');});
+});

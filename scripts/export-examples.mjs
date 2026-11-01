@@ -1,0 +1,13 @@
+// Explicitly publish completed, non-private demo jobs into the static examples gallery.
+import {flashcardsCsv} from '../packages/media/dist/index.js';
+import fs from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {VideoJobSchema,VideoManifestSchema,scriptForFormat} from '../packages/contracts/dist/index.js';
+const pairs=process.argv.slice(2);if(!pairs.length||pairs.some(item=>!/^([a-z0-9-]{1,50})=([a-f0-9-]{36})$/.test(item)))throw new Error('Usage: node scripts/export-examples.mjs slug=job-uuid [slug=job-uuid]');
+const data=process.env.BRAINROT_DATA_DIR??path.join(os.homedir(),'.local/share/brainrot'),root=path.resolve('apps/web/public/examples'),examples=[];
+const supplied=new Set(['i0M4ARe9v0Y','KvS0MLj5IIE','LofyMQts7hY','1nIGWHLMsFA']);
+for(const pair of pairs){const[slug,id]=pair.split('='),directory=path.join(data,'videos-v2',id);const record=JSON.parse(await fs.readFile(path.join(directory,'job.json'),'utf8')),job=VideoJobSchema.parse(record.job),manifest=VideoManifestSchema.parse(JSON.parse(await fs.readFile(path.join(directory,'manifest.json'),'utf8')));if(job.state!=='ready')throw new Error('Only completed jobs can be exported');const format=manifest.schemaVersion==='BrainrottenPlaybackManifestV3'?manifest.format:'skit';scriptForFormat(manifest.script,format);if(format==='skit'&&!manifest.sourceCredits.some(source=>{try{return supplied.has(new URL(source.url).searchParams.get('v'));}catch{return false;}}))throw new Error('An example must use the supplied gameplay');
+ const target=path.join(root,slug);await fs.mkdir(target,{recursive:true});for(const file of ['video.mp4','poster.png'])await fs.copyFile(path.join(directory,file),path.join(target,file));
+ const learning=manifest.schemaVersion==='BrainrottenPlaybackManifestV3'?manifest.learning:undefined;
+ if(learning){for(const file of ['learning.json','notes.md','captions.srt'])await fs.copyFile(path.join(directory,file),path.join(target,file));await fs.writeFile(path.join(target,'flashcards.csv'),flashcardsCsv(learning));}
+ const example=VideoJobSchema.parse({...job,format,...(learning?{learning,outputs:{learningUrl:`/examples/${slug}/learning.json`,notesUrl:`/examples/${slug}/notes.md`,captionsUrl:`/examples/${slug}/captions.srt`,flashcardsUrl:`/examples/${slug}/flashcards.csv`}}:{}),voiceBackend:job.voiceBackend??'elevenlabs',videoUrl:`/examples/${slug}/video.mp4`,downloadUrl:`/examples/${slug}/video.mp4`,posterUrl:`/examples/${slug}/poster.png`,audioUrl:null});examples.push(example);
+}
+await fs.writeFile(path.join(root,'index.json'),JSON.stringify(examples,null,2));console.log(`Exported ${examples.length} labelled examples. No generation requests were made.`);

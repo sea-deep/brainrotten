@@ -1,0 +1,6 @@
+{
+  "name": "brainrot-fixture-repo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tiny fixture repository for Brainrot scaffold tests"
+}

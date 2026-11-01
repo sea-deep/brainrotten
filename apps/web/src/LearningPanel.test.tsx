@@ -1,0 +1,14 @@
+import React from 'react';
+import {describe,it,expect,vi} from 'vitest';
+import {render,screen,fireEvent} from '@testing-library/react';
+import {LearningPackSchema} from '@brainrot/contracts';
+import {LearningPanel} from './LearningPanel.js';
+const pack=LearningPackSchema.parse({schemaVersion:'BrainrottenLearningPackV1',jobId:'11111111-1111-4111-8111-111111111111',format:'whiteboard',title:'Payment',language:'en',durationSeconds:10,takeaway:'Reuse one key per purchase.',chapters:[{id:'retry',title:'The lost response',startMs:2000,endMs:8000}],questions:[{id:'q1',prompt:'Which key should the retry reuse?',choices:['The purchase key','A new key'],answer:0,explanation:'It identifies the same operation.',turnIndices:[0],startMs:2000,endMs:8000}],transcript:[{turnIndex:0,speaker:'jhatka',text:'Reuse the purchase key.',startMs:2000,endMs:8000}]});
+describe('replayable learning panel',()=>{
+  it('grades an answer, explains the mechanism, replays its evidence and resets locally',()=>{const replay=vi.fn();render(<LearningPanel pack={pack} onReplay={replay}/>);expect(screen.queryByRole('status')).toBeNull();fireEvent.click(screen.getByRole('button',{name:'A new key'}));expect(screen.getByRole('status')).toHaveTextContent('It identifies the same operation.');expect(screen.getByRole('button',{name:'The purchase key'})).toBeDisabled();fireEvent.click(screen.getByRole('button',{name:'Replay the explanation'}));expect(replay).toHaveBeenCalledWith(2000);fireEvent.click(screen.getByRole('button',{name:'Reset answers'}));expect(screen.queryByRole('status')).toBeNull();expect(screen.getByRole('button',{name:'The purchase key'})).not.toBeDisabled();});
+  it('offers chapters and existing bundle downloads without a question requirement',()=>{const replay=vi.fn();render(<LearningPanel pack={{...pack,questions:[]}} onReplay={replay} downloads={{notesUrl:'/notes',captionsUrl:'/captions',learningUrl:'/learning'}}/>);fireEvent.click(screen.getByText('Chapters'));fireEvent.click(screen.getByRole('button',{name:'0:02 The lost response'}));expect(replay).toHaveBeenCalledWith(2000);expect(screen.getByRole('link',{name:'Notes .md'})).toHaveAttribute('href','/notes');expect(screen.queryByText('Check your understanding')).toBeNull();});
+});
+
+describe('flashcards and saved reviews',()=>{
+  it('reveals derived study cards and replays their evidence',()=>{const replay=vi.fn();render(<LearningPanel pack={pack} onReplay={replay}/>);fireEvent.click(screen.getByRole('button',{name:'Flashcards'}));expect(screen.queryByText('The purchase key — It identifies the same operation.')).toBeNull();fireEvent.click(screen.getByRole('button',{name:'Reveal answer'}));expect(screen.getByText('The purchase key — It identifies the same operation.')).toBeInTheDocument();fireEvent.click(screen.getByRole('button',{name:'Replay'}));expect(replay).toHaveBeenCalledWith(2000);});
+});

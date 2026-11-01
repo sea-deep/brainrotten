@@ -1,0 +1,6 @@
+{
+  "_comment": "Example INVALID lesson — wrong schemaVersion and missing required fields.",
+  "schemaVersion": "LessonDraft",
+  "title": "Missing fields everywhere",
+  "dialogue": "this should be an array"
+}

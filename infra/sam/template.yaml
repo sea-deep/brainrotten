@@ -1,0 +1,424 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Brainrotten authenticated asynchronous video API and five-video trial
+Parameters:
+  RuntimeImageUri:
+    Type: String
+    Description: ECR URI of cloud/Dockerfile, built for linux/amd64
+  AppOrigin:
+    Type: String
+    Default: http://localhost:5173
+    Description: Exact frontend origin, without trailing slash
+  CognitoDomainPrefix:
+    Type: String
+    Description: Globally unique Cognito hosted-domain prefix
+  GoogleClientId:
+    Type: String
+    Default: ''
+  GoogleClientSecret:
+    Type: String
+    NoEcho: true
+    Default: ''
+    Description: Legacy fallback; prefer GoogleOAuthSecretArn
+  GoogleOAuthSecretArn:
+    Type: String
+    Default: ''
+    Description: Secrets Manager JSON secret with client_id and client_secret
+  ProviderSecretArn:
+    Type: String
+    Default: ''
+    Description: Secrets Manager JSON with project keys and CHARACTER_VOICES_JSON
+  AdditionalClientIds:
+    Type: CommaDelimitedList
+    Default: ''
+    Description: Optional public client IDs from this user pool, for additional first-party clients
+  EnableHostedTrial:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+Conditions:
+  HasAdditionalClients: !Not [!Equals [!Join ['', !Ref AdditionalClientIds], '']]
+  HasGoogleSecretArn: !Not [!Equals [!Ref GoogleOAuthSecretArn, '']]
+  HasGoogle: !And [!Not [!Equals [!Ref GoogleClientId, '']], !Or [!Condition HasGoogleSecretArn, !Not [!Equals [!Ref GoogleClientSecret, '']]]]
+  HasProvider: !Not [!Equals [!Ref ProviderSecretArn, '']]
+  TrialEnabled: !And [!Condition HasGoogle, !Condition HasProvider, !Equals [!Ref EnableHostedTrial, 'true']]
+Globals:
+  Function:
+    MemorySize: 512
+    Timeout: 30
+    Architectures: [x86_64]
+    Environment:
+      Variables:
+        NODE_ENV: production
+        BRAINROTTEN_MODE: hosted
+        BRAINROT_SKIP_ENV: '1'
+        BRAINROTTEN_ROOT: /var/task/app
+        DYNAMODB_TABLE: !Ref JobsTable
+        S3_BUCKET: !Ref MediaBucket
+        JOB_QUEUE_URL: !Ref VideoQueue
+        HOSTED_ENABLED: !If [TrialEnabled, 'true', 'false']
+        COGNITO_DOMAIN: !Sub 'https://${CognitoDomainPrefix}.auth.${AWS::Region}.amazoncognito.com'
+        COGNITO_ISSUER: !Sub 'https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}'
+        COGNITO_CLIENT_ID: !Ref WebClient
+        COGNITO_AGENT_CLIENT_ID: !Ref AgentClient
+        COGNITO_ADDITIONAL_CLIENT_IDS: !Join [',', !Ref AdditionalClientIds]
+Resources:
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      UserPoolName: !Sub '${AWS::StackName}-users'
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      UsernameAttributes: [email]
+      AutoVerifiedAttributes: [email]
+  GoogleProvider:
+    Type: AWS::Cognito::UserPoolIdentityProvider
+    Condition: HasGoogle
+    Properties:
+      UserPoolId: !Ref UserPool
+      ProviderName: Google
+      ProviderType: Google
+      ProviderDetails:
+        client_id: !Ref GoogleClientId
+        client_secret: !If [HasGoogleSecretArn, !Sub '{{resolve:secretsmanager:${GoogleOAuthSecretArn}:SecretString:client_secret}}', !Ref GoogleClientSecret]
+        authorize_scopes: openid email profile
+      AttributeMapping:
+        email: email
+        name: name
+  WebClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      GenerateSecret: false
+      SupportedIdentityProviders: !If [HasGoogle, [!Ref GoogleProvider], [COGNITO]]
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows: [code]
+      AllowedOAuthScopes: [openid, email, profile]
+      CallbackURLs: [!Sub '${AppOrigin}/auth/callback']
+      LogoutURLs: [!Ref AppOrigin]
+      AccessTokenValidity: 1
+      TokenValidityUnits:
+        AccessToken: hours
+      PreventUserExistenceErrors: ENABLED
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Ref CognitoDomainPrefix
+      UserPoolId: !Ref UserPool
+  AgentClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      GenerateSecret: false
+      SupportedIdentityProviders: !If [HasGoogle, [!Ref GoogleProvider], [COGNITO]]
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows: [code]
+      AllowedOAuthScopes: [openid, email, profile]
+      CallbackURLs: ['http://localhost:43891/callback']
+      AccessTokenValidity: 1
+      RefreshTokenValidity: 30
+      TokenValidityUnits:
+        AccessToken: hours
+        RefreshToken: days
+      EnableTokenRevocation: true
+      RefreshTokenRotation:
+        Feature: ENABLED
+        RetryGracePeriodSeconds: 10
+      PreventUserExistenceErrors: ENABLED
+  Api:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: $default
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 20
+        ThrottlingRateLimit: 5
+      CorsConfiguration:
+        AllowOrigins: [!Ref AppOrigin]
+        AllowHeaders: [authorization, content-type]
+        AllowMethods: [GET, POST, PUT, OPTIONS]
+        MaxAge: 3600
+      Auth:
+        DefaultAuthorizer: CognitoJwt
+        Authorizers:
+          CognitoJwt:
+            IdentitySource: $request.header.Authorization
+            JwtConfiguration:
+              issuer: !Sub 'https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}'
+              audience: !If [HasAdditionalClients, !Split [',', !Join [',', [!Ref WebClient, !Ref AgentClient, !Join [',', !Ref AdditionalClientIds]]]], [!Ref WebClient, !Ref AgentClient]]
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      ImageUri: !Ref RuntimeImageUri
+      ImageConfig:
+        Command: [cloud/dist/api.handler]
+      ReservedConcurrentExecutions: 10
+      LoggingConfig:
+        LogGroup: !Ref ApiLogs
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JobsTable
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt VideoQueue.QueueName
+        - S3ReadPolicy:
+            BucketName: !Ref MediaBucket
+      Events:
+        LearningGuide:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/learning-guide
+        CreateSession:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: POST
+            Path: /api/v1/sessions
+        ListSessions:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/sessions
+        GetSession:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/sessions/{sessionId}
+        SessionGuide:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/sessions/{sessionId}/guide
+        ReadSessionResponse:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/sessions/{sessionId}/review
+        WriteSessionResponse:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: PUT
+            Path: /api/v1/sessions/{sessionId}/review
+        PublishSessionLesson:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: POST
+            Path: /api/v1/sessions/{sessionId}/videos
+        Health:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/health
+            Auth:
+              Authorizer: NONE
+        OpenApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/openapi.json
+            Auth:
+              Authorizer: NONE
+        Config:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/studio/config
+            Auth:
+              Authorizer: NONE
+        Account:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/me
+        List:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/videos
+        Submit:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: POST
+            Path: /api/v1/videos
+        ImageSearch:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: POST
+            Path: /api/v1/images/search
+        Status:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/videos/{jobId}
+        LearningPack:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/videos/{jobId}/learning
+        Library:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/library
+        ValidateScript:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: POST
+            Path: /api/v1/videos/validate
+        GetReview:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: GET
+            Path: /api/v1/videos/{jobId}/review
+        UpdateReview:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref Api
+            Method: PUT
+            Path: /api/v1/videos/{jobId}/review
+  Worker:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      ImageUri: !Ref RuntimeImageUri
+      ImageConfig:
+        Command: [cloud/dist/worker.handler]
+      Timeout: 900
+      MemorySize: 4096
+      EphemeralStorage:
+        Size: 2048
+      ReservedConcurrentExecutions: 2
+      Environment:
+        Variables:
+          PROVIDER_SECRET_ARN: !Ref ProviderSecretArn
+      LoggingConfig:
+        LogGroup: !Ref WorkerLogs
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JobsTable
+        - S3CrudPolicy:
+            BucketName: !Ref MediaBucket
+        - SQSPollerPolicy:
+            QueueName: !GetAtt VideoQueue.QueueName
+        - Statement:
+            - Effect: Allow
+              Action: secretsmanager:GetSecretValue
+              Resource: !If [HasProvider, !Ref ProviderSecretArn, !Sub 'arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:brainrotten-disabled-*']
+      Events:
+        Queue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt VideoQueue.Arn
+            BatchSize: 1
+            FunctionResponseTypes: [ReportBatchItemFailures]
+            ScalingConfig:
+              MaximumConcurrency: 2
+  VideoQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 5400
+      MessageRetentionPeriod: 86400
+      SqsManagedSseEnabled: true
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt DeadLetters.Arn
+        maxReceiveCount: 3
+  DeadLetters:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 1209600
+      SqsManagedSseEnabled: true
+  JobsTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+      SSESpecification:
+        SSEEnabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+  MediaBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins: [!Ref AppOrigin]
+            AllowedMethods: [GET, HEAD]
+            AllowedHeaders: [Range]
+            ExposedHeaders: [Content-Length, Content-Range, Accept-Ranges]
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireMedia
+            Status: Enabled
+            ExpirationInDays: 30
+  ApiLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+  WorkerLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+Outputs:
+  ApiBaseUrl:
+    Value: !Sub 'https://${Api}.execute-api.${AWS::Region}.amazonaws.com/api/v1'
+  GoogleRedirectUri:
+    Value: !Sub 'https://${CognitoDomainPrefix}.auth.${AWS::Region}.amazoncognito.com/oauth2/idpresponse'
+  CognitoClientId:
+    Value: !Ref WebClient
+  CognitoAgentClientId:
+    Value: !Ref AgentClient
+  CognitoUserPoolId:
+    Value: !Ref UserPool
+  CognitoDomain:
+    Value: !Sub 'https://${CognitoDomainPrefix}.auth.${AWS::Region}.amazoncognito.com'
+  TrialEnabled:
+    Value: !If [TrialEnabled, 'true', 'false']
+  JobsTableName:
+    Value: !Ref JobsTable
+  MediaBucketName:
+    Value: !Ref MediaBucket
+  QueueUrl:
+    Value: !Ref VideoQueue
