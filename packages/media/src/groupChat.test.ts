@@ -11,6 +11,7 @@ import {generateVideoArtifact} from './engine.js';
 import {prepareChatPanels,chatStateAt,CHAT_PANEL} from './chatFrames.js';
 import {groupChatExample,GROUP_CHAT_RULES} from './formatGuides.js';
 import {resolveChatIcon,unknownChatIcons,iconAvatarUri} from './chatIcons.js';
+import {plainArrows} from './uiKit.js';
 import {validateVideoRequest} from './validation.js';
 vi.mock('./providers.js',async original=>({...await original<typeof import('./providers.js')>(),availableVoices:()=>[{role:'motu'},{role:'jack'},{role:'patlu'}],synthesizeDialogue:vi.fn()}));
 afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs();vi.clearAllMocks();});
@@ -108,4 +109,8 @@ describe('repair loop for smaller models',()=>{
     expect(retry).toContain('failed validation');expect(retry).toContain('different character voice');
     expect(JSON.parse(fetch.mock.calls[0]![1].body).messages[0].content).toContain('Romanized Hinglish');
   });
+});
+
+describe('text glyphs',()=>{
+  it('renders arrows the font lacks as ASCII instead of blanks',()=>{expect(plainArrows('path badal diya → app/cloud ⇒ done ➡️')).toBe('path badal diya -> app/cloud => done ->');});
 });

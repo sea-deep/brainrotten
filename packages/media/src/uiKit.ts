@@ -9,7 +9,10 @@ import {workspaceRoot} from './env.js';
 
 export type UiNode={type:string;props:Record<string,unknown>};
 export const h=(type:string,style:Record<string,unknown>,...children:unknown[]):UiNode=>({type,props:{style:{display:'flex',...style},children:children.flat().filter(child=>child!==null&&child!==false&&child!==undefined)}});
-export const text=(style:Record<string,unknown>,value:string):UiNode=>({type:'div',props:{style:{display:'flex',...style},children:value}});
+// Roboto has no arrow glyphs and arrows are not emoji, so they would render blank.
+const ARROWS:Record<string,string>={'→':'->','←':'<-','⇒':'=>','⇐':'<=','↔':'<->','➜':'->','➡':'->','⟶':'->'};
+export const plainArrows=(value:string)=>value.replace(/[→←⇒⇐↔➜➡⟶]\uFE0F?/g,c=>ARROWS[c.replace('\uFE0F','')]??c);
+export const text=(style:Record<string,unknown>,value:string):UiNode=>({type:'div',props:{style:{display:'flex',...style},children:plainArrows(value)}});
 export const img=(src:string,style:Record<string,unknown>):UiNode=>({type:'img',props:{src,style}});
 export const svgUri=(svg:string)=>'data:image/svg+xml;base64,'+Buffer.from(svg).toString('base64');
 
