@@ -11,10 +11,13 @@ API_STACK="${API_STACK:-brainrotten-api}"
 SITE_STACK="${SITE_STACK:-brainrotten-site}"
 ACCOUNT="$(aws sts get-caller-identity --query Account --output text)"
 
+# Create the GitHub OIDC provider unless one exists that this stack does not own (re-runs must keep their own).
 provider="$(aws iam list-open-id-connect-providers --query "OpenIDConnectProviderList[?ends_with(Arn,'token.actions.githubusercontent.com')].Arn" --output text)"
+owned="$(aws cloudformation describe-stack-resource --region "$REGION" --stack-name brainrotten-ci --logical-resource-id GitHubOidc --query 'StackResourceDetail.PhysicalResourceId' --output text 2>/dev/null || true)"
+create=true; [[ -n "$provider" && "$provider" != "$owned" ]] && create=false
 aws cloudformation deploy --region "$REGION" --stack-name brainrotten-ci --template-file infra/ci/template.yaml \
   --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset \
-  --parameter-overrides "GitHubRepository=$REPO" "CreateOidcProvider=$([[ -n "$provider" ]] && echo false || echo true)"
+  --parameter-overrides "GitHubRepository=$REPO" "CreateOidcProvider=$create"
 ci() { aws cloudformation describe-stacks --region "$REGION" --stack-name brainrotten-ci --query "Stacks[0].Outputs[?OutputKey=='$1'].OutputValue" --output text; }
 param() { aws cloudformation describe-stacks --region "$REGION" --stack-name "$API_STACK" --query "Stacks[0].Parameters[?ParameterKey=='$1'].ParameterValue" --output text; }
 
