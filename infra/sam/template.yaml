@@ -87,6 +87,7 @@ Resources:
       AttributeMapping:
         email: email
         name: name
+        picture: picture
   WebClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
