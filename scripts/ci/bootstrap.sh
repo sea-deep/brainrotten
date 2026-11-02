@@ -15,9 +15,13 @@ ACCOUNT="$(aws sts get-caller-identity --query Account --output text)"
 provider="$(aws iam list-open-id-connect-providers --query "OpenIDConnectProviderList[?ends_with(Arn,'token.actions.githubusercontent.com')].Arn" --output text)"
 owned="$(aws cloudformation describe-stack-resource --region "$REGION" --stack-name brainrotten-ci --logical-resource-id GitHubOidc --query 'StackResourceDetail.PhysicalResourceId' --output text 2>/dev/null || true)"
 create=true; [[ -n "$provider" && "$provider" != "$owned" ]] && create=false
+# GitHub sends either repo:OWNER/REPO or, with immutable subjects, repo:OWNER@ID/REPO@ID. Trust exactly what it sends.
+prefix="$(gh api "repos/$REPO/actions/oidc/customization/sub" --jq '.sub_claim_prefix // empty' 2>/dev/null || true)"
+prefix="${prefix:-repo:$REPO}"
+echo "GitHub token subject: $prefix:…"
 aws cloudformation deploy --region "$REGION" --stack-name brainrotten-ci --template-file infra/ci/template.yaml \
   --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset \
-  --parameter-overrides "GitHubRepository=$REPO" "CreateOidcProvider=$create"
+  --parameter-overrides "GitHubSubjectPrefix=$prefix" "CreateOidcProvider=$create"
 ci() { aws cloudformation describe-stacks --region "$REGION" --stack-name brainrotten-ci --query "Stacks[0].Outputs[?OutputKey=='$1'].OutputValue" --output text; }
 param() { aws cloudformation describe-stacks --region "$REGION" --stack-name "$API_STACK" --query "Stacks[0].Parameters[?ParameterKey=='$1'].ParameterValue" --output text; }
 
