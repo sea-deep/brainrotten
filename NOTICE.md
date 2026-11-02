@@ -2,7 +2,7 @@
 
 Brainrotten (the website, the API, the MCP server and the BrainRotGram app) is an **unofficial, non-commercial fan and educational project** made for a hackathon. It is **not affiliated with, sponsored by or endorsed by** any of the companies, studios, broadcasters or people named below. All characters, names, likenesses, voices, trademarks and footage listed here **belong to their respective owners**. Brainrotten claims no ownership of them, and nothing in this repository grants anyone a licence to them.
 
-Our own code is separate from this content. Credits below are attribution, not permission.
+Our own code is separate from this content and is MIT-licensed (see [LICENSE](LICENSE)); that licence does not extend to anything listed here. Credits below are attribution, not permission.
 
 ## Cartoon characters
 

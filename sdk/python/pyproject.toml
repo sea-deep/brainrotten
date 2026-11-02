@@ -3,6 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
+license = "MIT"
 name = "brainrotten"
 version = "0.1.0"
 description = "Brainrotten SDK: the MCP tools as Python functions, so agents spend fewer tokens."

@@ -89,3 +89,7 @@ The shared API now includes `/library`, `/videos/validate` and `/videos/{jobId}/
 ## Credits
 
 Group chat emoji use [Twemoji](https://github.com/jdecked/twemoji) graphics by Twitter, Inc. and contributors, licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/), via the MIT-licensed `@twemoji/svg` package. Sketch boards use the [Virgil](https://github.com/excalidraw/virgil) font (OFL-1.1, Ellinor Rapp), [rough.js](https://github.com/rough-stuff/rough) (MIT) and [dagre](https://github.com/dagrejs/dagre) (MIT). Member icons come from [Lucide](https://lucide.dev) (ISC) and [Simple Icons](https://simpleicons.org) (CC0; brand logos remain their owners' trademarks). Chat panels are laid out with [Satori](https://github.com/vercel/satori) (MPL-2.0).
+
+## License
+
+Code: [MIT](LICENSE). Third-party characters, voices, footage and fonts are not covered; see [NOTICE.md](NOTICE.md).

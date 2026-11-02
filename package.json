@@ -39,5 +39,6 @@
     "esbuild": "0.28.2",
     "eslint": "10.13.0",
     "typescript": "npm:@typescript/typescript6@6.0.2"
-  }
+  },
+  "license": "MIT"
 }
