@@ -1,9 +1,11 @@
 {
   "mcpServers": {
     "brainrotten": {
-      "command": "/opt/homebrew/bin/node",
+      "command": "npx",
       "args": [
-        "/Users/dipak/code/brainrot-ide/apps/companion/dist/mcp.js"
+        "-y",
+        "brainrotten-mcp@latest",
+        "mcp"
       ],
       "disabled": false,
       "autoApprove": [

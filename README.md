@@ -51,10 +51,10 @@ Unofficial, non-commercial fan project. The cartoon characters, voices (AI clone
 ## Install the MCP server (one command)
 
 ```bash
-npx -y https://d3sk6lwsh4ufyv.cloudfront.net/install/brainrotten-mcp-0.1.0.tgz setup
+npx -y brainrotten-mcp@latest setup
 ```
 
-It signs you in with Google in the browser and adds Brainrotten to every coding agent it finds (Claude Code, Codex, Cursor, VS Code, Claude Desktop, Windsurf, Kiro, Gemini CLI, OpenCode). Or tell your agent: "Install Brainrotten MCP from https://d3sk6lwsh4ufyv.cloudfront.net/install.md". The current link is always in [install.md](https://d3sk6lwsh4ufyv.cloudfront.net/install.md). Source: `apps/companion/src/standalone`, packed by `scripts/build-mcp-package.mjs` on every site deploy.
+It signs you in with Google in the browser and adds Brainrotten to every coding agent it finds (Claude Code, Codex, Cursor, VS Code, Claude Desktop, Windsurf, Kiro, Gemini CLI, OpenCode). Or tell your agent: "Install Brainrotten MCP from https://d3sk6lwsh4ufyv.cloudfront.net/install.md". Published on npm as [`brainrotten-mcp`](https://www.npmjs.com/package/brainrotten-mcp); the site also serves the same package at `/install/brainrotten-mcp-<version>.tgz`. Source: `apps/companion/src/standalone`, packed by `scripts/build-mcp-package.mjs` on every site deploy.
 
 ## Hosted
 

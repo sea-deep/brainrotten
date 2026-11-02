@@ -20,10 +20,9 @@ const tools=[
   ['list_video_voices','Available clones and provider/renderer readiness.','{}'],
   ['get_change_context','Optional evidence from a repository registered with the local service.','projectId: "…"'],
 ];
-declare const __MCP_VERSION__:string;
 const hostedSite=import.meta.env['VITE_HOSTED']==='true';
 const siteOrigin=typeof location==='undefined'?'':location.origin;
-const installCommand=`npx -y ${siteOrigin}/install/brainrotten-mcp-${__MCP_VERSION__}.tgz setup`;
+const installCommand='npx -y brainrotten-mcp@latest setup';
 const installGuide=`${siteOrigin}/install.md`;
 /** One copyable shell line. */
 function CopyLine({text}:{text:string}):React.ReactElement{const[copied,setCopied]=useState(false);return <div className="copy-line"><pre className="code-box compact"><code>{text}</code></pre><button type="button" className="text-button" onClick={()=>{void navigator.clipboard?.writeText(text).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);}).catch(()=>{});}}><Icon name={copied?'check':'copy'} size={15}/>{copied?'Copied':'Copy'}</button></div>;}
