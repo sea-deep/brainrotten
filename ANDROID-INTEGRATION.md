@@ -10,10 +10,10 @@ and call the Brainrotten hosted API. Values below are from the deployed `brainro
 | Name | Value |
 |---|---|
 | API base URL | `https://fqfewiusg8.execute-api.ap-south-1.amazonaws.com/api/v1` |
-| Website | `https://main.d21cxkcmjm7x19.amplifyapp.com` (AWS Amplify Hosting). The Android app does not need the website. |
+| Website | `https://d3sk6lwsh4ufyv.cloudfront.net` (S3 + CloudFront). The Android app does not need the website. |
 | AWS region | `ap-south-1` |
 | API stack | `brainrotten-api` |
-| Website hosting | AWS Amplify app `d21cxkcmjm7x19` (CloudFront pending account verification) |
+| Website hosting | Stack `brainrotten-site` (private S3 bucket, CloudFront with security headers) |
 
 ---
 

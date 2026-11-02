@@ -1,5 +1,5 @@
 /** Companion API client. Provider credentials never enter this module. */
-import {accessToken,completeGoogleRedirect,isSignedIn,signOut} from './googleAuth.js';
+import {completeGoogleRedirect,currentProfile,ensureAccessToken,isSignedIn,signOut} from './googleAuth.js';
 import { StudioConfigSchema, LearningPackSchema, VideoReviewSchema, VideoLibrarySchema, ScriptValidationSchema, ReviewConflictError,type VideoReviewPatch,type LibraryQuery, VideoJobSchema,ImageSearchResultSchema,McpSetupSchema, type GenerateVideoInput, type StudioConfig, type VideoJob,type ImageSearchResult,type CognitoSettings } from '@brainrot/contracts';
 
 const HOSTED=import.meta.env['VITE_HOSTED']==='true';
@@ -15,7 +15,7 @@ export async function saveSessionResponse(id:string,patch:import('@brainrot/cont
 }
 
 export async function bootstrap(): Promise<void> {
-  if(HOSTED){sessionToken=accessToken();if(!sessionToken)throw new Error('Sign in with Google to use the trial.');return;}
+  if(HOSTED){sessionToken=await ensureAccessToken();if(!sessionToken)throw new Error('Sign in with Google to use the trial.');return;}
   if (sessionToken) return;
   try {
     const res = await fetch(`${BASE}/bootstrap`, { method: 'GET', credentials: 'same-origin' });
@@ -42,7 +42,9 @@ async function studioRequest(path: string, init: RequestInit = {}, retried = fal
 
 export async function getStudioConfig(): Promise<StudioConfig> {
   const config=StudioConfigSchema.parse(HOSTED?await(await fetch(`${BASE}/studio/config`)).json():await studioRequest('/studio/config'));
-  await completeGoogleRedirect(config);
+  const returnTo=await completeGoogleRedirect(config);
+  // Studio handles the callback; send visitors who started elsewhere (landing, MCP page) back there.
+  if(returnTo&&!returnTo.startsWith('/studio'))window.location.replace(returnTo);
   return config;
 }
 export async function getTrialQuota():Promise<{used:number;limit:number;remaining:number}|null>{if(!HOSTED||!isSignedIn())return null;const result=await studioRequest('/me') as{quota:{used:number;limit:number;remaining:number}};return result.quota;}
@@ -69,7 +71,7 @@ export async function getMcpSetup(){return McpSetupSchema.parse(await studioRequ
 export async function revealMcpToken(rotate=false):Promise<string>{const result=await studioRequest('/studio/mcp-token',{method:'POST',body:JSON.stringify({action:rotate?'rotate':'reveal'})}) as{token:string};return result.token;}
 export async function configureCognito(input:CognitoSettings):Promise<StudioConfig>{return StudioConfigSchema.parse(await studioRequest('/studio/auth/config',{method:'POST',body:JSON.stringify(input)}));}
 export async function getAccount():Promise<{sub:string;email?:string;name?:string}|null>{
-  const token=accessToken();if(!token)return null;if(HOSTED)return{sub:'hosted-session'};
+  if(HOSTED){const profile=currentProfile();return profile?{sub:'hosted-session',...(profile.name?{name:profile.name}:{}),...(profile.email?{email:profile.email}:{})}:null;}const token=await ensureAccessToken();if(!token)return null;
   try{return await studioRequest('/studio/auth/session',{method:'POST',body:JSON.stringify({accessToken:token})}) as{sub:string;email?:string;name?:string};}catch(error){signOut();throw error;}
 }
 export type { GenerateVideoInput, StudioConfig, VideoJob };

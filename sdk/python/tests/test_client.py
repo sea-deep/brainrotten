@@ -110,6 +110,13 @@ class ClientTest(unittest.TestCase):
             Brainrotten(account=True, data_dir=Path(self.tmp.name))
         self.assertIn("pnpm brainrotten login", caught.exception.message)
 
+    def test_unreachable_server_gives_a_clear_error(self):
+        br = Brainrotten(api_url="http://127.0.0.1:9/api/v1", token="synthetic", timeout=2)
+        with self.assertRaises(BrainrottenError) as caught:
+            br.config()
+        self.assertEqual(caught.exception.status, 0)
+        self.assertIn("Cannot reach Brainrotten", caught.exception.message)
+
 
 if __name__ == "__main__":
     unittest.main()

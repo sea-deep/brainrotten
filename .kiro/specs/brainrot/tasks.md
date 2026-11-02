@@ -24,7 +24,8 @@ Spec revision: 2026-11-01. Requirement numbers refer to `requirements.md`.
   - [x] 13.1 Cognito user pool with Google, web, agent and Android app clients
   - [x] 13.2 Provider secret in Secrets Manager; enable the hosted trial
   - [x] 13.3 Live test: Google sign-in, quota reservation, one hosted video (61 s end to end)
-  - [x] 13.4 Website on AWS Amplify Hosting (CloudFront waits on account verification)
+  - [x] 13.4 Website on S3 + CloudFront (`brainrotten-site`); briefly on Amplify while CloudFront awaited account verification
+  - [x] 13.5 Deploy pipeline: GitHub Actions with OIDC, automatic site deploys, one-click backend deploys
 - [ ] 14. BrainRotGram Android app against the hosted API (Req 7)
   - [x] 14.1 Native Cognito app client (`AndroidClient`, `brainrotgram://` callbacks)
   - [ ] 14.2 Sessions, library, player, predictions and reflections

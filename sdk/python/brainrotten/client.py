@@ -106,6 +106,9 @@ class Brainrotten:
             except json.JSONDecodeError:
                 payload = {}
             raise BrainrottenError(err.code, payload.get("message", err.reason), payload.get("issues")) from None
+        except urllib.error.URLError as err:
+            hint = "Start Studio with pnpm dev, or use Brainrotten(account=True)" if "127.0.0.1" in self.api_url else "Check the API URL and your connection"
+            raise BrainrottenError(0, f"Cannot reach Brainrotten at {self.api_url}. {hint}.") from err
 
     # ---- discovery (same as the MCP tools) ---------------------------------------------------
     def config(self) -> dict:

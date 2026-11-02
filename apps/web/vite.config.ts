@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+// Absolute URL for link previews (og:image); set VITE_SITE_URL when building the public site.
+const siteUrl=(process.env['VITE_SITE_URL']??'').replace(/\/$/,'');
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(),{name:'site-url',transformIndexHtml:html=>html.replaceAll('__SITE_URL__',siteUrl)}],
   server: {
     // Only allow loopback during development
     host: '127.0.0.1',

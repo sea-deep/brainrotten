@@ -12,11 +12,11 @@ Developers and learners creating English/Hinglish/Benglish explanations from arb
 
 ## Product Purpose
 
-Brainrotten Studio accepts a topic; Brainrotten MCP lets the invoking agent author the script from its own context. Both share the same voice and video engine.
+Brainrotten turns a coding agent's real session into a one-minute learning video. The agent writes the script from its own context through MCP, the Python SDK or the REST API; Studio also accepts a topic. All paths share one voice and video engine. Five formats: sketch board (default for systems and bugs), character skit (concepts), PR review (a real diff), tier list (options weighed) and group chat (parts of a system talking).
 
 ## Operating Context
 
-Local BYOK is independent of the hosted Google-authenticated, five-lifetime-video trial. API keys remain server-side or in private local settings. Hosted credentials and deployment are deferred to the builder’s account setup.
+Local BYOK is independent of the hosted Google-authenticated, five-lifetime-video trial, which is live on AWS (S3 + CloudFront website, API Gateway + Lambda in ap-south-1, deployed by GitHub Actions). API keys remain server-side or in private local settings. Hosted visitors browse and type freely and sign in only when they generate; the session persists across tabs and renews silently.
 
 ## Capabilities and Constraints
 
@@ -28,7 +28,7 @@ Brainrotten Studio, MCP and a shared asynchronous REST API. Playful cream/lavend
 
 ## Evidence on Hand
 
-Real local videos exist for both character pairs, including agent-authored script submission over MCP. A separate silent-audio test exports a full 180-second MP4. Hosted authentication and generation are not deployed or live-tested.
+Five landing examples were written by the coding agent from real sessions in this repository, one per format (Lambda handler bug, Cognito pool ID check, its PR, hosting choice on a new AWS account, Lambda cold starts). Hosted sign-in and generation are live-tested.
 
 ## Product Principles
 

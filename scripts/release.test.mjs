@@ -26,8 +26,8 @@ test('CLI submits once with a stable request ID and downloads authenticated loca
   }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});}
 });
 test('public gallery contains only the user-selected ElevenLabs voices',async()=>{
-  const root='apps/web/public/examples',entries=JSON.parse(await fs.readFile(root+'/index.json','utf8')),approved=new Set(['jack','badri','budhdev','jhaplu','paplu','taplu','jhatka','john','motu']);assert.equal(entries.length,3);
-  const slugs=new Set();for(const entry of entries){assert.equal(entry.voiceBackend,'elevenlabs');for(const character of Object.values(entry.script.participants))assert.ok(approved.has(character),`Unapproved example speaker ${character}`);const slug=entry.videoUrl.split('/')[2];slugs.add(slug);assert.ok((await fs.stat(`${root}/${slug}/video.mp4`)).size>1000);}
+  const root='apps/web/public/examples',entries=JSON.parse(await fs.readFile(root+'/index.json','utf8')),approved=new Set(['jack','badri','budhdev','jhaplu','paplu','taplu','jhatka','john','motu']);assert.ok(entries.length>=3);
+  const slugs=new Set();for(const entry of entries){assert.equal(entry.voiceBackend,'elevenlabs');const speakers=new Set([...Object.values(entry.script.participants??{}),entry.script.narrator,...entry.script.dialogue.map(line=>line.speaker)].filter(Boolean));for(const character of speakers)assert.ok(approved.has(character),`Unapproved example speaker ${character}`);const slug=entry.videoUrl.split('/')[2];slugs.add(slug);assert.ok((await fs.stat(`${root}/${slug}/video.mp4`)).size>1000);}
   for(const entry of await fs.readdir(root,{withFileTypes:true}))if(entry.isDirectory())assert.ok(slugs.has(entry.name),'An unlisted video directory would still be publicly shipped.');
 });
 

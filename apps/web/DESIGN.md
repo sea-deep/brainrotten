@@ -17,3 +17,9 @@ The landing page borrows a video-library shelf: the hero is an explicitly playab
 Four visible raster slots use actual user-directed video poster frames (one hero plus three examples); source links remain in the example metadata. Only the approved ElevenLabs pairs are public: John/Dr Jhatka, Jhaplu/Paplu and Badri/Budhdev. The other eleven clips were moved outside public assets. Static demo `/studio` offers setup rather than nonfunctional controls. Normal `/studio` preserves the existing generator.
 
 Native video controls, deliberate playback, keyboard-accessible interface tabs, copy recovery, viewport-safe code, reduced-motion overrides and visible content before animation are required. Motion is a one-time shelf settle plus focused hover/press feedback. Code uses its real monospace face. No autoplaying audio or editor-specific prerequisite. Design artifacts and render QA stay in `.artifacts/release-prep/`.
+
+## Public site — 2026-11-02
+
+Landing order: hero (copy + gummy bears), a scroll-driven walkthrough, real-session examples (one tab per format), four ways in (MCP, Python, Studio, API), run options, FAQ. The walkthrough pins while the reader scrolls through a tall section; scroll position maps to story time, so each stretch advances one step and scrolling back rewinds. A clickable five-step rail and a caption name the current step. Below 1000px it shows one card at a time. Reduced motion shows the finished state as a normal section.
+
+The header is one row at every width: brand, an account button (hosted: Google sign-in, or avatar plus free videos left) and, on small screens, a menu toggle that opens the links inside the pill. Studio links never force a Google redirect. The footer is a full-width plum band, not a pill: large wordmark, three link columns (Make, Connect, Run), and a thin rule above languages, credit and back to top.

@@ -8,21 +8,33 @@ vi.mock('./AgentFlow.js',()=>({AgentFlow:()=>null}));
 beforeEach(()=>{vi.stubGlobal('IntersectionObserver',class{observe(){}unobserve(){}disconnect(){}});});
 afterEach(()=>{cleanup();vi.unstubAllGlobals();});
 describe('production landing page',()=>{
-  it('keeps playback explicit and switches only between selected ElevenLabs voices',()=>{
+  it('shows one real-session example per format and keeps playback explicit',()=>{
     render(<LandingPage/>);expect(document.querySelector('video')).toBeNull();
     expect(screen.getByRole('heading',{level:1})).toHaveTextContent('Stop doomscrolling. Understand what your agent just changed.');
-    fireEvent.click(screen.getByRole('button',{name:'Databases'}));
-    expect(screen.getByText(/Jhaplu & Paplu · Hinglish/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button',{name:/Play saved example/}));
-    expect(document.querySelector('video')?.getAttribute('src')).toBe('/examples/hinglish-database-replica-eleven/video.mp4');
-    expect(document.querySelectorAll('img[src*="-maya"]')).toHaveLength(0);
+    expect(screen.getAllByRole('tab',{name:/Sketch board|Character skit|PR review|Tier list|Group chat/})).toHaveLength(5);
+    expect(screen.getByRole('tab',{name:/Sketch board/})).toHaveAttribute('aria-selected','true');
+    fireEvent.click(screen.getByRole('tab',{name:/PR review/}));
+    expect(screen.getByRole('tabpanel',{name:/PR review/})).toHaveTextContent('Accept real Cognito pool IDs');
+    expect(screen.getByText(/What the agent did/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:/Play example/}));
+    expect(document.querySelector('video')?.getAttribute('src')).toBe('/examples/session-prreview-cognito/video.mp4');
+    fireEvent.keyDown(screen.getByRole('tab',{name:/PR review/}),{key:'ArrowRight'});
+    expect(screen.getByRole('tab',{name:/Tier list/})).toHaveAttribute('aria-selected','true');
+    expect(document.querySelector('video')).toBeNull();
+  });
+  it('sends Studio links to Studio without forcing a Google redirect',()=>{
+    render(<LandingPage/>);
+    for(const link of screen.getAllByRole('link',{name:/Open Studio/}))expect(link).toHaveAttribute('href','/studio');
   });
   it('changes the interface instructions and destination together',()=>{
-    render(<LandingPage/>);fireEvent.click(screen.getByRole('tab',{name:'API'}));
-    expect(screen.getByRole('tabpanel')).toHaveTextContent('POST /api/v1/videos');
+    render(<LandingPage/>);expect(screen.getByRole('tab',{name:'MCP'})).toHaveAttribute('aria-selected','true');
+    fireEvent.click(screen.getByRole('tab',{name:'API'}));
+    expect(screen.getByRole('tabpanel',{name:'API'})).toHaveTextContent('POST /api/v1/videos');
     expect(screen.getByRole('link',{name:'Read the API docs'})).toHaveAttribute('href','/api');
     fireEvent.keyDown(screen.getByRole('tab',{name:'API'}),{key:'ArrowRight'});
-    expect(screen.getByRole('tab',{name:'Studio'})).toHaveAttribute('aria-selected','true');
+    expect(screen.getByRole('tab',{name:'MCP'})).toHaveAttribute('aria-selected','true');
+    fireEvent.click(screen.getByRole('tab',{name:'Python'}));
+    expect(screen.getByRole('tabpanel',{name:'Python'})).toHaveTextContent('make_video');
   });
   it('does not insert a placeholder token that breaks automatic local authorization',()=>{
     const config=JSON.parse(editorConfig('standard','node','/installed/brainrotten/apps/companion/dist/mcp.js',''));

@@ -46,11 +46,20 @@ Brainrotten turns agent context or a topic into a short explanation: a two-chara
 
 ## Hosted
 
-- Website: https://main.d21cxkcmjm7x19.amplifyapp.com
+- Website: https://d3sk6lwsh4ufyv.cloudfront.net (private S3 behind CloudFront)
 - API: https://fqfewiusg8.execute-api.ap-south-1.amazonaws.com/api/v1 (OpenAPI at `/openapi.json`)
 - Sign-in: Google through Amazon Cognito. Five free hosted videos per account.
 - Coding agents: `pnpm brainrotten login --api-url <API>` then `pnpm brainrotten mcp --account`.
 - Android: see [ANDROID-INTEGRATION.md](ANDROID-INTEGRATION.md).
+
+## Deploy pipeline
+
+GitHub Actions (`.github/workflows`) runs `pnpm check` on every push and pull request. On `main`:
+
+- Website changes deploy automatically to S3 + CloudFront and are smoke-tested (`scripts/ci/deploy-site.sh`).
+- Backend changes build the arm64 Lambda image and push it to ECR. Nothing goes live until you run **Actions → Deploy backend → Run workflow**, which deploys the API stack and smoke-tests it (`scripts/ci/deploy-backend.sh`).
+
+GitHub signs in to AWS with OIDC (`infra/ci/template.yaml`): no AWS keys are stored in GitHub. One-time setup: `scripts/ci/bootstrap.sh` with admin AWS credentials and a `gh` login.
 
 ## Learning sessions
 
