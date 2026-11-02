@@ -49,6 +49,7 @@ function toolbar():string{
     return `${i===2?`<rect x="${cx-19}" y="25" width="38" height="40" rx="9" fill="#e0dfff"/>`:''}${iconMarkup(tool,cx,45,20,i===2?1:.75).replace(`stroke="${INK}"`,`stroke="${i===2?'#4a47b1':'#495057'}"`)}`;}).join('');
 }
 
+const round=(value:number)=>Math.round(value*10)/10;
 interface Placed{id:string;x:number;y:number;width:number;height:number;label:string;kind:string;icon?:string|undefined}
 export interface SketchBoard{height:number;markup(index:number,sinceStartMs:(index:number)=>number):string}
 
@@ -63,6 +64,8 @@ export function buildSketch(script:VideoScript):SketchBoard{
   const graph=g.graph(),gw=graph.width??SKETCH_WIDTH,gh=graph.height??600,scale=Math.min(1.5,(SKETCH_WIDTH-56)/gw,(900-TOOLBAR-20-40)/gh);
   const offsetX=(SKETCH_WIDTH-gw*scale)/2,offsetY=TOOLBAR+20;
   const at=(x:number,y:number)=>[offsetX+x*scale,offsetY+y*scale] as const;
+  // Text and icons shrink with a wide board scaled down to fit, but never grow past their designed size.
+  const ink=Math.min(1,scale);
   const nodes:Placed[]=sketch.nodes.map(node=>{const n=g.node(node.id);const[x,y]=at(n.x,n.y);return{id:node.id,x,y,width:n.width*scale,height:n.height*scale,label:node.label,kind:node.kind,icon:node.icon};});
   const height=Math.round(Math.max(620,Math.min(900,offsetY+gh*scale+40)));
   // When each element first appears: on its first mention; unmentioned nodes from the start;
@@ -84,16 +87,17 @@ export function buildSketch(script:VideoScript):SketchBoard{
       out+=paths(gen.linearPath(points.map(([x,y])=>[x,y]),{seed:seed(key),stroke,strokeWidth:width,roughness:1.2,bowing:1.4}),opacity);
       const[a,b]=points.slice(-2) as Array<readonly [number,number]>,angle=Math.atan2(b![1]-a![1],b![0]-a![0]);
       out+=paths(gen.linearPath([[b![0]-16*Math.cos(angle-.5),b![1]-16*Math.sin(angle-.5)],[b![0],b![1]],[b![0]-16*Math.cos(angle+.5),b![1]-16*Math.sin(angle+.5)]],{seed:seed(key+'head'),stroke,strokeWidth:width,roughness:1}),opacity);
-      if(edge.label){const mid=points[Math.floor(points.length/2)]!,w=edge.label.length*10+16;
-        out+=`<rect x="${mid[0]-w/2}" y="${mid[1]-15}" width="${w}" height="28" fill="#ffffff" opacity="${opacity}"/><text x="${mid[0]}" y="${mid[1]+6}" font-family="Virgil" font-size="19" text-anchor="middle" fill="${hot?stroke:'#495057'}" opacity="${opacity}">${escapeXml(edge.label)}</text>`;}
+      if(edge.label){const mid=points[Math.floor(points.length/2)]!,w=(edge.label.length*10+16)*ink;
+        out+=`<rect x="${mid[0]-w/2}" y="${mid[1]-15*ink}" width="${w}" height="${28*ink}" fill="#ffffff" opacity="${opacity}"/><text x="${mid[0]}" y="${mid[1]+6*ink}" font-family="Virgil" font-size="${round(19*ink)}" text-anchor="middle" fill="${hot?stroke:'#495057'}" opacity="${opacity}">${escapeXml(edge.label)}</text>`;}
     }
     for(const node of nodes){
       const opacity=fade(appearNode(node.id));if(!opacity)continue;
       const hot=focus.has(node.id),stroke=hot?focusColor:INK,options={seed:seed(node.id),fill:FILL[node.kind]??'#a5d8ff',fillStyle:'hachure',hachureGap:8,hachureAngle:-41,fillWeight:1.4,stroke,strokeWidth:hot?3.6:2,roughness:1.3};
       const x=node.x-node.width/2,y=node.y-node.height/2;
       out+=paths(node.kind==='actor'?gen.ellipse(node.x,node.y,node.width,node.height,options):gen.rectangle(x,y,node.width,node.height,options),opacity);
-      out+=iconMarkup(node.icon,node.x,y+34,30,opacity);
-      out+=`<text x="${node.x}" y="${node.icon?y+node.height-22:node.y+9}" font-family="Virgil" font-size="24" text-anchor="middle" fill="${INK}" opacity="${opacity}">${escapeXml(node.label)}</text>`;
+      // Icon and label shrink with the box, so a wide board never stacks them on top of each other.
+      out+=iconMarkup(node.icon,node.x,y+34*ink,30*ink,opacity);
+      out+=`<text x="${node.x}" y="${node.icon?y+node.height-22*ink:node.y+9*ink}" font-family="Virgil" font-size="${round(24*ink)}" text-anchor="middle" fill="${INK}" opacity="${opacity}">${escapeXml(node.label)}</text>`;
     }
     const note=line?.sketch?.note;
     if(note){

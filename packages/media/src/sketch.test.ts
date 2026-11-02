@@ -37,6 +37,25 @@ describe('sketch board format',()=>{
     // A new element fades in at the start of its line.
     expect(board.markup(1,()=>0)).not.toContain('Redis cache');expect(board.markup(1,()=>160)).toMatch(/Redis cache/);expect(board.markup(1,()=>160)).toContain('opacity="0.5"');
   });
+  it('shrinks icons and labels with a crowded board so they never overlap',()=>{
+    const crowded={...script,sketch:{nodes:[
+      {id:'assets',label:'assets/characters',kind:'store',icon:'folder'},
+      {id:'code',label:'characters.ts',kind:'service',icon:'file-code'},
+      {id:'docker',label:'Dockerfile',kind:'service',icon:'docker'},
+      {id:'lambda',label:'Lambda worker',kind:'service',icon:'server'},
+      {id:'web',label:'Website build',kind:'service',icon:'globe'}],
+      edges:[{from:'code',to:'assets',label:'image path'},{from:'docker',to:'assets',label:'COPY'},{from:'docker',to:'lambda',label:'image'},{from:'web',to:'assets',label:'/characters'}]}} as VideoScript;
+    const markup=buildSketch(crowded).markup(crowded.dialogue.length-1,()=>9999);
+    const sizes=[...markup.matchAll(/font-size="([\d.]+)" text-anchor="middle" fill="#1e1e1e"[^>]*>([^<]+)</g)].map(m=>Number(m[1]));
+    expect(sizes.length).toBeGreaterThan(0);
+    expect(Math.max(...sizes)).toBeLessThan(24);
+    // Each icon ends above the top of its label text.
+    const icons=[...markup.matchAll(/translate\(([\d.-]+) ([\d.-]+)\) scale\(([\d.]+)\)/g)].slice(5).map(m=>({x:Number(m[1])+12*Number(m[3]),bottom:Number(m[2])+24*Number(m[3])}));
+    const labels=[...markup.matchAll(/<text x="([\d.-]+)" y="([\d.-]+)" font-family="Virgil" font-size="([\d.]+)" text-anchor="middle" fill="#1e1e1e"/g)].map(m=>({x:Number(m[1]),top:Number(m[2])-Number(m[3])*0.8}));
+    for(const icon of icons){const label=labels.find(l=>Math.abs(l.x-icon.x)<1);if(label)expect(label.top).toBeGreaterThanOrEqual(icon.bottom-1);}
+  });
+  // The original example keeps its designed text size.
+  it('keeps full-size labels on boards that fit',()=>{expect(buildSketch(script).markup(6,()=>9999)).toContain('font-size="24"');});
   it('composes the board as a centered card over gameplay',async()=>{
     const font=await sketchFont();await expect(fs.stat(font)).resolves.toBeTruthy();
     const svg=renderFrameSvg({segments,words:[],title:script.title,style:'brainrot',durationSeconds:8,format:'sketch',script,sketchBoard:buildSketch(script)},2.2);
