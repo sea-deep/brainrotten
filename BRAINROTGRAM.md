@@ -72,7 +72,7 @@ Sign-in gate ──► Bottom nav:  Home  ·  Search  ·  ( + Studio )  ·  Sess
    - **Questions**: 1–3.
    - A **"N of 5 free videos left"** line from `GET /me`.
    **Generate** sends `POST /videos` with a fresh `requestId` (reuse it if the same submit is retried). Then a progress screen with the job's real `stage` and `progress` (poll every 3 s for 30 s, then every 10 s). The user can leave; a small "Making 1 video" pill stays on Home until it is ready, then a banner "Your video is ready" opens it. `402 QUOTA_EXCEEDED` → "You've used your 5 free videos."
-6. **Profile.** Picture, name, email; quota ring ("3 of 5 left"); a 3-column grid of the user's videos (posters, tap to play in the reel viewer) with a **Saved** tab (`GET /library?review=bookmarked`); **Sign out** (clear storage, open the Cognito logout URL, back to the gate).
+6. **Profile.** Picture, name, email; quota ring ("3 of 5 left"); a 3-column grid of the user's videos (posters, tap to play in the reel viewer) with a **Saved** tab (`GET /library?review=bookmarked`); **Sign out** (clear storage, open the Cognito logout URL, back to the gate). An **About** row shows: “Unofficial, non-commercial fan project. Characters and gameplay belong to their owners; voices are AI clones.” and opens `https://d3sk6lwsh4ufyv.cloudfront.net/credits.html`. The sign-in gate shows the same first sentence in small print.
 
 ### P1 — if P0 is solid
 

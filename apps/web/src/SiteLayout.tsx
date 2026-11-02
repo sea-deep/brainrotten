@@ -60,6 +60,7 @@ export function SiteFooter():React.ReactElement{
       <a className="footer-brand" href="/" aria-label="Brainrotten home"><BrainMark size={44}/><span>brainrotten</span></a>
       <nav className="footer-columns" aria-label="Footer navigation">{FOOTER_LINKS.map(([title,links])=><div key={title}><h2>{title}</h2><ul>{links.map(([label,href])=><li key={href}><a href={href}>{label}</a></li>)}</ul></div>)}</nav>
     </div>
+    <p className="footer-legal">Unofficial, non-commercial fan project. Characters and gameplay belong to their owners; voices are AI clones. Not affiliated with Xilam, Cosmos-Maya, Viacom18, Paperboat or the game studios. <a href="/credits.html">Credits</a> · <a href="/terms.html">Terms</a> · <a href="/privacy.html">Privacy</a></p>
     <div className="footer-bottom"><span>English · Hinglish · Benglish</span><span className="footer-credit">by <mark>the brainrotted</mark></span><a href="#top" onClick={event=>{event.preventDefault();scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}}>Back to top ↑</a></div>
   </footer>;
 }

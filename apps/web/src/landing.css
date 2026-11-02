@@ -113,3 +113,4 @@
 
 /* ---------- Studio: sign in at the moment of generating ---------- */
 .generate-signin{display:grid;gap:10px;justify-items:start}.generate-signin p{margin:0;font-size:13px;color:#62516f}
+.site-footer .footer-legal{margin:40px 0 0;max-width:72ch;font-size:13px;line-height:1.6;color:#c9b8d6}.site-footer .footer-legal a{color:#fffdf9;text-underline-offset:3px}

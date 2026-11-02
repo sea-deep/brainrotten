@@ -44,6 +44,10 @@ Brainrotten turns agent context or a topic into a short explanation: a two-chara
 - `pnpm mcp`: Starts the MCP stdio server bridge.
 
 
+## Credits and disclaimer
+
+Unofficial, non-commercial fan project. The cartoon characters, voices (AI clones) and gameplay footage belong to their owners; see [NOTICE.md](NOTICE.md).
+
 ## Hosted
 
 - Website: https://d3sk6lwsh4ufyv.cloudfront.net (private S3 behind CloudFront)

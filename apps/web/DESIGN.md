@@ -23,3 +23,7 @@ Native video controls, deliberate playback, keyboard-accessible interface tabs, 
 Landing order: hero (copy + gummy bears), a scroll-driven walkthrough, real-session examples (one tab per format), four ways in (MCP, Python, Studio, API), run options, FAQ. The walkthrough pins while the reader scrolls through a tall section; scroll position maps to story time, so each stretch advances one step and scrolling back rewinds. A clickable five-step rail and a caption name the current step. Below 1000px it shows one card at a time. Reduced motion shows the finished state as a normal section.
 
 The header is one row at every width: brand, an account button (hosted: Google sign-in, or avatar plus free videos left) and, on small screens, a menu toggle that opens the links inside the pill. Studio links never force a Google redirect. The footer is a full-width plum band, not a pill: large wordmark, three link columns (Make, Connect, Run), and a thin rule above languages, credit and back to top.
+
+## Legal — 2026-11-02
+
+Every page footer carries a one-line disclaimer (unofficial, non-commercial fan project; characters and gameplay belong to their owners; voices are AI clones) with links to `/credits.html`, `/terms.html` and `/privacy.html`. Full attribution lives in `NOTICE.md`, mirrored on the credits page. This replaces the earlier no-credits rule.
