@@ -20,9 +20,9 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { GenerateVideoInputSchema,GetVideoInputSchema,ValidateVideoScriptInputSchema,LibraryQuerySchema,VideoLibrarySchema,VideoReviewSchema,ScriptValidationSchema,StudioConfigSchema,CAST_MEMBERS,FormatGuideInputSchema,LearningPackSchema,VIDEO_FORMATS } from '@brainrot/contracts';
 import { CharacterGuideInputSchema,ImageSearchInputSchema } from '@brainrot/contracts';
-import {characterGuide,SERVER_INSTRUCTIONS} from '@brainrot/media';
+import {characterGuide,SERVER_INSTRUCTIONS} from '@brainrot/media/agent';
 import {mcpEndpoint} from './endpoint.js';
-import {readAccountProfile,accountAccessToken} from './account.js';
+import {readAccountProfile,accountAccessToken,accountLogin} from './account.js';
 import {CreateLearningSessionSchema,GetSessionInputSchema,PublishSessionLessonSchema,SessionListQuerySchema,SessionDetailSchema,SessionPageSchema,LearningSessionSchema,LearningGuideSchema} from '@brainrot/contracts';
 
 // ── Config ────────────────────────────────────────────────────────────────
@@ -32,9 +32,15 @@ const DATA_DIR =
   process.env['BRAINROT_DATA_DIR'] ??
   path.join(os.homedir(), '.local', 'share', 'brainrot');
 const accountMode=process.argv.includes('--account')||process.env['BRAINROTTEN_CONNECTION']==='account';
-const account=accountMode?readAccountProfile(DATA_DIR):undefined;
-const endpoint=account?{baseUrl:account.apiUrl,remote:true,token:undefined}:mcpEndpoint(process.env,PORT);
+/** Account mode starts even before sign-in, so an agent can install it and then call sign_in itself. */
+function savedAccount(){try{return readAccountProfile(DATA_DIR);}catch{return undefined;}}
+let account=accountMode?savedAccount():undefined;
+const ACCOUNT_API=account?.apiUrl??process.env['BRAINROTTEN_API_URL']??'';
+const LOGIN_HINT=process.env['BRAINROTTEN_LOGIN_HINT']??'pnpm brainrotten login --api-url <API>';
+const endpoint=accountMode?{baseUrl:ACCOUNT_API,remote:true,token:undefined}:mcpEndpoint(process.env,PORT);
 const BASE_URL = endpoint.baseUrl;
+let signIn:{url?:string;error?:unknown}|undefined;
+const notSignedIn=()=>new Error(`Not signed in to Brainrotten. Call the sign_in tool (it opens the user's browser), or run: ${LOGIN_HINT}`);
 
 let startup: Promise<void> | undefined;
 async function ensureCompanion(): Promise<void> {
@@ -92,6 +98,7 @@ async function companionRequest(
 ): Promise<unknown> {
   await ensureCompanion();
   if(endpoint.remote&&urlPath==='/context')throw new Error('Repository evidence is available through the local companion only. Pass your context in the video script.');
+  if(accountMode){account??=savedAccount();if(!account)throw notSignedIn();}
   const token=endpoint.remote?(account?await accountAccessToken(DATA_DIR,BASE_URL):endpoint.token!):localMcpToken();
 
   const response = await fetch(`${BASE_URL}${urlPath}`, {
@@ -141,6 +148,26 @@ function createBrainrotServer(): McpServer {
         `Copy this complete example's structure and replace its content with ours:\n${JSON.stringify(guide.storyExample)}`,
         'Then call validate_video_script, fix every issue, and call generate_short_video once. If you can run Python, use the Brainrotten SDK instead: print(Brainrotten().make_video(request)).'].join('\n\n');
       return{messages:[{role:'user' as const,content:{type:'text' as const,text}}]};
+    });
+  }
+  if(accountMode){
+    // Lets the agent finish setup itself: opens the user's browser for Google sign-in and returns the link at once.
+    server.registerTool('sign_in',{
+      description:'Connect this MCP server to the user\'s Brainrotten account (Google sign-in). Call it when another tool says "Not signed in", or right after installing. It opens the user\'s browser and returns immediately with the sign-in link: show the link to the user in case the browser did not open, ask them to finish signing in, then call sign_in again to confirm. No input.',
+      inputSchema:z.object({}),
+    },async()=>{
+      account??=savedAccount();
+      if(account)return{content:[{type:'text',text:'Signed in to Brainrotten. All tools are ready.'}]};
+      if(!ACCOUNT_API)return{isError:true,content:[{type:'text',text:`No Brainrotten API is configured. Run: ${LOGIN_HINT}`}]};
+      if(signIn?.error){const message=String(signIn.error);signIn=undefined;return{isError:true,content:[{type:'text',text:`${message} Call sign_in again to retry.`}]};}
+      if(!signIn){
+        let resolveUrl:(url:string)=>void=()=>{};const url=new Promise<string>(resolve=>{resolveUrl=resolve;});
+        const state:{url?:string;error?:unknown}={};signIn=state;
+        accountLogin(ACCOUNT_API,DATA_DIR,true,link=>{state.url=link;resolveUrl(link);}).then(()=>{account=savedAccount();signIn=undefined;},error=>{state.error=error;resolveUrl('');});
+        await Promise.race([url,new Promise(resolve=>setTimeout(resolve,15000))]);
+      }
+      if(signIn?.error){const message=String(signIn.error);signIn=undefined;return{isError:true,content:[{type:'text',text:message}]};}
+      return{content:[{type:'text',text:`Opened the browser for Google sign-in. If it did not open, ask the user to open this link and sign in:\n${signIn?.url??'(link not ready yet; call sign_in again)'}\nWhen they are done, call sign_in again to confirm.`}]};
     });
   }
   server.registerTool('get_learning_guide',{

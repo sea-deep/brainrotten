@@ -1,10 +1,14 @@
 import { defineConfig } from 'vite';
+import { readFileSync } from 'node:fs';
 import react from '@vitejs/plugin-react';
 
 // Absolute URL for link previews (og:image); set VITE_SITE_URL when building the public site.
 const siteUrl=(process.env['VITE_SITE_URL']??'').replace(/\/$/,'');
+// Version of the one-command MCP installer published with the site (scripts/build-mcp-package.mjs).
+const mcpVersion=JSON.parse(readFileSync(new URL('../companion/package.json',import.meta.url),'utf8')).version as string;
 
 export default defineConfig({
+  define: {__MCP_VERSION__: JSON.stringify(mcpVersion)},
   plugins: [react(),{name:'site-url',transformIndexHtml:html=>html.replaceAll('__SITE_URL__',siteUrl)}],
   server: {
     // Only allow loopback during development

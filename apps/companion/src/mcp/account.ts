@@ -41,7 +41,7 @@ export async function accountAccessToken(dataDir:string,expectedApiUrl?:string):
   refreshing.set(dataDir,pending);try{return await pending;}finally{refreshing.delete(dataDir);}
 }
 export function removeAccountProfile(dataDir:string){fs.rmSync(file(dataDir),{force:true});}
-export async function accountLogin(api:string,dataDir:string,openBrowser=true):Promise<void>{
+export async function accountLogin(api:string,dataDir:string,openBrowser=true,onUrl?:(url:string)=>void):Promise<void>{
   const apiUrl=accountApiUrl(api),response=await fetch(apiUrl+'/studio/config',{redirect:'error',signal:AbortSignal.timeout(15000)});
   if(!response.ok)throw new Error('Cannot read the hosted sign-in configuration.');
   const config=await response.json() as {auth?:{configured?:boolean;domain?:string;issuer?:string;agentClientId?:string}};
@@ -66,7 +66,7 @@ export async function accountLogin(api:string,dataDir:string,openBrowser=true):P
     const timer=setTimeout(()=>finish(new Error('Sign-in timed out after five minutes.')),300000);
     server.once('error',()=>finish(new Error('The account callback port is unavailable. Close another login attempt and retry.')));
     server.listen(43891,'127.0.0.1',()=>{
-      process.stderr.write('Continue in your browser: '+authorize.toString()+'\n');
+      process.stderr.write('Continue in your browser: '+authorize.toString()+'\n');onUrl?.(authorize.toString());
       if(openBrowser){const command=process.platform==='darwin'?'open':process.platform==='win32'?'explorer':'xdg-open';const child=spawn(command,[authorize.toString()],{stdio:'ignore'});child.on('error',()=>{});child.unref();}
     });
   });

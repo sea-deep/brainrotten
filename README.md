@@ -48,6 +48,14 @@ Brainrotten turns agent context or a topic into a short explanation: a two-chara
 
 Unofficial, non-commercial fan project. The cartoon characters, voices (AI clones) and gameplay footage belong to their owners; see [NOTICE.md](NOTICE.md).
 
+## Install the MCP server (one command)
+
+```bash
+npx -y https://d3sk6lwsh4ufyv.cloudfront.net/install/brainrotten-mcp-0.1.0.tgz setup
+```
+
+It signs you in with Google in the browser and adds Brainrotten to every coding agent it finds (Claude Code, Codex, Cursor, VS Code, Claude Desktop, Windsurf, Kiro, Gemini CLI, OpenCode). Or tell your agent: "Install Brainrotten MCP from https://d3sk6lwsh4ufyv.cloudfront.net/install.md". The current link is always in [install.md](https://d3sk6lwsh4ufyv.cloudfront.net/install.md). Source: `apps/companion/src/standalone`, packed by `scripts/build-mcp-package.mjs` on every site deploy.
+
 ## Hosted
 
 - Website: https://d3sk6lwsh4ufyv.cloudfront.net (private S3 behind CloudFront)
