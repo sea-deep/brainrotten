@@ -4,7 +4,7 @@ Description: Brainrotten authenticated asynchronous video API and five-video tri
 Parameters:
   RuntimeImageUri:
     Type: String
-    Description: ECR URI of cloud/Dockerfile, built for linux/amd64
+    Description: ECR URI of apps/cloud/Dockerfile, built for linux/amd64
   AppOrigin:
     Type: String
     Default: http://localhost:5173
@@ -175,7 +175,7 @@ Resources:
       PackageType: Image
       ImageUri: !Ref RuntimeImageUri
       ImageConfig:
-        Command: [cloud/dist/api.handler]
+        Command: [apps/cloud/dist/api.handler]
       LoggingConfig:
         LogGroup: !Ref ApiLogs
       Policies:
@@ -337,7 +337,7 @@ Resources:
       PackageType: Image
       ImageUri: !Ref RuntimeImageUri
       ImageConfig:
-        Command: [cloud/dist/worker.handler]
+        Command: [apps/cloud/dist/worker.handler]
       Timeout: 900
       MemorySize: 3008
       EphemeralStorage:

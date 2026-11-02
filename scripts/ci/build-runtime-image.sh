@@ -19,12 +19,12 @@ else
   if docker buildx inspect 2>/dev/null | grep -q 'Driver: *docker-container'; then
     # Layer cache kept in ECR (tag "buildcache"): unchanged dependency layers are reused across builds.
     # Single-platform manifest without attestations, which Lambda requires.
-    docker buildx build --platform linux/arm64 -f cloud/Dockerfile -t "$ECR_REPOSITORY:$TAG" \
+    docker buildx build --platform linux/arm64 -f apps/cloud/Dockerfile -t "$ECR_REPOSITORY:$TAG" \
       --cache-from "type=registry,ref=$ECR_REPOSITORY:buildcache" \
       --cache-to "type=registry,ref=$ECR_REPOSITORY:buildcache,mode=max,image-manifest=true,oci-mediatypes=true" \
       --provenance=false --sbom=false --push . >&2
   else
-    docker build --platform linux/arm64 -f cloud/Dockerfile -t "$ECR_REPOSITORY:$TAG" . >&2
+    docker build --platform linux/arm64 -f apps/cloud/Dockerfile -t "$ECR_REPOSITORY:$TAG" . >&2
     docker push "$ECR_REPOSITORY:$TAG" >&2
   fi
   existing="$(digest)"

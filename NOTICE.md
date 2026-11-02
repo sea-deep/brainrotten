@@ -12,15 +12,15 @@ Our own code is separate from this content and is MIT-licensed (see [LICENSE](LI
 | Motu, Patlu, Chingum, Dr Jhatka, Ghasitaram, John | *Motu Patlu* | Cosmos-Maya and Viacom18 (Nickelodeon India); based on characters from *Lotpot* comics (Lotpot Group) |
 | Badri (Badrinath), Budhdev (Budhdeb) | *Bandbudh Aur Budbak* | Paperboat Animation Studio |
 
-The character pictures in `oggy/`, `cockroaches/`, `motupatlu/`, `budbak/` and `apps/web/public/characters/` are cutouts of existing artwork, some cleaned up with an image editor. They are not original designs. The folder READMEs and `*-source.json` files list where each reference came from; those pages do not grant a redistribution licence.
+The character pictures in `assets/characters/` (one folder per show) are cutouts of existing artwork, some cleaned up with an image editor. They are not original designs. The folder READMEs and `*-source.json` files list where each reference came from; those pages do not grant a redistribution licence.
 
 ## Voices
 
-The character voices are **synthetic voice clones** made with ElevenLabs (and an optional local model) from short clips of the series above, listed in each character's `metadata.csv`. The original performances belong to the voice actors and the series' rights holders. Every line a character says in a Brainrotten video is **AI-generated text spoken by a clone**: the original actors did not say it and have not approved it.
+The character voices are **synthetic voice clones** made with ElevenLabs (and an optional local model) from short clips of the series above, listed in each character's `voices/` clip list. The original performances belong to the voice actors and the series' rights holders. Every line a character says in a Brainrotten video is **AI-generated text spoken by a clone**: the original actors did not say it and have not approved it.
 
 ## Gameplay backgrounds
 
-Muted, cropped excerpts used as video backgrounds (details and source links in `apps/companion/assets/gameplay/sources.json`):
+Muted, cropped excerpts used as video backgrounds (details and source links in `assets/gameplay/sources.json`):
 
 | Clip | Game | Game rights holder | Uploader |
 |---|---|---|---|

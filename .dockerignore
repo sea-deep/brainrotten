@@ -10,7 +10,7 @@
 **/*.mp3
 **/*.wav
 **/*.mp4
-!apps/companion/assets/gameplay/*.mp4
+!assets/gameplay/*.mp4
 **/*.sqlite*
 **/session.token
 
@@ -27,3 +27,6 @@
 **/*.ckpt
 **/*secrets*.json
 **/*credentials*.json
+# Only the character cutouts go into the runtime image
+assets/characters/*/voices
+assets/characters/*/references

@@ -17,7 +17,7 @@ export const BACKGROUNDS=[
   {id:'subway-surfers' as const,name:'Subway Surfers'},
   {id:'gta-stunts' as const,name:'GTA Stunts'},
 ];
-export function resolveBackground(background:ValidatedVideoInput['background'],jobId:string,assetDir=path.join(workspaceRoot,'apps/companion/assets/gameplay')):{file:string;name:string;credits:NonNullable<VideoJob['sourceCredits']>}{
+export function resolveBackground(background:ValidatedVideoInput['background'],jobId:string,assetDir=path.join(workspaceRoot,'assets/gameplay')):{file:string;name:string;credits:NonNullable<VideoJob['sourceCredits']>}{
   const selected=background==='auto'?BACKGROUNDS[1+parseInt(jobId.slice(0,2),16)%4]!.id:background;
   if(selected==='auto'||!BACKGROUNDS.some(item=>item.id===selected))throw new GenerationError('Choose one of the supplied gameplay videos.');
   const file=path.join(assetDir,`${selected}.mp4`);

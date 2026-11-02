@@ -32,7 +32,7 @@ const TERMINAL:Array<{at:number;kind:'user'|'agent'|'ok'|'tool';text:string}>=[
 ];
 const HISTORY=[
   {kind:'agent' as const,text:'Live API: Cannot find module \'api\''},
-  {kind:'agent' as const,text:'Adding cloud/lambda-bootstrap.mjs'},
+  {kind:'agent' as const,text:'Adding apps/cloud/lambda-bootstrap.mjs'},
   {kind:'ok' as const,text:'✓ handler loads with Lambda env vars'},
 ];
 const RENDER_STAGES=['Script','Voice','Sketch','Video'];
@@ -96,7 +96,7 @@ export function AgentFlow({heading}:{heading?:React.ReactNode}):React.ReactEleme
         <div className="flow-column">
           <article className={`flow-card flow-diff ${step(1)}`} aria-label="Step 2: code and context">
             <header><span className="flow-num">2</span><h3>Code + context</h3></header>
-            <div className="flow-file" aria-hidden="true"><span>cloud/lambda-bootstrap.mjs</span><span className="flow-diffstat"><b>+4</b></span></div>
+            <div className="flow-file" aria-hidden="true"><span>apps/cloud/lambda-bootstrap.mjs</span><span className="flow-diffstat"><b>+4</b></span></div>
             <pre className="flow-code" aria-hidden="true"><code>
               <span className="is-add">+ const handler = process.argv[2];</span>
               <span className="is-add">+ if (handler) process.env._HANDLER = handler;</span>

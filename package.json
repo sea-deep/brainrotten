@@ -13,7 +13,7 @@
     "dev": "pnpm --filter @brainrot/contracts build && pnpm --filter @brainrot/core build && pnpm --filter @brainrot/media build && pnpm --parallel --filter @brainrot/companion --filter @brainrot/web dev",
     "build": "pnpm --filter @brainrot/contracts build && pnpm --filter @brainrot/core build && pnpm --filter @brainrot/media build && pnpm --filter @brainrot/companion build && node scripts/export-openapi.mjs && pnpm --filter @brainrot/web build && pnpm --filter @brainrot/cloud build",
     "typecheck": "pnpm -r typecheck",
-    "lint": "eslint apps packages cloud eslint.config.js --max-warnings 0",
+    "lint": "eslint apps packages eslint.config.js --max-warnings 0",
     "test": "node --test scripts/release.test.mjs && pnpm -r test",
     "check": "pnpm build && pnpm typecheck && pnpm lint && pnpm test && pnpm test:python",
     "demo:seed": "node apps/companion/dist/cli.js seed",

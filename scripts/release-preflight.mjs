@@ -10,7 +10,7 @@ const check=(label,ok)=>{console.log(`${ok?'OK':'MISSING'}  ${label}`);failed ||
 check('Node 26+',Number(process.versions.node.split('.')[0])>=26);
 check('pnpm',spawnSync('pnpm',['--version'],{stdio:'ignore'}).status===0);
 check('3 approved ElevenLabs examples',JSON.parse(fs.readFileSync(path.join(root,'apps/web/public/examples/index.json'),'utf8')).length===3);
-for(const filename of ['infra/site/template.yaml','infra/sam/template.yaml','cloud/Dockerfile'])check(filename,fs.existsSync(path.join(root,filename)));
+for(const filename of ['infra/site/template.yaml','infra/sam/template.yaml','apps/cloud/Dockerfile'])check(filename,fs.existsSync(path.join(root,filename)));
 if(aws){
   for(const[tool,args]of [['aws',['--version']],['sam',['--version']],['docker',['info']]])check(tool,spawnSync(tool,args,{stdio:'ignore'}).status===0);
   check('AWS account authentication',spawnSync('aws',['sts','get-caller-identity'],{stdio:'ignore'}).status===0);

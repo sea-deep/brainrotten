@@ -23,7 +23,7 @@ async function main(){
     child.on('exit',code=>{process.exitCode=code??1;});return;
   }
   if(command==='doctor'){
-    const checks=[['Node 26+',Number(process.versions.node.split('.')[0])>=26],['Built MCP',Boolean(await fs.stat(path.join(root,'apps/companion/dist/mcp.js')).catch(()=>null))],['FFmpeg',spawnSync('ffmpeg',['-version'],{stdio:'ignore'}).status===0],['Supplied gameplay',Boolean(await fs.stat(path.join(root,'apps/companion/assets/gameplay/sources.json')).catch(()=>null))]];
+    const checks=[['Node 26+',Number(process.versions.node.split('.')[0])>=26],['Built MCP',Boolean(await fs.stat(path.join(root,'apps/companion/dist/mcp.js')).catch(()=>null))],['FFmpeg',spawnSync('ffmpeg',['-version'],{stdio:'ignore'}).status===0],['Supplied gameplay',Boolean(await fs.stat(path.join(root,'assets/gameplay/sources.json')).catch(()=>null))]];
     for(const[name,ok]of checks)console.log(`${ok?'OK':'MISSING'}  ${name}`);
     console.log('No provider calls were made. Configure keys and character voices in local Studio.');
     if(checks.some(([,ok])=>!ok))process.exitCode=1;return;

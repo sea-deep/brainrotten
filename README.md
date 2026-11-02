@@ -92,15 +92,25 @@ flowchart LR
   R --> F[FFmpeg MP4 + learning pack]
 ```
 
-| Part | Where | What it does |
-|---|---|---|
-| Contracts | `packages/contracts` | Zod schemas shared by every client: video requests, formats, jobs, learning packs, sessions |
-| Media engine | `packages/media` | Script checks, voices, frame rendering (Satori + resvg, rough.js sketches) and FFmpeg composition |
-| Local server + MCP | `apps/companion` | Express API on `127.0.0.1:3001`, SQLite, the stdio MCP server and the `brainrotten-mcp` installer |
-| Studio | `apps/web` | React + Vite website: landing page, Studio, docs |
-| Hosted backend | `cloud`, `infra/sam` | AWS Lambda API and worker (container image), SQS, DynamoDB, S3, Cognito |
-| Website hosting | `infra/site` | Private S3 bucket behind CloudFront |
-| Python SDK | `sdk/python` | The MCP tools as Python functions, so agents can do everything in one script |
+```
+apps/
+  companion/     Local server (Express + SQLite on 127.0.0.1:3001), the stdio MCP server and the brainrotten-mcp installer
+  web/           Website and Studio (React + Vite)
+  cloud/         Hosted backend: Lambda API and render worker (container image)
+packages/
+  contracts/     Zod schemas every client shares: requests, formats, jobs, learning packs, sessions
+  core/          Repository evidence and lesson helpers
+  media/         Script checks, voices, frame rendering (Satori + resvg, rough.js) and FFmpeg composition
+sdk/python/      The MCP tools as Python functions
+infra/
+  sam/           API stack: API Gateway, Lambda, SQS, DynamoDB, S3, Cognito
+  site/          Website stack: private S3 bucket behind CloudFront
+  ci/            Keyless GitHub Actions deploy role (OIDC)
+assets/          Third-party characters, voice clip lists and gameplay clips (not MIT, see NOTICE.md)
+scripts/         Build, release and deploy scripts (scripts/ci for the pipeline)
+tools/           Optional local voice model
+examples/        Test fixtures
+```
 
 ### Use it from code
 

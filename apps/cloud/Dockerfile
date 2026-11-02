@@ -10,10 +10,10 @@ COPY packages/core/package.json ./packages/core/package.json
 COPY packages/media/package.json ./packages/media/package.json
 COPY apps/companion/package.json ./apps/companion/package.json
 COPY apps/web/package.json ./apps/web/package.json
-COPY cloud/package.json ./cloud/package.json
+COPY apps/cloud/package.json ./apps/cloud/package.json
 RUN pnpm install --frozen-lockfile
 COPY packages ./packages
-COPY cloud ./cloud
+COPY apps/cloud ./apps/cloud
 RUN pnpm --filter @brainrot/contracts build && pnpm --filter @brainrot/media build && pnpm --filter @brainrot/cloud build
 
 FROM node:26-bookworm-slim
@@ -21,13 +21,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg ca-certi
 WORKDIR /var/task/app
 COPY --from=build /var/task/app /var/task/app
 COPY --from=build /opt/runtime /opt/runtime
-COPY cloud/lambda-bootstrap.mjs /opt/runtime/bootstrap.mjs
+COPY apps/cloud/lambda-bootstrap.mjs /opt/runtime/bootstrap.mjs
 COPY apps/web/public/fonts ./apps/web/public/fonts
-COPY apps/companion/assets/gameplay ./apps/companion/assets/gameplay
-COPY oggy/oggy.png oggy/jack.png ./oggy/
-COPY budbak/badri.png budbak/budhdev.png ./budbak/
-COPY cockroaches/assets ./cockroaches/assets
-COPY motupatlu/assets ./motupatlu/assets
+COPY assets/gameplay ./assets/gameplay
+# Character cutouts only (voice recordings and references stay out via .dockerignore).
+COPY assets/characters ./assets/characters
 ENV BRAINROTTEN_ROOT=/var/task/app BRAINROTTEN_MODE=hosted BRAINROT_SKIP_ENV=1 NPM_CONFIG_CACHE=/tmp/.npm
 ENTRYPOINT ["/usr/local/bin/node", "/opt/runtime/bootstrap.mjs"]
-CMD ["cloud/dist/api.handler"]
+CMD ["apps/cloud/dist/api.handler"]

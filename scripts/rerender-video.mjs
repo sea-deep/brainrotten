@@ -14,7 +14,7 @@ const staging=await fs.mkdtemp(path.join(dir,'.rerender-'));
 const cachedImages=new Map();
 for(const [index,line]of manifest.script.dialogue.entries()){const visuals=line.brollSequence??(line.broll?[line.broll]:[]);for(const[position,visual]of visuals.entries()){if(visual.kind!=='image')continue;const name=visuals.length===1?`broll-${index}.png`:`broll-${index}-${position}.png`;const cue=manifest.broll.find(c=>c.kind==='image'&&c.imageFile===name);if(cue?.imageFile){const file=path.join(dir,cue.imageFile);try{await fs.access(file);cachedImages.set(`${index}:${position}`,file);}catch{/*Fetch the explicitly requested original if its local copy is missing.*/}}}}
 const visuals=record.input.broll?await prepareBroll(manifest.script,voice,staging,cachedImages):{cues:[],credits:[]};
-const sources=JSON.parse(await fs.readFile(path.join(workspaceRoot,'apps/companion/assets/gameplay/sources.json'),'utf8'));
+const sources=JSON.parse(await fs.readFile(path.join(workspaceRoot,'assets/gameplay/sources.json'),'utf8'));
 const credit=manifest.sourceCredits.find(c=>sources.clips.some(s=>s.sourceUrl===c.url));
 const bg=credit?sources.clips.find(s=>s.sourceUrl===credit.url):null;
 const format=manifest.schemaVersion==='BrainrottenPlaybackManifestV3'?manifest.format:'skit';

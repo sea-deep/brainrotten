@@ -33,7 +33,7 @@ apps/web          React player (Vite)
 packages/contracts Zod schemas + inferred types (single source of truth)
 packages/core     business logic (transport-independent)
 packages/media   shared script, clone speech, B-roll and FFmpeg renderer
-cloud/src         JWT-authenticated AWS adapter (not deployed)
+apps/cloud/src         JWT-authenticated AWS adapter (not deployed)
 infra/sam         SAM template (not deployed)
 examples/         fixture repo + example lessons
 .kiro/            specs, steering, skills, hooks, settings
