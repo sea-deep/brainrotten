@@ -1,95 +1,144 @@
+<p align="center">
+  <img src=".github/social-preview.png" alt="Brainrotten: your coding agent's work, explained in a one-minute video" width="840">
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/brainrotten-mcp"><img alt="npm" src="https://img.shields.io/npm/v/brainrotten-mcp?color=684393&label=npm%20brainrotten-mcp"></a>
+  <a href="https://github.com/sea-deep/brainrotten/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/sea-deep/brainrotten/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/code-MIT-30263c"></a>
+  <a href="https://d3sk6lwsh4ufyv.cloudfront.net"><img alt="Website" src="https://img.shields.io/badge/try%20it-website-f0b19b"></a>
+</p>
+
 # Brainrotten
 
-Brainrotten turns agent context or a topic into a short explanation: a two-character skit, a WhatsApp-style group chat where the components (with real icons) text each other, a GitHub-style PR review of the real diff, an Excalidraw-style sketch board, or a TierMaker-style tier list. Any format can pause for a Pause & Predict question. Studio, MCP and the REST API share the same generation pipeline, cloned voices, reference inserts and portable learning packs.
+**AI coding agents change your code faster than you can read it.** Brainrotten turns what your agent just did into a one-minute video you would actually watch: a hand-drawn diagram, two cartoon characters arguing it out, a code review, a ranking, or the parts of your system texting each other. The video stops to ask you what happens next, and ends with a short quiz, so you understand the change instead of just accepting it.
 
-## Requirements
+It works in **English, Hinglish and Benglish**, and the first five videos on the website are free.
 
-- Node.js 26+
-- pnpm 9+
-- FFmpeg and ffprobe installed and available in your `PATH`
+**[Try it on the website](https://d3sk6lwsh4ufyv.cloudfront.net)** · **[Watch the examples](https://d3sk6lwsh4ufyv.cloudfront.net/examples)** · **[Connect your coding agent](#connect-your-coding-agent)**
 
-## Getting Started
+---
 
-1. **Install dependencies:**
-   ```bash
-   pnpm install
-   ```
+## How it works
 
-2. **Configure environment variables:**
-   ```bash
-   cp .env.example .env
-   ```
-   Add your API keys (e.g. `ELEVENLABS_API_KEY`, `GEMINI_API_KEY`) if generating live voice or AI scripts.
+1. **You work with your coding agent as usual** (Claude Code, Codex, Cursor, Kiro, VS Code and others).
+2. **Ask it to explain what it did.** It already knows the change and the reasons, so it writes the script itself and picks the best format.
+3. **Brainrotten draws it, voices it and renders the video** in the background while your agent keeps working.
+4. **You watch it, answer the questions** and keep the notes, transcript and flashcards.
 
-3. **Build the packages:**
-   ```bash
-   pnpm build
-   ```
+## Five ways to explain a change
 
-4. **Start the local app:**
-   ```bash
-   pnpm dev
-   ```
-   The Studio web UI will be accessible at `http://127.0.0.1:3001/studio`.
+Every example below was written by a coding agent about real work in this repository.
 
-## Available Scripts
+| Format | Best for | Example |
+|---|---|---|
+| **Sketch board** | Systems, request paths, bugs across components. An Excalidraw-style diagram builds up, the problem in red, the fix in green. | [Why the Lambda couldn't find its handler](https://d3sk6lwsh4ufyv.cloudfront.net/examples/session-sketch-lambda/video.mp4) |
+| **Character skit** | A concept or a misconception. One character asks, the other explains, with real follow-up questions. | [Signed in, but still "invalid"?](https://d3sk6lwsh4ufyv.cloudfront.net/examples/session-skit-cognito/video.mp4) |
+| **PR review** | A real diff, line by line, as GitHub-style review comments. | [Accept real Cognito pool IDs](https://d3sk6lwsh4ufyv.cloudfront.net/examples/session-prreview-cognito/video.mp4) |
+| **Tier list** | Several options weighed against one rule, ranked S to F. | [Where to host on a new AWS account](https://d3sk6lwsh4ufyv.cloudfront.net/examples/session-tierlist-hosting/video.mp4) |
+| **Group chat** | Parts of a system "talking" in a WhatsApp-style chat. | [Why the first request took 18 seconds](https://d3sk6lwsh4ufyv.cloudfront.net/examples/session-groupchat-coldstart/video.mp4) |
 
-- `pnpm dev`: Starts both the companion server and the Studio web interface with hot-reloading.
-- `pnpm build`: Builds all monorepo packages and applications.
-- `pnpm test`: Runs the test suite across packages.
-- `pnpm typecheck`: Type-checks TypeScript across all packages.
-- `pnpm lint`: Runs ESLint across all projects.
-- `pnpm check`: Runs build, typecheck, lint, and tests.
-- `pnpm verify:e2e`: Builds and verifies the real local MCP/HTTP queue through MP4 rendering, downloads and saved reviews for every current format, with synthetic provider responses and temporary data. No API credits are used. FFmpeg and ffprobe are required. After a build, `node scripts/verify-generation-e2e.mjs --serve` keeps that isolated app open for browser QA; Ctrl+C removes its temporary data.
-- `pnpm mcp`: Starts the MCP stdio server bridge.
+Videos can pause for **Pause & Predict**: the screen asks what happens next, gives you a few seconds to think, then shows the answer.
 
+---
 
-## Credits and disclaimer
+## Get started
 
-Unofficial, non-commercial fan project. The cartoon characters, voices (AI clones) and gameplay footage belong to their owners; see [NOTICE.md](NOTICE.md).
+### On the website
 
-## Install the MCP server (one command)
+Open **[the website](https://d3sk6lwsh4ufyv.cloudfront.net/studio)**, sign in with Google, type a topic or paste an error, pick a format and press Generate. Five videos per account are free.
+
+### Connect your coding agent
+
+Paste this into your terminal (needs [Node.js](https://nodejs.org) 20 or newer):
 
 ```bash
 npx -y brainrotten-mcp@latest setup
 ```
 
-It signs you in with Google in the browser and adds Brainrotten to every coding agent it finds (Claude Code, Codex, Cursor, VS Code, Claude Desktop, Windsurf, Kiro, Gemini CLI, OpenCode). Or tell your agent: "Install Brainrotten MCP from https://d3sk6lwsh4ufyv.cloudfront.net/install.md". Published on npm as [`brainrotten-mcp`](https://www.npmjs.com/package/brainrotten-mcp); the site also serves the same package at `/install/brainrotten-mcp-<version>.tgz`. Source: `apps/companion/src/standalone`, packed by `scripts/build-mcp-package.mjs` on every site deploy.
+It opens Google sign-in in your browser, then adds Brainrotten to every coding agent on your computer: **Claude Code, Codex, Cursor, VS Code, Claude Desktop, Windsurf, Kiro, Gemini CLI and OpenCode**. Your other settings are kept, with a backup of every file it changes. Restart your agent, then ask:
 
-## Hosted
+> Explain what we just did as a Brainrotten video.
 
-- Website: https://d3sk6lwsh4ufyv.cloudfront.net (private S3 behind CloudFront)
-- API: https://fqfewiusg8.execute-api.ap-south-1.amazonaws.com/api/v1 (OpenAPI at `/openapi.json`)
-- Sign-in: Google through Amazon Cognito. Five free hosted videos per account.
-- Coding agents: `pnpm brainrotten login --api-url <API>` then `pnpm brainrotten mcp --account`.
-- Android: see [ANDROID-INTEGRATION.md](ANDROID-INTEGRATION.md).
+Prefer not to touch the terminal? Tell your agent: *"Install Brainrotten MCP from https://d3sk6lwsh4ufyv.cloudfront.net/install.md"*. It can do the whole setup, including signing you in.
 
-## Deploy pipeline
+<details>
+<summary>More installer commands</summary>
 
-GitHub Actions (`.github/workflows`) runs `pnpm check` on every push and pull request. On `main`:
+| Command | What it does |
+|---|---|
+| `npx -y brainrotten-mcp@latest setup --client cursor,codex` | Only set up the agents you name |
+| `npx -y brainrotten-mcp@latest status` | Shows your account, free videos left and the agents found |
+| `npx -y brainrotten-mcp@latest uninstall` | Removes Brainrotten from your agents' settings |
 
-- Website changes deploy automatically to S3 + CloudFront and are smoke-tested (`scripts/ci/deploy-site.sh`).
-- Backend changes build the arm64 Lambda image and push it to ECR. Nothing goes live until you run **Actions → Deploy backend → Run workflow**, which deploys the API stack and smoke-tests it (`scripts/ci/deploy-backend.sh`).
+On a machine without a browser, add `--no-login`; your agent can then call the `sign_in` tool, which gives you a link to open anywhere.
+</details>
 
-GitHub signs in to AWS with OIDC (`infra/ci/template.yaml`): no AWS keys are stored in GitHub. One-time setup: `scripts/ci/bootstrap.sh` with admin AWS credentials and a `gh` login.
+---
 
-## Learning sessions
+## For developers
 
-An agent can save what it changed and why as a learning **session**, then publish a lesson for it. The learner predicts (or skips), watches, answers, practises a small transfer task and reflects in Studio under "Learn from your agent". MCP tools: `get_learning_guide`, `record_learning_session`, `list_learning_sessions`, `get_learning_session`, `publish_session_lesson`. Learner responses can only be written by the learner, never by the agent token. For a hosted account, run `pnpm brainrotten login --api-url …` once and start MCP with `--account`. [Session API](docs/CLIENT-INTEGRATION.md#learning-sessions-openapi-13) · [Account connection](docs/MCP-SETUP.md#hosted-account-connection-recommended).
+### What's inside
 
-## Video formats and learning packs
+```mermaid
+flowchart LR
+  A[Coding agent] -- MCP / Python SDK --> B[Brainrotten API]
+  S[Studio website] -- REST --> B
+  P[Android app] -- REST --> B
+  B -- queue --> W[Render worker]
+  W --> T[Script check]
+  W --> V[ElevenLabs voices]
+  W --> R[Satori + resvg frames]
+  R --> F[FFmpeg MP4 + learning pack]
+```
 
-Choose `skit`, `casefile`, `whiteboard` or `pov` in Studio. MCP clients call `get_video_formats` for each format’s contract and `list_video_voices` for actual readiness. Complete agent-written scripts bypass the script model; optional quizzes are supplied in that same script. Topic generation can request 0–3 review questions without a separate model call.
+| Part | Where | What it does |
+|---|---|---|
+| Contracts | `packages/contracts` | Zod schemas shared by every client: video requests, formats, jobs, learning packs, sessions |
+| Media engine | `packages/media` | Script checks, voices, frame rendering (Satori + resvg, rough.js sketches) and FFmpeg composition |
+| Local server + MCP | `apps/companion` | Express API on `127.0.0.1:3001`, SQLite, the stdio MCP server and the `brainrotten-mcp` installer |
+| Studio | `apps/web` | React + Vite website: landing page, Studio, docs |
+| Hosted backend | `cloud`, `infra/sam` | AWS Lambda API and worker (container image), SQS, DynamoDB, S3, Cognito |
+| Website hosting | `infra/site` | Private S3 bucket behind CloudFront |
+| Python SDK | `sdk/python` | The MCP tools as Python functions, so agents can do everything in one script |
 
-New completed videos include chapters, a quiz with replay links when requested, a transcript, `learning.json`, `notes.md` and `captions.srt`. Studio saves watch position, bookmarks and graded answers through the shared API. Local state belongs to this installation; hosted state belongs to the authenticated account. Studio can import complete agent requests and check scripts without a model or speech call. Saved V2 videos remain playable. [Format and API contract](docs/VIDEO-FORMATS.md) · [MCP setup](docs/MCP-SETUP.md).
+### Use it from code
 
+- **REST API:** `https://fqfewiusg8.execute-api.ap-south-1.amazonaws.com/api/v1` with a Cognito access token. OpenAPI spec at [`/openapi.json`](https://fqfewiusg8.execute-api.ap-south-1.amazonaws.com/api/v1/openapi.json); every format's rules and a complete example at `GET /formats/guide?format=sketch`.
+- **Python SDK:** `pip install ./sdk/python`, then `Brainrotten(account=True).make_video(request)` validates, generates, waits and returns a small summary. See [sdk/python/README.md](sdk/python/README.md).
+- **Mobile:** [ANDROID-INTEGRATION.md](ANDROID-INTEGRATION.md) covers sign-in and every endpoint; [BRAINROTGRAM.md](BRAINROTGRAM.md) is the full spec for the BrainRotGram Android app.
 
-The shared API now includes `/library`, `/videos/validate` and `/videos/{jobId}/review`. MCP adds `list_videos`, `validate_video_script` and `get_video_review`. Study packs include flashcards; CSV, MP3, SRT, JSON and Markdown outputs are available without another inference request. [Client integration and review contract](docs/CLIENT-INTEGRATION.md).
+### Run it locally
 
-## Credits
+You need Node.js 26+, pnpm 9+ and FFmpeg.
 
-Group chat emoji use [Twemoji](https://github.com/jdecked/twemoji) graphics by Twitter, Inc. and contributors, licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/), via the MIT-licensed `@twemoji/svg` package. Sketch boards use the [Virgil](https://github.com/excalidraw/virgil) font (OFL-1.1, Ellinor Rapp), [rough.js](https://github.com/rough-stuff/rough) (MIT) and [dagre](https://github.com/dagrejs/dagre) (MIT). Member icons come from [Lucide](https://lucide.dev) (ISC) and [Simple Icons](https://simpleicons.org) (CC0; brand logos remain their owners' trademarks). Chat panels are laid out with [Satori](https://github.com/vercel/satori) (MPL-2.0).
+```bash
+pnpm install
+cp .env.example .env      # add ELEVENLABS_API_KEY and a script provider key (Gemini or Paper)
+pnpm build
+pnpm dev                  # Studio at http://127.0.0.1:3001/studio
+```
 
-## License
+| Command | What it does |
+|---|---|
+| `pnpm check` | Build, type-check, lint and every test (TypeScript and Python) |
+| `pnpm verify:e2e` | Renders a real MP4 in every format through the MCP and HTTP paths, with fake providers (no API credits) |
+| `pnpm mcp` | The MCP server against your local Studio |
 
-Code: [MIT](LICENSE). Third-party characters, voices, footage and fonts are not covered; see [NOTICE.md](NOTICE.md).
+Tests never call paid services or use real keys.
+
+### Deploys and releases
+
+Every push and pull request runs the checks in GitHub Actions. On `main`, website changes go live automatically in about four minutes. Backend changes build the Lambda image straight away and go live when you run **Actions → Deploy backend** (about 20 seconds for code-only changes). GitHub signs in to AWS with OIDC, so no AWS keys are stored in the repository. One-time setup: `scripts/ci/bootstrap.sh`.
+
+To release the installer, bump the version in `apps/companion/package.json` and run **Actions → Release MCP package**. It publishes `brainrotten-mcp` to npm with provenance, mirrors it to GitHub Packages and creates a GitHub Release.
+
+---
+
+## Credits and license
+
+Brainrotten is an **unofficial, non-commercial fan project**. The cartoon characters (from *Oggy and the Cockroaches*, *Motu Patlu* and *Bandbudh Aur Budbak*) and the gameplay footage belong to their owners, and the character voices are AI clones: the original actors did not say these lines. Full credits, including fonts, icons and emoji, are in [NOTICE.md](NOTICE.md).
+
+The code is released under the [MIT License](LICENSE). That license does not cover the third-party characters, voices, footage or fonts.
+
+Questions and ideas: [Discussions](https://github.com/sea-deep/brainrotten/discussions).
