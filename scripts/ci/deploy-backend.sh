@@ -14,6 +14,31 @@ done
 ORIGIN="$(aws cloudformation describe-stacks --region "$AWS_REGION" --stack-name "$SITE_STACK" --query "Stacks[0].Outputs[?OutputKey=='SiteUrl'].OutputValue" --output text)"
 [[ "$ORIGIN" == https://* ]] || { echo "Deploy the site stack first ($SITE_STACK has no SiteUrl)." >&2; exit 1; }
 
+# Fast path: when the template and every setting except the image are already live, swap the image on the two
+# Lambda functions directly (about 20 seconds) instead of a full CloudFormation update (about 2 minutes).
+TEMPLATE_SHA="$(node -e 'process.stdout.write(require("crypto").createHash("sha256").update(require("fs").readFileSync("infra/sam/template.yaml")).digest("hex").slice(0,16))')"
+fast_path() {
+  [[ "${FORCE_FULL_DEPLOY:-}" == "1" ]] && return 1
+  # Every full deploy tags the stack with a fingerprint of the template it applied.
+  local live
+  live="$(aws cloudformation describe-stacks --region "$AWS_REGION" --stack-name "$API_STACK" --query "Stacks[0].Tags[?Key=='TemplateSha'].Value | [0]" --output text 2>/dev/null)" || return 1
+  [[ "$live" == "$TEMPLATE_SHA" ]] || { echo "Template changed: full deploy." >&2; return 1; }
+  local expected="AppOrigin=$ORIGIN CognitoDomainPrefix=$COGNITO_DOMAIN_PREFIX GoogleClientId=$GOOGLE_CLIENT_ID GoogleOAuthSecretArn=$GOOGLE_OAUTH_SECRET_ARN ProviderSecretArn=$PROVIDER_SECRET_ARN EnableHostedTrial=$ENABLE_HOSTED_TRIAL"
+  local actual
+  actual="$(aws cloudformation describe-stacks --region "$AWS_REGION" --stack-name "$API_STACK" --query 'Stacks[0].Parameters' --output json | node -e '
+    const params=JSON.parse(require("fs").readFileSync(0,"utf8")),value=k=>(params.find(p=>p.ParameterKey===k)||{}).ParameterValue;
+    console.log(["AppOrigin","CognitoDomainPrefix","GoogleClientId","GoogleOAuthSecretArn","ProviderSecretArn","EnableHostedTrial"].map(k=>k+"="+value(k)).join(" "));')"
+  [[ "$actual" == "$expected" ]] || { echo "Settings changed: full deploy." >&2; return 1; }
+  for logical in ApiFunction Worker; do
+    local name
+    name="$(aws cloudformation describe-stack-resource --region "$AWS_REGION" --stack-name "$API_STACK" --logical-resource-id "$logical" --query 'StackResourceDetail.PhysicalResourceId' --output text)" || return 1
+    aws lambda update-function-code --region "$AWS_REGION" --function-name "$name" --image-uri "$IMAGE" --query 'LastUpdateStatus' --output text >/dev/null || return 1
+    aws lambda wait function-updated-v2 --region "$AWS_REGION" --function-name "$name" || return 1
+    echo "Updated $logical ($name) to $IMAGE" >&2
+  done
+}
+
+if fast_path; then echo "Code-only change: updated the Lambda images directly." >&2; else
 sam deploy \
   --template-file infra/sam/template.yaml \
   --stack-name "$API_STACK" \
@@ -30,7 +55,9 @@ sam deploy \
     "GoogleClientId=$GOOGLE_CLIENT_ID" \
     "GoogleOAuthSecretArn=$GOOGLE_OAUTH_SECRET_ARN" \
     "ProviderSecretArn=$PROVIDER_SECRET_ARN" \
-    "EnableHostedTrial=$ENABLE_HOSTED_TRIAL"
+    "EnableHostedTrial=$ENABLE_HOSTED_TRIAL" \
+  --tags "TemplateSha=$TEMPLATE_SHA"
+fi
 
 API="$(aws cloudformation describe-stacks --region "$AWS_REGION" --stack-name "$API_STACK" --query "Stacks[0].Outputs[?OutputKey=='ApiBaseUrl'].OutputValue" --output text)"
 # Smoke test: the public endpoints answer and protected ones still require sign-in.

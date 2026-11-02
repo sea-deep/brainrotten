@@ -30,12 +30,18 @@ done
 aws s3 sync "$DIST" "s3://$BUCKET" --region "$AWS_REGION" --exclude '*' --include '*.html' --cache-control 'no-cache' --content-type 'text/html; charset=utf-8' --only-show-errors
 aws s3 sync "$DIST" "s3://$BUCKET" --region "$AWS_REGION" --delete --only-show-errors
 
+# HTML, the example index and the install files are no-cache and every asset name is hashed, so the deploy
+# does not wait for the invalidation to finish; the smoke test below retries briefly instead.
 INVALIDATION="$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION" --paths '/index.html' '/' '/examples/index.json' '/install.md' '/llms.txt' '/install/brainrotten-mcp.tgz' --query 'Invalidation.Id' --output text)"
-aws cloudfront wait invalidation-completed --distribution-id "$DISTRIBUTION" --id "$INVALIDATION"
+echo "CloudFront invalidation $INVALIDATION started."
 
 # Smoke test the live routes.
 for path in / /studio /mcp /examples/index.json /og.png /install.md /install/brainrotten-mcp.tgz; do
-  code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$SITE_URL$path")"
+  for attempt in 1 2 3 4 5 6; do
+    code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$SITE_URL$path")"
+    [[ "$code" == 200 ]] && break
+    sleep 5
+  done
   [[ "$code" == 200 ]] || { echo "$SITE_URL$path returned $code" >&2; exit 1; }
 done
 echo "Site live at $SITE_URL"

@@ -134,6 +134,10 @@ Resources:
                 Effect: Allow
                 Action: ecr:GetAuthorizationToken
                 Resource: '*'
+              - Sid: CodeOnlyDeploys
+                Effect: Allow
+                Action: [lambda:UpdateFunctionCode, lambda:GetFunction, lambda:GetFunctionConfiguration]
+                Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ApiStackName}-*
               - Sid: SiteCache
                 Effect: Allow
                 Action: [cloudfront:CreateInvalidation, cloudfront:GetInvalidation]
