@@ -26,7 +26,8 @@ else
       --cache-to "type=registry,ref=$ECR_REPOSITORY:buildcache,mode=max,image-manifest=true,oci-mediatypes=true" \
       --provenance=false --sbom=false --push . >&2
   else
-    docker build --platform linux/arm64 -f apps/cloud/Dockerfile -t "$ECR_REPOSITORY:$TAG" . >&2
+    # No provenance or SBOM attestations: Lambda only accepts a plain single-platform image manifest.
+    docker build --platform linux/arm64 --provenance=false --sbom=false -f apps/cloud/Dockerfile -t "$ECR_REPOSITORY:$TAG" . >&2
     docker push "$ECR_REPOSITORY:$TAG" >&2
   fi
   existing="$(digest)"
