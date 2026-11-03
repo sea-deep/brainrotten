@@ -59,7 +59,7 @@ export const geminiProvider:ScriptProvider={
     return raw;
   },
 };
-/** Auto selects by registry order. An explicit choice never falls back. */
+/** Auto tries these in order (see withScriptFallback). An explicit choice never falls back. */
 export const SCRIPT_PROVIDERS:ScriptProvider[]=[geminiProvider,paperProvider];
 export function scriptProviderPreference():NonNullable<ValidatedVideoInput['scriptProvider']>{
   loadStudioEnv();let value:unknown=process.env['BRAINROTTEN_SCRIPT_PROVIDER']??'auto';
@@ -69,5 +69,21 @@ export function scriptProviderPreference():NonNullable<ValidatedVideoInput['scri
 export function saveScriptProvider(provider:NonNullable<ValidatedVideoInput['scriptProvider']>):void{
   if(process.env['BRAINROTTEN_MODE']==='hosted')throw new GenerationError('Script provider settings are local-only.');
   ScriptProviderPreferenceSchema.parse(provider);fs.mkdirSync(localDataDir(),{recursive:true,mode:0o700});fs.writeFileSync(path.join(localDataDir(),'script-provider.json'),JSON.stringify({provider}),{mode:0o600});
+}
+/** Configured providers to try, in order: every configured one for auto, only the chosen one otherwise. */
+export function scriptProviderChain(preference=scriptProviderPreference()):ScriptProvider[]{return SCRIPT_PROVIDERS.filter(provider=>(preference==='auto'||provider.id===preference)&&provider.isConfigured());}
+/**
+ * Runs one script attempt per provider in the chain until one succeeds. In auto mode a failed or invalid Gemini
+ * script falls back to Paper (and so on); an explicitly chosen provider never falls back. Throws the last error.
+ */
+export async function withScriptFallback<T>(preference:ValidatedVideoInput['scriptProvider']|undefined,attempt:(provider:ScriptProvider)=>Promise<T>):Promise<T>{
+  const chain=scriptProviderChain(preference??scriptProviderPreference());
+  if(!chain.length)throw new GenerationError('Add the selected Gemini/Paper key in Settings or .env, choose a configured script provider, or provide a complete script through MCP.');
+  let last:unknown;
+  for(const provider of chain){
+    try{return await attempt(provider);}
+    catch(error){last=error;if(provider!==chain.at(-1))console.warn(`[brainrotten] ${provider.name} script failed (${error instanceof Error?error.message:'unknown error'}); trying ${chain[chain.indexOf(provider)+1]!.name}.`);}
+  }
+  throw last;
 }
 export function activeScriptProvider(preference=scriptProviderPreference()):ScriptProvider|undefined{return SCRIPT_PROVIDERS.find(provider=>(preference==='auto'||provider.id===preference)&&provider.isConfigured());}
