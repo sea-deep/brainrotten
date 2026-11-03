@@ -112,7 +112,7 @@ examples/        Test fixtures
 
 - **REST API:** `https://fqfewiusg8.execute-api.ap-south-1.amazonaws.com/api/v1` with a Cognito access token. OpenAPI spec at [`/openapi.json`](https://fqfewiusg8.execute-api.ap-south-1.amazonaws.com/api/v1/openapi.json); every format's rules and a complete example at `GET /formats/guide?format=sketch`.
 - **Python SDK:** `pip install ./sdk/python`, then `Brainrotten(account=True).make_video(request)` validates, generates, waits and returns a small summary. See [sdk/python/README.md](sdk/python/README.md).
-- **Mobile:** [ANDROID-INTEGRATION.md](ANDROID-INTEGRATION.md) covers sign-in and every endpoint; [BRAINROTGRAM.md](BRAINROTGRAM.md) is the full spec for the BrainRotGram Android app.
+- **Mobile:** [ANDROID-INTEGRATION.md](ANDROID-INTEGRATION.md) covers sign-in and every endpoint; [BRAINROTGRAM.md](BRAINROTGRAM.md) is the full spec for the BrainRotGram Android app. The app itself lives in a separate repository; `pnpm app:sync` keeps a read-only clone in `../brainrotgram` and checks every API call and sign-in setting it uses against the live backend.
 
 ### Run it locally
 
