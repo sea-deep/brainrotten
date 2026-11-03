@@ -159,3 +159,12 @@ describe('hosted worker speech protection and lifecycle',()=>{
     );
   });
 });
+
+describe('job telemetry',()=>{
+  it('writes one CloudWatch metric line with the outcome and the user-facing error',async()=>{
+    const {jobTelemetry}=await import('./worker.js');
+    const line=JSON.parse(jobTelemetry({jobId:'j1',format:'skit',ok:false,stage:'scripting',jobSeconds:12.4,queueWaitSeconds:3.6,error:'Gemini script request failed (HTTP 503).'}));
+    expect(line._aws.CloudWatchMetrics[0].Namespace).toBe('Brainrotten');
+    expect(line).toMatchObject({Format:'skit',JobFailed:1,JobSucceeded:0,JobSeconds:12,QueueWaitSeconds:4,outcome:'failed',error:'Gemini script request failed (HTTP 503).'});
+  });
+});

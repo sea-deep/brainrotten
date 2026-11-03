@@ -114,3 +114,13 @@ describe('repair loop for smaller models',()=>{
 describe('text glyphs',()=>{
   it('renders arrows the font lacks as ASCII instead of blanks',()=>{expect(plainArrows('path badal diya → app/cloud ⇒ done ➡️')).toBe('path badal diya -> app/cloud => done ->');});
 });
+
+describe('model-written icons that no icon set has',()=>{
+  it('gives people a generic icon and drops optional ones instead of failing',async()=>{
+    const {dropUnknownIcons}=await import('./providers.js');
+    const raw={chat:{members:[{icon:'git'},{icon:'locked-bathroom-door'}]},sketch:{nodes:[{id:'a',icon:'database'},{id:'b',icon:'oggy knocks on the door'}]}};
+    expect(dropUnknownIcons(raw)).toBe(2);
+    expect(raw.chat.members.map(member=>member.icon)).toEqual(['git','user']);
+    expect(raw.sketch.nodes[1]).not.toHaveProperty('icon');expect(raw.sketch.nodes[0]!.icon).toBe('database');
+  });
+});

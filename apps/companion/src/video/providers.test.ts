@@ -73,11 +73,12 @@ describe('agent-authored and Paper-authored scripts', () => {
     '{invalid-json',
     JSON.stringify({ ...script, dialogue: [] }),
     JSON.stringify({ ...script, question: { ...script.question, answer: 3 } }),
-  ])('rejects invalid returned content before synthesis can begin', async (content) => {
-    fetchMock.mockResolvedValueOnce(Response.json({ choices: [{ message: { content } }] }));
+  ])('rejects invalid returned content before synthesis can begin, after one repair attempt', async (content) => {
+    const reply = () => Response.json({ choices: [{ message: { content } }] });
+    fetchMock.mockResolvedValueOnce(reply()).mockResolvedValueOnce(reply());
     await expect(createScript(GenerateVideoInputSchema.parse({ prompt: 'Explain retry budgets' })))
-      .rejects.toThrow('did not match the selected cast or script contract');
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+      .rejects.toThrow('did not match the script contract after one repair attempt');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it('reports a missing completion instead of fabricating a lesson', async () => {

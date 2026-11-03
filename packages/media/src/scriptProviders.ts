@@ -47,7 +47,7 @@ export const geminiProvider:ScriptProvider={
     const jsonSchema={...schema};delete jsonSchema['$schema'];
     let response:Response;
     try{response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,{
-      method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},signal:AbortSignal.timeout(120000),
+      method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},signal:AbortSignal.timeout(Number(process.env['GEMINI_TIMEOUT_MS'])||60000),
       body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:'user',parts:[{text:user}]}],generationConfig:{maxOutputTokens:16384,responseFormat:{text:{mimeType:'APPLICATION_JSON',schema:jsonSchema}}}}),
     });}catch{throw new GenerationError('Gemini script request did not complete. Retry explicitly or submit an agent-written script.');}
     if(!response.ok)throw new GenerationError(`Gemini script request failed (HTTP ${response.status}). ${[401,403].includes(response.status)?'Check the API key and its permissions.':response.status===429?'Check the API quota or rate limit.':response.status===404?'Check GEMINI_MODEL and model access.':'Retry explicitly or submit an agent-written script.'}`);
