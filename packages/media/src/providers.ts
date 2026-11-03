@@ -13,7 +13,7 @@ import {unknownChatIcons,GENERIC_CHAT_ICONS,BRAND_CHAT_ICON_EXAMPLES} from './ch
 import {activeScriptProvider} from './scriptProviders.js';
 export {GenerationError} from './generationError.js';
 import {speechBackend,localVoiceReady,localReferenceReady,synthesizeLocal} from './localVoice.js';
-import {deliveryText,deliverySettings,dialogueRequest,VOICE_CONTROL_TOKEN} from './voiceDelivery.js';
+import {deliveryText,deliverySettings,dialogueRequest,SPEECH_MODEL,VOICE_CONTROL_TOKEN} from './voiceDelivery.js';
 const execFileAsync=promisify(execFile);
 export type Speaker=CharacterId;
 export interface Voice{id:string;name:string;role:Speaker;description:string}
@@ -204,7 +204,7 @@ async function durationOf(file:string):Promise<number>{
 }
 async function voiceChunk(dialogue:VideoScript['dialogue'],voiceIds:Record<CharacterId,string>,input:ValidatedVideoInput,dataDir:string,key:string):Promise<VoiceResult>{
   const settings=deliverySettings(input);
-  const hash=createHash('sha256').update(JSON.stringify({dialogue:dialogue.map(line=>({speaker:line.speaker,text:deliveryText(line)})),voiceIds,language:input.language,model:'eleven_v3',...(settings?{settings}:{})})).digest('hex');
+  const hash=createHash('sha256').update(JSON.stringify({dialogue:dialogue.map(line=>({speaker:line.speaker,text:deliveryText(line)})),voiceIds,language:input.language,model:SPEECH_MODEL,...(settings?{settings}:{})})).digest('hex');
   const dir=path.join(dataDir,'voice-cache-v2',hash);await fs.mkdir(dir,{recursive:true,mode:0o700});
   const audioPath=path.join(dir,'audio.mp3'),timingPath=path.join(dir,'timing.json');
   try{const timing=JSON.parse(await fs.readFile(timingPath,'utf8')) as Omit<VoiceResult,'audioPath'>&{timingVersion?:number};await fs.access(audioPath);if(timing.timingVersion===2)return{...timing,audioPath};}catch{/*no completed synthesis*/}
@@ -222,7 +222,7 @@ async function voiceChunk(dialogue:VideoScript['dialogue'],voiceIds:Record<Chara
       const rejection=await response.json().catch(()=>({})) as{detail?:{param?:string}};
       await fs.writeFile(path.join(dir,'rejection.json'),JSON.stringify(rejection).replaceAll(key,'[redacted]'),{mode:0o600});
       if(response.status<500)await fs.rm(path.join(dir,'requested'),{force:true});
-      if(rejection.detail?.param==='settings')throw new GenerationError('ElevenLabs rejected these voice delivery settings. Use a supported stability mode.',response.status>=500);
+      if(rejection.detail?.param==='settings')throw new GenerationError('ElevenLabs rejected these voice delivery settings. Use a supported voice mode.',response.status>=500);
       throw new GenerationError(`ElevenLabs speech request failed (${response.status}). ${response.status===401?'Check your key.':response.status===402||response.status===429?'Check credits and rate limits.':'Check access to the cloned voices.'}`,response.status>=500);
     }
     payload=await response.json() as NonNullable<typeof payload>;
