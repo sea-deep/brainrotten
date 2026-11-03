@@ -39,14 +39,50 @@ const IconSchema=z.string().trim().regex(/^[A-Za-z0-9 .+-]{1,60}$/).describe('A 
 /** Reactions a member can tap under a chat message. A fixed set keeps rendering reliable. */
 export const ChatReactionSchema=z.enum(['😂','💀','😭','👍','🔥','😳','🙏','❤️','🤡','👀']);
 const EMOJI=/\p{Extended_Pictographic}/u;
+export const CHAT_CODE_ROWS=8,CHAT_CODE_COLUMNS=34;
 /** Per-message group-chat options. Spoken text stays speakable; display is what the bubble shows. */
 export const ChatLineSchema=z.object({
   display:z.string().trim().min(1).max(200).optional().describe('Texting-style bubble text (slang, emoji, lowercase). Defaults to the spoken text.'),
   reaction:ChatReactionSchema.optional().describe('One reaction tapped under this message by another member.'),
   code:z.string().min(1).max(320).optional().describe('A short code snippet sent as its own monospace bubble right after the text. At most 8 lines, 34 columns.'),
 }).superRefine((chat,ctx)=>{
-  if(chat.code){const rows=chat.code.split('\n');if(rows.length>8||rows.some(row=>row.length>34))ctx.addIssue({code:'custom',path:['code'],message:'Keep chat code to 8 lines of at most 34 characters so it stays readable on a phone'});}
+  if(chat.code){const rows=chat.code.split('\n');if(rows.length>CHAT_CODE_ROWS||rows.some(row=>row.length>CHAT_CODE_COLUMNS))ctx.addIssue({code:'custom',path:['code'],message:'Keep chat code to 8 lines of at most 34 characters so it stays readable on a phone'});}
 });
+/**
+ * Fits a chat code bubble into CHAT_CODE_ROWS x CHAT_CODE_COLUMNS: long lines wrap at a space or punctuation
+ * (continuations indented two more spaces), unbreakable runs are cut with "…", and extra rows end in "…".
+ * Returns the code unchanged when it already fits.
+ */
+export function fitChatCode(code:string):string{
+  const rows=code.replace(/\t/g,'  ').split('\n').map(row=>row.trimEnd());
+  while(rows.length&&!rows.at(-1))rows.pop();
+  if(rows.length<=CHAT_CODE_ROWS&&rows.every(row=>row.length<=CHAT_CODE_COLUMNS))return rows.join('\n')||code;
+  const out:string[]=[];
+  for(const row of rows){
+    const indent=row.match(/^\s*/)![0];let rest=row;
+    while(rest.length>CHAT_CODE_COLUMNS){
+      const window=rest.slice(0,CHAT_CODE_COLUMNS+1);
+      // Prefer a space or a comma/bracket; split inside a dotted name only when nothing else fits.
+      const soft=Math.max(window.lastIndexOf(' '),...[',','(','{','[',';'].map(mark=>window.lastIndexOf(mark)+1));
+      const cut=soft>indent.length+2?soft:window.lastIndexOf('.')+1;
+      if(cut<=indent.length+2){out.push(rest.slice(0,CHAT_CODE_COLUMNS-1)+'…');rest='';break;}
+      out.push(rest.slice(0,cut).trimEnd());
+      rest=(indent+'  '+rest.slice(cut).trimStart()).slice(0,400);
+      if(rest.trim()==='')rest='';
+    }
+    if(rest)out.push(rest);
+  }
+  if(out.length>CHAT_CODE_ROWS){out.length=CHAT_CODE_ROWS-1;out.push('…');}
+  return out.join('\n');
+}
+/** Applies fitChatCode to every chat code bubble in raw (unparsed) script JSON, before schema validation. */
+export function fitChatCodeInRawScript(raw:unknown):number{
+  let fitted=0;
+  const dialogue=(raw as {dialogue?:unknown})?.dialogue;
+  if(Array.isArray(dialogue))for(const line of dialogue){const chat=(line as {chat?:{code?:unknown}})?.chat;
+    if(chat&&typeof chat.code==='string'){const next=fitChatCode(chat.code);if(next!==chat.code){chat.code=next;fitted++;}}}
+  return fitted;
+}
 export const GroupChatSchema=z.object({
   title:z.string().trim().min(1).max(32).describe('Group name, e.g. "checkout-prod 💀"'),
   members:z.array(z.object({
