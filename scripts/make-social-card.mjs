@@ -10,7 +10,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const require=createRequire(path.join(root,'packages/media/package.json'));
 const satoriModule=await import(require.resolve('satori'));const satori=[satoriModule.default?.default,satoriModule.default,satoriModule].find(candidate=>typeof candidate==='function');
 const {Resvg}=require('@resvg/resvg-js');
-const out=path.resolve(root,process.argv[2]??'.github/social-preview.png');
+const out=path.resolve(root,process.argv[2]??'apps/web/public/og.png');
 
 const font=file=>fs.readFileSync(path.join(root,'apps/web/public/fonts',file));
 const poster=slug=>'data:image/png;base64,'+fs.readFileSync(path.join(root,'apps/web/public/examples',slug,'poster.png')).toString('base64');

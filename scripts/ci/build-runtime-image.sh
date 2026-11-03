@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Builds the arm64 Lambda runtime image for one commit and pushes it to ECR, unless that commit's
 # image already exists. Prints the immutable image URI (repo@sha256:…) as the last line.
-# Needs: AWS credentials, Docker, ECR_REPOSITORY (full URI), AWS_REGION. Optional: IMAGE_TAG (default: git SHA).
+# Needs: AWS credentials, Docker, Node, ECR_REPOSITORY (full URI), AWS_REGION, MEDIA_BUCKET (private bucket with the
+# character cutouts and gameplay clips the image needs; they are not in git). Optional: IMAGE_TAG (default: git SHA).
 set -euo pipefail
 : "${ECR_REPOSITORY:?set ECR_REPOSITORY to the full ECR repository URI}"
 : "${AWS_REGION:?set AWS_REGION}"
@@ -15,6 +16,7 @@ existing="$(digest)"
 if [[ -n "$existing" && "$existing" != "None" ]]; then
   echo "Image for $TAG already in ECR; reusing it." >&2
 else
+  node scripts/media.mjs pull --only assets/characters,assets/gameplay >&2
   aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$REGISTRY" >&2
   if docker buildx inspect 2>/dev/null | grep -q 'Driver: *docker-container'; then
     # Layer cache kept in ECR (tag "buildcache"): unchanged dependency layers are reused across builds.

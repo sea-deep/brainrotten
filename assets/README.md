@@ -1,22 +1,23 @@
-# Third-party assets
+# Third-party media (not in git)
 
-Everything in this folder belongs to someone else. Brainrotten is an unofficial, non-commercial fan project; these files are **not** covered by the repository's MIT licence. Owners, licences and removal requests: [NOTICE.md](../NOTICE.md).
+Videos use cartoon character cutouts, AI voice clones and background gameplay clips that belong to other people. None of it is committed to this repository, and none of it is covered by the MIT licence. Owners and credits: [NOTICE.md](../NOTICE.md).
+
+Maintainers keep it in a private, encrypted S3 bucket (stack `brainrotten-ci`, output `MediaBucketName`) and copy it with:
+
+```bash
+pnpm media:pull          # cutouts, gameplay clips, posters and the social image
+pnpm media:pull --all    # also voice clip lists, references and example videos
+pnpm media:push          # upload local changes
+```
+
+The layout it restores, which the code expects:
 
 ```
 assets/
-  characters/
-    oggy-and-the-cockroaches/   Oggy, Jack, Jhaplu, Paplu, Taplu   (Xilam Animation)
-    motu-patlu/                 Motu, Patlu, Chingum, Ghasitaram, Dr Jhatka, John   (Cosmos-Maya / Viacom18)
-    bandbudh-aur-budbak/        Badri, Budhdev   (Paperboat Animation Studio)
-  gameplay/                     Background clips: Subway Surfers, GTA V, Minecraft
+  characters/<show>/<id>.png    transparent character cutouts; ids match packages/media/src/characters.ts
+  characters/<show>/voices/     clip lists used to make each voice clone (audio stays local)
+  characters/<show>/references/ where the cutouts came from
+  gameplay/<name>.mp4           muted, cropped background clips
 ```
 
-Each character folder holds:
-
-- `<id>.png`: the transparent cutout drawn in videos. The ids match `packages/media/src/characters.ts`; the website serves them at `/characters/<id>.png`.
-- `voices/`: the clip lists used to make each AI voice clone. The recordings themselves stay on the maintainer's computer and are never committed (audio is git-ignored).
-- `references/`: where the cutouts came from.
-
-`gameplay/` holds muted, cropped background clips with their sources in `gameplay/sources.json`.
-
-Only the cutouts and gameplay clips go into the hosted runtime image (`apps/cloud/Dockerfile`); voices and references are excluded by `.dockerignore`.
+Running without the private media: everything builds and the tests pass. To render videos, add your own cutouts (`assets/characters/<show>/<id>.png`) and background clips (`assets/gameplay/*.mp4`), using media you have the rights to. A test fails if any of these files is ever committed.

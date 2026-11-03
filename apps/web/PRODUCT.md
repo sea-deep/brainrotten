@@ -16,7 +16,7 @@ Brainrotten turns a coding agent's real session into a one-minute learning video
 
 ## Operating Context
 
-Local BYOK is independent of the hosted Google-authenticated, five-lifetime-video trial, which is live on AWS (S3 + CloudFront website, API Gateway + Lambda in ap-south-1, deployed by GitHub Actions). API keys remain server-side or in private local settings. Hosted visitors browse and type freely and sign in only when they generate; the session persists across tabs and renews silently.
+Local BYOK is independent of the hosted Google-authenticated, five-lifetime-video trial, which is live on AWS (S3 + CloudFront website, API Gateway + Lambda in ap-south-1, deployed by GitLab CI). API keys remain server-side or in private local settings. Hosted visitors browse and type freely and sign in only when they generate; the session persists across tabs and renews silently.
 
 ## Capabilities and Constraints
 

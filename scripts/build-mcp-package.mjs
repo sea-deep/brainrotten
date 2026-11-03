@@ -33,7 +33,7 @@ try{
   fs.writeFileSync(path.join(staging,'package.json'),JSON.stringify({
     name:'brainrotten-mcp',version,description:'Connect any coding agent to Brainrotten: one-minute videos that explain what your agent just did.',
     type:'module',bin:{'brainrotten-mcp':'cli.mjs'},files:['cli.mjs','README.md','LICENSE'],engines:{node:'>=20'},license:'MIT',
-    homepage:site,repository:{type:'git',url:'git+https://github.com/sea-deep/brainrotten.git',directory:'apps/companion'},bugs:{url:'https://github.com/sea-deep/brainrotten/issues'},keywords:['mcp','model-context-protocol','claude-code','codex','cursor','kiro','ai-agent','learning','video','education'],
+    homepage:site,repository:{type:'git',url:'git+https://gitlab.com/wdipak/brainrotten.git',directory:'apps/companion'},bugs:{url:'https://gitlab.com/wdipak/brainrotten/-/issues'},keywords:['mcp','model-context-protocol','claude-code','codex','cursor','kiro','ai-agent','learning','video','education'],
   },null,2)+'\n');
   fs.writeFileSync(path.join(staging,'README.md'),npmReadme());
   fs.copyFileSync(path.join(root,'LICENSE'),path.join(staging,'LICENSE'));

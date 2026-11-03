@@ -1,22 +1,17 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >-
-  Keyless GitHub Actions deploys for Brainrotten. GitHub signs in with OIDC (no stored AWS keys).
-  The GitHub role can only push the runtime image, upload the website, invalidate CloudFront and run
-  CloudFormation on the two Brainrotten stacks; CloudFormation itself uses a separate execution role.
+  Keyless GitLab CI deploys for Brainrotten, plus the private media bucket. GitLab signs in with OIDC (no stored
+  AWS keys). The deploy role can only push the runtime image, upload the website, read the media bucket,
+  invalidate CloudFront and run CloudFormation on the two Brainrotten stacks; CloudFormation itself uses a
+  separate execution role. Third-party media (characters, voices, gameplay, example videos) is never in git:
+  it lives in MediaBucket, and scripts/media.mjs pulls it for local work and CI builds.
 
 Parameters:
-  GitHubSubjectPrefix:
+  GitLabProjectPath:
     Type: String
-    Default: repo:sea-deep/brainrotten
-    AllowedPattern: '^repo:[A-Za-z0-9_.@-]+/[A-Za-z0-9_.@-]+$'
-    Description: >-
-      Start of the OIDC sub claim. Repos using GitHub's immutable subjects send repo:OWNER@ID/REPO@ID
-      (read it from GET repos/OWNER/REPO/actions/oidc/customization/sub, field sub_claim_prefix).
-  CreateOidcProvider:
-    Type: String
-    Default: 'true'
-    AllowedValues: ['true', 'false']
-    Description: Set false if this account already has the token.actions.githubusercontent.com provider.
+    Default: wdipak/brainrotten
+    AllowedPattern: '^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)+$'
+    Description: GitLab project path; only pipelines on its protected main branch can deploy.
   ApiStackName:
     Type: String
     Default: brainrotten-api
@@ -27,18 +22,52 @@ Parameters:
     Type: String
     Default: brainrotten-runtime
 
-Conditions:
-  MakeProvider: !Equals [!Ref CreateOidcProvider, 'true']
-
 Resources:
-  GitHubOidc:
+  GitLabOidc:
     Type: AWS::IAM::OIDCProvider
-    Condition: MakeProvider
     Properties:
-      Url: https://token.actions.githubusercontent.com
+      Url: https://gitlab.com
       ClientIdList: [sts.amazonaws.com]
 
-  # CloudFormation deploys the stacks with this role, so the GitHub role never needs IAM or service permissions itself.
+  # Private store for media that must not be public in git. Versioned so an overwrite can be undone.
+  MediaBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-media-${AWS::AccountId}
+      VersioningConfiguration: {Status: Enabled}
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules: [{ObjectOwnership: BucketOwnerEnforced}]
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-old-versions
+            Status: Enabled
+            NoncurrentVersionExpiration: {NoncurrentDays: 90}
+
+  MediaBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref MediaBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: TlsOnly
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource: [!GetAtt MediaBucket.Arn, !Sub '${MediaBucket.Arn}/*']
+            Condition: {Bool: {aws:SecureTransport: 'false'}}
+
+  # CloudFormation deploys the stacks with this role, so the deploy role never needs IAM or service permissions itself.
   CloudFormationExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -53,29 +82,22 @@ Resources:
               StringEquals: {aws:SourceAccount: !Ref AWS::AccountId}
       ManagedPolicyArns: [arn:aws:iam::aws:policy/AdministratorAccess]
 
-  GitHubDeployRole:
+  GitLabDeployRole:
     Type: AWS::IAM::Role
     Properties:
-      Description: Assumed by GitHub Actions (main branch and the site/backend environments) to deploy Brainrotten.
+      Description: Assumed by GitLab CI pipelines on the protected main branch to deploy Brainrotten.
       MaxSessionDuration: 3600
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Principal:
-              Federated: !If
-                - MakeProvider
-                - !Ref GitHubOidc
-                - !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
+              Federated: !Ref GitLabOidc
             Action: sts:AssumeRoleWithWebIdentity
             Condition:
               StringEquals:
-                token.actions.githubusercontent.com:aud: sts.amazonaws.com
-              StringLike:
-                token.actions.githubusercontent.com:sub:
-                  - !Sub ${GitHubSubjectPrefix}:ref:refs/heads/main
-                  - !Sub ${GitHubSubjectPrefix}:environment:site
-                  - !Sub ${GitHubSubjectPrefix}:environment:backend
+                gitlab.com:aud: sts.amazonaws.com
+                gitlab.com:sub: !Sub project_path:${GitLabProjectPath}:ref_type:branch:ref:main
       Policies:
         - PolicyName: deploy
           PolicyDocument:
@@ -117,6 +139,10 @@ Resources:
                   - arn:aws:s3:::aws-sam-cli-managed-default-samclisourcebucket-*/*
                   - !Sub arn:aws:s3:::${SiteStackName}-sitebucket-*
                   - !Sub arn:aws:s3:::${SiteStackName}-sitebucket-*/*
+              - Sid: ReadMedia
+                Effect: Allow
+                Action: [s3:GetObject, s3:ListBucket]
+                Resource: [!GetAtt MediaBucket.Arn, !Sub '${MediaBucket.Arn}/*']
               - Sid: RuntimeImagePush
                 Effect: Allow
                 Action:
@@ -145,8 +171,11 @@ Resources:
 
 Outputs:
   DeployRoleArn:
-    Description: Set as the AWS_DEPLOY_ROLE_ARN repository variable.
-    Value: !GetAtt GitHubDeployRole.Arn
+    Description: Set as the AWS_DEPLOY_ROLE_ARN CI/CD variable.
+    Value: !GetAtt GitLabDeployRole.Arn
+  MediaBucketName:
+    Description: Private media store; set as the MEDIA_BUCKET CI/CD variable.
+    Value: !Ref MediaBucket
   CloudFormationExecutionRoleArn:
-    Description: Set as the CFN_EXECUTION_ROLE_ARN repository variable.
+    Description: Set as the CFN_EXECUTION_ROLE_ARN CI/CD variable.
     Value: !GetAtt CloudFormationExecutionRole.Arn

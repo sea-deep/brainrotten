@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import { readFileSync, readdirSync, createReadStream } from 'node:fs';
+import { readFileSync, readdirSync, createReadStream, existsSync } from 'node:fs';
 import path from 'node:path';
 import type { Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -9,11 +9,13 @@ const siteUrl=(process.env['VITE_SITE_URL']??'').replace(/\/$/,'');
 // Version of the one-command MCP installer published with the site (scripts/build-mcp-package.mjs).
 const mcpVersion=JSON.parse(readFileSync(new URL('../companion/package.json',import.meta.url),'utf8')).version as string;
 
-// Character cutouts live once, in assets/characters/<show>/<id>.png (third-party, see NOTICE.md).
+// Character cutouts live once, in assets/characters/<show>/<id>.png (third-party, see NOTICE.md). They are not in git:
+// `pnpm media:pull` downloads them from the private media bucket. Without them the site builds, minus the cutouts.
 // Serve them at /characters/<id>.png in dev and copy them into the build, instead of keeping a second copy here.
 const charactersDir=new URL('../../assets/characters/',import.meta.url).pathname;
 function characterFiles():Map<string,string>{
   const files=new Map<string,string>();
+  if(!existsSync(charactersDir))return files;
   for(const show of readdirSync(charactersDir,{withFileTypes:true}))if(show.isDirectory())
     for(const file of readdirSync(path.join(charactersDir,show.name)))if(file.endsWith('.png'))files.set(file,path.join(charactersDir,show.name,file));
   return files;

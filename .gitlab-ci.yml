@@ -1,0 +1,184 @@
+# Every push and merge request runs the checks. A push to main also:
+#   - deploys the website (S3 + CloudFront) when site files changed, and
+#   - builds the backend image when backend files changed; ship it with the manual "deploy-backend" job.
+# A tag mcp-v<version> publishes the brainrotten-mcp installer to npm (Trusted Publishing, no stored token).
+# Run a pipeline on main with DEPLOY_ALL=true to deploy everything even if nothing changed.
+#
+# AWS access is keyless: GitLab signs an ID token, and the AWS CLI exchanges it for the deploy role
+# (infra/ci/template.yaml trusts only pipelines on this project's protected main branch). Variables come from
+# scripts/ci/bootstrap.sh. Third-party media is not in git; deploy jobs pull it from the private media bucket.
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_COMMIT_TAG =~ /^mcp-v/
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+stages: [check, deploy]
+
+variables:
+  PNPM_VERSION: 9.15.9
+  NODE_IMAGE: node:26.12.1-bookworm
+
+.node:
+  image: $NODE_IMAGE
+  before_script:
+    - corepack enable && corepack prepare "pnpm@$PNPM_VERSION" --activate
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install --frozen-lockfile
+  cache:
+    key: {files: [pnpm-lock.yaml]}
+    paths: [.pnpm-store]
+
+# Exchanges the job's GitLab ID token for the deploy role through the AWS CLI's built-in web identity support.
+.aws:
+  id_tokens:
+    AWS_ID_TOKEN:
+      aud: sts.amazonaws.com
+  variables:
+    AWS_WEB_IDENTITY_TOKEN_FILE: /tmp/aws-web-identity-token
+    AWS_ROLE_SESSION_NAME: gitlab-$CI_PROJECT_NAME-$CI_JOB_ID
+  script: &aws-login
+    - printf '%s' "$AWS_ID_TOKEN" > "$AWS_WEB_IDENTITY_TOKEN_FILE"
+    - export AWS_ROLE_ARN="$AWS_DEPLOY_ROLE_ARN" AWS_DEFAULT_REGION="$AWS_REGION"
+
+.main-only: &main-only
+  if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG == null
+
+check:
+  stage: check
+  extends: .node
+  rules:
+    - if: $CI_COMMIT_TAG == null
+  script:
+    - apt-get update -qq && apt-get install -y -qq ffmpeg python3 >/dev/null
+    - pnpm build
+    - pnpm typecheck
+    - pnpm lint
+    - node --test scripts/release.test.mjs
+    - pnpm -r --no-sort --workspace-concurrency=4 test
+    - pnpm test:python
+    - pnpm build:demo
+    - pnpm release:verify
+
+templates:
+  stage: check
+  image: python:3.12-slim
+  rules:
+    - if: $CI_COMMIT_TAG == null
+  script:
+    - pip install --quiet cfn-lint==1.48.1
+    - cfn-lint infra/site/template.yaml infra/sam/template.yaml infra/ci/template.yaml
+
+deploy-site:
+  stage: deploy
+  extends: [.node, .aws]
+  needs: [check, templates]
+  resource_group: deploy-site
+  environment: {name: site, url: https://d3sk6lwsh4ufyv.cloudfront.net}
+  rules:
+    - <<: *main-only
+      changes: &site-files
+        - apps/web/**/*
+        - apps/companion/**/*
+        - packages/**/*
+        - scripts/build-mcp-package.mjs
+        - scripts/examples-media.mjs
+        - scripts/media.mjs
+        - examples/website-media.json
+        - infra/site/**/*
+        - scripts/ci/deploy-site.sh
+        - pnpm-lock.yaml
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $DEPLOY_ALL == "true"
+  script:
+    - *aws-login
+    - apt-get update -qq && apt-get install -y -qq unzip >/dev/null
+    - curl -sSfL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscli.zip && unzip -q /tmp/awscli.zip -d /tmp && /tmp/aws/install >/dev/null
+    - pnpm build
+    - scripts/ci/deploy-site.sh
+
+# Building the image puts nothing live, so it runs alongside the checks.
+build-backend:
+  stage: check
+  extends: .aws
+  image: docker:27
+  services: [docker:27-dind]
+  tags: [saas-linux-small-arm64]
+  variables:
+    DOCKER_TLS_CERTDIR: /certs
+  rules:
+    - <<: *main-only
+      changes: &backend-files
+        - apps/cloud/**/*
+        - packages/**/*
+        - infra/sam/**/*
+        - scripts/media.mjs
+        - scripts/ci/build-runtime-image.sh
+        - scripts/ci/deploy-backend.sh
+        - pnpm-lock.yaml
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $DEPLOY_ALL == "true"
+  script:
+    - *aws-login
+    - apk add --no-cache aws-cli nodejs bash git >/dev/null
+    - IMAGE="$(scripts/ci/build-runtime-image.sh | tail -1)"
+    - echo "Backend image ready, nothing live yet: $IMAGE. Run the deploy-backend job in this pipeline to ship it."
+
+# The approval step for the backend: press play on this job in a main pipeline.
+deploy-backend:
+  stage: deploy
+  extends: .aws
+  image: docker:27
+  services: [docker:27-dind]
+  tags: [saas-linux-small-arm64]
+  needs: []
+  resource_group: deploy-backend
+  environment: {name: backend}
+  variables:
+    DOCKER_TLS_CERTDIR: /certs
+  rules:
+    - <<: *main-only
+      when: manual
+      allow_failure: true
+  script:
+    - *aws-login
+    - apk add --no-cache aws-cli nodejs bash git py3-pip >/dev/null
+    - pip install --quiet --break-system-packages aws-sam-cli
+    - IMAGE="$(scripts/ci/build-runtime-image.sh | tail -1)"
+    - scripts/ci/deploy-backend.sh "$IMAGE"
+
+release-mcp:
+  stage: deploy
+  extends: .node
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^mcp-v/
+  id_tokens:
+    NPM_ID_TOKEN:
+      aud: npm:registry.npmjs.org
+    SIGSTORE_ID_TOKEN:
+      aud: sigstore
+  script:
+    - npm install -g npm@latest >/dev/null
+    - pnpm build
+    - pnpm --filter @brainrot/companion exec vitest run src/standalone
+    - VERSION="$(node -p "require('./apps/companion/package.json').version")"
+    - '[ "${CI_COMMIT_TAG#mcp-v}" = "$VERSION" ] || { echo "Tag $CI_COMMIT_TAG does not match version $VERSION" >&2; exit 1; }'
+    - node scripts/build-mcp-package.mjs --out release --guides release
+    - if npm view "brainrotten-mcp@$VERSION" version >/dev/null 2>&1; then echo "Already on npm."; else npm publish "./release/brainrotten-mcp-$VERSION.tgz" --access public --provenance; fi
+  artifacts:
+    paths: [release/*.tgz]
+
+# The GitLab release page for the tag, with the installer tarball attached.
+release-mcp-page:
+  stage: deploy
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs: [{job: release-mcp, artifacts: true}]
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^mcp-v/
+  script:
+    - echo "Release $CI_COMMIT_TAG"
+  release:
+    tag_name: $CI_COMMIT_TAG
+    name: brainrotten-mcp ${CI_COMMIT_TAG}
+    description: 'Install: `npx -y brainrotten-mcp@latest setup` · npm: https://www.npmjs.com/package/brainrotten-mcp'

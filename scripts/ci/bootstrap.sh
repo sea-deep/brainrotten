@@ -1,41 +1,38 @@
 #!/usr/bin/env bash
-# One-time setup for the deploy pipeline. Run it yourself with AWS admin credentials and a gh login:
-#   1. creates the keyless GitHub → AWS deploy role (infra/ci/template.yaml, stack brainrotten-ci),
-#   2. creates the "site" and "backend" GitHub environments, limited to the main branch,
-#   3. sets the repository variables the workflows read, copied from the live API stack's settings.
-# Nothing secret is stored in GitHub: only role ARNs, stack names and Secrets Manager ARNs.
+# One-time setup for the deploy pipeline. Run it yourself with AWS admin credentials and a glab login:
+#   1. creates the keyless GitLab → AWS deploy role and the private media bucket (infra/ci/template.yaml, stack brainrotten-ci),
+#   2. protects the main branch (only protected-branch pipelines can assume the deploy role),
+#   3. sets the CI/CD variables .gitlab-ci.yml reads, copied from the live API stack's settings.
+# Nothing secret is stored in GitLab: only role ARNs, bucket and stack names and Secrets Manager ARNs.
 set -euo pipefail
-REPO="${REPO:-sea-deep/brainrotten}"
+PROJECT="${PROJECT:-wdipak/brainrotten}"
 REGION="${AWS_REGION:-ap-south-1}"
 API_STACK="${API_STACK:-brainrotten-api}"
 SITE_STACK="${SITE_STACK:-brainrotten-site}"
 ACCOUNT="$(aws sts get-caller-identity --query Account --output text)"
+ENCODED="${PROJECT//\//%2F}"
 
-# Create the GitHub OIDC provider unless one exists that this stack does not own (re-runs must keep their own).
-provider="$(aws iam list-open-id-connect-providers --query "OpenIDConnectProviderList[?ends_with(Arn,'token.actions.githubusercontent.com')].Arn" --output text)"
-owned="$(aws cloudformation describe-stack-resource --region "$REGION" --stack-name brainrotten-ci --logical-resource-id GitHubOidc --query 'StackResourceDetail.PhysicalResourceId' --output text 2>/dev/null || true)"
-create=true; [[ -n "$provider" && "$provider" != "$owned" ]] && create=false
-# GitHub sends either repo:OWNER/REPO or, with immutable subjects, repo:OWNER@ID/REPO@ID. Trust exactly what it sends.
-prefix="$(gh api "repos/$REPO/actions/oidc/customization/sub" --jq '.sub_claim_prefix // empty' 2>/dev/null || true)"
-prefix="${prefix:-repo:$REPO}"
-echo "GitHub token subject: $prefix:…"
 aws cloudformation deploy --region "$REGION" --stack-name brainrotten-ci --template-file infra/ci/template.yaml \
-  --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset \
-  --parameter-overrides "GitHubSubjectPrefix=$prefix" "CreateOidcProvider=$create"
+  --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM --no-fail-on-empty-changeset \
+  --parameter-overrides "GitLabProjectPath=$PROJECT"
 ci() { aws cloudformation describe-stacks --region "$REGION" --stack-name brainrotten-ci --query "Stacks[0].Outputs[?OutputKey=='$1'].OutputValue" --output text; }
 param() { aws cloudformation describe-stacks --region "$REGION" --stack-name "$API_STACK" --query "Stacks[0].Parameters[?ParameterKey=='$1'].ParameterValue" --output text; }
 
-for env in site backend; do
-  gh api -X PUT "repos/$REPO/environments/$env" --input - >/dev/null <<<'{"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}'
-  gh api "repos/$REPO/environments/$env/deployment-branch-policies" --jq '.branch_policies[].name' | grep -qx main \
-    || gh api -X POST "repos/$REPO/environments/$env/deployment-branch-policies" -f name=main -f type=branch >/dev/null
-done
+# main must be protected: the deploy role trusts only tokens for project_path:$PROJECT:ref_type:branch:ref:main,
+# and protected variables are only given to protected branches.
+glab api "projects/$ENCODED/protected_branches/main" >/dev/null 2>&1 \
+  || glab api -X POST "projects/$ENCODED/protected_branches" -f name=main -f push_access_level=40 -f merge_access_level=40 >/dev/null
 
-set_var() { gh variable set "$1" --repo "$REPO" --body "$2" >/dev/null; echo "  $1"; }
-echo "Repository variables:"
+set_var() {
+  glab api -X DELETE "projects/$ENCODED/variables/$1" >/dev/null 2>&1 || true
+  glab api -X POST "projects/$ENCODED/variables" -f key="$1" -f value="$2" -f protected=true -f masked=false >/dev/null
+  echo "  $1"
+}
+echo "CI/CD variables:"
 set_var AWS_REGION "$REGION"
 set_var AWS_DEPLOY_ROLE_ARN "$(ci DeployRoleArn)"
 set_var CFN_EXECUTION_ROLE_ARN "$(ci CloudFormationExecutionRoleArn)"
+set_var MEDIA_BUCKET "$(ci MediaBucketName)"
 set_var ECR_REPOSITORY "$ACCOUNT.dkr.ecr.$REGION.amazonaws.com/brainrotten-runtime"
 set_var API_STACK "$API_STACK"
 set_var SITE_STACK "$SITE_STACK"
@@ -44,4 +41,4 @@ set_var GOOGLE_CLIENT_ID "$(param GoogleClientId)"
 set_var GOOGLE_OAUTH_SECRET_ARN "$(param GoogleOAuthSecretArn)"
 set_var PROVIDER_SECRET_ARN "$(param ProviderSecretArn)"
 set_var ENABLE_HOSTED_TRIAL "$(param EnableHostedTrial)"
-echo "Done. Pushes to main now deploy the website; run Actions → Deploy backend to ship backend changes."
+echo "Done. Pushes to main now deploy the website; run the manual deploy-backend job in a main pipeline to ship backend changes."

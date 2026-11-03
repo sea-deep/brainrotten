@@ -25,9 +25,16 @@ test('CLI submits once with a stable request ID and downloads authenticated loca
     const result=await run(['scripts/brainrotten.mjs','generate','--input',input,'--output',output],{BRAINROT_PORT:String(server.address().port),BRAINROT_DATA_DIR:directory});assert.equal(result.code,0,result.stderr);assert.equal(submissions,1);assert.equal(request.requestId,'stable-synthetic-request');assert.equal(JSON.parse(result.stdout).jobId,job.jobId);assert.equal(await fs.readFile(output,'utf8'),'synthetic-media');
   }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});}
 });
-test('public gallery contains only the user-selected ElevenLabs voices',async()=>{
+test('no third-party media is tracked in git (it lives in the private media bucket)',async()=>{
+  const {execFileSync}=await import('node:child_process');
+  const tracked=execFileSync('git',['ls-files'],{encoding:'utf8'}).split('\n').filter(Boolean);
+  const banned=/^(assets\/(characters|gameplay)\/|apps\/web\/public\/characters\/|apps\/web\/public\/flow\/|apps\/web\/public\/og\.png$|\.github\/)|\.(mp4|mov|webm|wav|m4a|mp3|flac)$|^(apps\/web\/public\/examples|examples\/website-archive)\/[^/]+\/[^/]+\.png$/;
+  assert.deepEqual(tracked.filter(file=>banned.test(file)),[],'Third-party media must not be committed; use pnpm media:push.');
+});
+
+test('public gallery contains only the user-selected ElevenLabs voices, and every video is in the release manifest',async()=>{
   const root='apps/web/public/examples',entries=JSON.parse(await fs.readFile(root+'/index.json','utf8')),approved=new Set(['jack','badri','budhdev','jhaplu','paplu','taplu','jhatka','john','motu']);assert.ok(entries.length>=3);
-  const slugs=new Set();for(const entry of entries){assert.equal(entry.voiceBackend,'elevenlabs');const speakers=new Set([...Object.values(entry.script.participants??{}),entry.script.narrator,...entry.script.dialogue.map(line=>line.speaker)].filter(Boolean));for(const character of speakers)assert.ok(approved.has(character),`Unapproved example speaker ${character}`);const slug=entry.videoUrl.split('/')[2];slugs.add(slug);assert.ok((await fs.stat(`${root}/${slug}/video.mp4`)).size>1000);}
+  const slugs=new Set();for(const entry of entries){assert.equal(entry.voiceBackend,'elevenlabs');const speakers=new Set([...Object.values(entry.script.participants??{}),entry.script.narrator,...entry.script.dialogue.map(line=>line.speaker)].filter(Boolean));for(const character of speakers)assert.ok(approved.has(character),`Unapproved example speaker ${character}`);const slug=entry.videoUrl.split('/')[2];slugs.add(slug);const media=JSON.parse(await fs.readFile('examples/website-media.json','utf8')).videos[slug];assert.ok(media?.size>1000&&/^[0-9a-f]{64}$/.test(media.sha256),`${slug} has no video in examples/website-media.json`);const local=await fs.stat(`${root}/${slug}/video.mp4`).catch(()=>null);if(local)assert.equal(local.size,media.size,`${slug}: local video differs from the release; run pnpm examples:upload`);}
   for(const entry of await fs.readdir(root,{withFileTypes:true}))if(entry.isDirectory())assert.ok(slugs.has(entry.name),'An unlisted video directory would still be publicly shipped.');
 });
 

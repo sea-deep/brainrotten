@@ -28,6 +28,9 @@
     "brainrotten": "node scripts/brainrotten.mjs",
     "build:site": "pnpm build && pnpm build:demo",
     "release:verify": "node scripts/verify-release.mjs",
+    "media:pull": "node scripts/media.mjs pull",
+    "media:push": "node scripts/media.mjs push",
+    "examples:manifest": "node scripts/examples-media.mjs manifest",
     "verify:e2e": "pnpm build && node scripts/verify-generation-e2e.mjs",
     "test:python": "python3 -m unittest discover -s sdk/python/tests -t sdk/python"
   },

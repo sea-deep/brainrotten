@@ -1,10 +1,6 @@
 <p align="center">
-  <img src=".github/social-preview.png" alt="Brainrotten: your coding agent's work, explained in a one-minute video" width="840">
-</p>
-
-<p align="center">
   <a href="https://www.npmjs.com/package/brainrotten-mcp"><img alt="npm" src="https://img.shields.io/npm/v/brainrotten-mcp?color=684393&label=npm%20brainrotten-mcp"></a>
-  <a href="https://github.com/sea-deep/brainrotten/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/sea-deep/brainrotten/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://gitlab.com/wdipak/brainrotten/-/pipelines"><img alt="pipeline" src="https://gitlab.com/wdipak/brainrotten/badges/main/pipeline.svg"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/code-MIT-30263c"></a>
   <a href="https://d3sk6lwsh4ufyv.cloudfront.net"><img alt="Website" src="https://img.shields.io/badge/try%20it-website-f0b19b"></a>
 </p>
@@ -105,8 +101,8 @@ sdk/python/      The MCP tools as Python functions
 infra/
   sam/           API stack: API Gateway, Lambda, SQS, DynamoDB, S3, Cognito
   site/          Website stack: private S3 bucket behind CloudFront
-  ci/            Keyless GitHub Actions deploy role (OIDC)
-assets/          Third-party characters, voice clip lists and gameplay clips (not MIT, see NOTICE.md)
+  ci/            Keyless GitLab CI deploy role (OIDC) and the private media bucket
+assets/          Where third-party media goes locally: not in git (see assets/README.md)
 scripts/         Build, release and deploy scripts (scripts/ci for the pipeline)
 tools/           Optional local voice model
 examples/        Test fixtures
@@ -121,6 +117,8 @@ examples/        Test fixtures
 ### Run it locally
 
 You need Node.js 26+, pnpm 9+ and FFmpeg.
+
+The repository holds code only. Character cutouts, voices, gameplay clips and example videos are third-party media, kept in a private bucket; maintainers fetch them with `pnpm media:pull` (needs AWS access). Without them everything builds and the tests pass; videos need your own characters and background clips in `assets/` (see [assets/README.md](assets/README.md)).
 
 ```bash
 pnpm install
@@ -139,9 +137,9 @@ Tests never call paid services or use real keys.
 
 ### Deploys and releases
 
-Every push and pull request runs the checks in GitHub Actions. On `main`, website changes go live automatically in about four minutes. Backend changes build the Lambda image straight away and go live when you run **Actions → Deploy backend** (about 20 seconds for code-only changes). GitHub signs in to AWS with OIDC, so no AWS keys are stored in the repository. One-time setup: `scripts/ci/bootstrap.sh`.
+Every push and merge request runs the checks in GitLab CI (`.gitlab-ci.yml`). On `main`, website changes go live automatically. Backend changes build the Lambda image straight away and go live when you press play on the **deploy-backend** job (about 20 seconds for code-only changes). GitLab signs in to AWS with OIDC, so no AWS keys are stored anywhere. One-time setup: `scripts/ci/bootstrap.sh`.
 
-To release the installer, bump the version in `apps/companion/package.json` and run **Actions → Release MCP package**. It publishes `brainrotten-mcp` to npm with provenance, mirrors it to GitHub Packages and creates a GitHub Release.
+To release the installer, bump the version in `apps/companion/package.json`, push to `main`, then push the tag `mcp-v<version>`. The pipeline publishes `brainrotten-mcp` to npm through Trusted Publishing with provenance and creates a GitLab release.
 
 ---
 
@@ -151,4 +149,4 @@ Brainrotten is an **unofficial, non-commercial fan project**. The cartoon charac
 
 The code is released under the [MIT License](LICENSE). That license does not cover the third-party characters, voices, footage or fonts.
 
-Questions and ideas: [Discussions](https://github.com/sea-deep/brainrotten/discussions).
+Questions and ideas: [issues](https://gitlab.com/wdipak/brainrotten/-/issues).

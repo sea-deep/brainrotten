@@ -1,0 +1,52 @@
+{
+  "videos": {
+    "python-list-copy": {
+      "size": 13727692,
+      "sha256": "b319f47ff310bfcf52954e16b2572ffc11054ffc54256f196855ebd5ccb3275a"
+    },
+    "node-await-foreach": {
+      "size": 16500958,
+      "sha256": "7128b82459f8cfd5f0fa7563d765d81cd559777265db0c5e53f098d38bd45f0f"
+    },
+    "css-center-card": {
+      "size": 6565847,
+      "sha256": "c98f55a3caae5f5fd126bce160cc21a5c1cc68f32d23452b7fd3216ccdbdc3bd"
+    },
+    "git-detached-head": {
+      "size": 5257024,
+      "sha256": "6fe5b92103fc3d1c093ebcc258f6518b7dad435e68f74fd89e36d0b03a57e841"
+    },
+    "react-useeffect-loop": {
+      "size": 5800650,
+      "sha256": "4d9b42e5f6c3aedf7dbb8a37ed801d3957bd4000f10fa97b0007a3895bb54a72"
+    },
+    "django-n-plus-one": {
+      "size": 6026874,
+      "sha256": "f964e40089467f1e65b7001e23fbffa038c2256953bf28c2cd947898d9214f92"
+    },
+    "flask-cors-preflight": {
+      "size": 7406581,
+      "sha256": "f8af3021382d46ead7cff3632ece6c6159bc1814972f48cb93a9633e80c3b6f1"
+    },
+    "flutter-setstate-dispose": {
+      "size": 14630904,
+      "sha256": "46db13f3d7f36b84fe91008c70bf784974d951793b522e71f741229e0c6b084a"
+    },
+    "go-goroutine-leak": {
+      "size": 4923199,
+      "sha256": "cece77ea728f6dacf6bab995f4c92b336057f4b1b2f7c41894341d69982b1b39"
+    },
+    "k8s-oomkilled": {
+      "size": 9641937,
+      "sha256": "b73ea65a6895a6cd88715bd969f0a60d85fb62ef567fbbb86185bab7267920ca"
+    },
+    "rust-borrow-checker": {
+      "size": 11575840,
+      "sha256": "92870063cc2396e9d57832e8fc6411d66c0a22b8b154b5c1478dcf6a5f192d37"
+    },
+    "redis-rate-limiter": {
+      "size": 8426159,
+      "sha256": "82ce4da7e5e916637e4c74de6a0f55118e805de2e4db61acb2a0ab1f8d953108"
+    }
+  }
+}
