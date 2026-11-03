@@ -15,7 +15,7 @@
   .site-header .site-brand{font-size:23px}.site-header .site-brand svg{width:30px;height:30px}
   .site-header .site-cta,.site-header .header-actions{margin-left:auto}
   .menu-toggle{display:inline-grid}
-  .site-header nav,.studio-header nav{display:none;order:3;width:100%;margin:0;flex-direction:column;align-items:stretch;gap:2px;padding:4px 0 6px}
+  .site-header nav{display:none;order:3;width:100%;margin:0;flex-direction:column;align-items:stretch;gap:2px;padding:4px 0 6px}
   .site-header.is-open nav{display:flex}
   .site-header nav>a,.site-header nav>button{justify-content:flex-start;font-size:16px;min-height:46px;padding:12px 14px}
   .site-header nav>a:hover,.site-header nav>button:hover{transform:none}
@@ -117,3 +117,18 @@
 .one-line-install{display:grid;gap:12px;margin:8px 0 28px;padding:22px;border-radius:18px;background:#e9dff6}.one-line-install h2{margin:0;font-family:Basteleur,serif;font-size:26px}.one-line-install p{margin:0;max-width:65ch;line-height:1.6}.copy-line{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.copy-line pre{flex:1 1 320px;min-width:0;margin:0;overflow-x:auto}
 .example-picker{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}.example-picker button{border:1px solid #d8c6df;background:transparent;border-radius:999px;padding:7px 14px;min-height:36px;font-size:14px;cursor:pointer;color:#30263c}.example-picker button[aria-pressed=true]{background:#30263c;color:#fffdf9;border-color:#30263c}.example-picker button:focus-visible{outline:2px solid #8060b1;outline-offset:2px}
 .examples-intro{max-width:62ch;color:#5d4f69;margin:-4px 0 18px}.example-project{margin:4px 0 0;font-size:13px;font-weight:600;color:#684393}
+
+/* One header for every page: a sticky full-width strip in the page colour, so nothing scrolls into view above the
+   pill, with the pill placed by the same frame on every page (the site pages' 1440px frame and side padding). */
+:root{--frame-pad:64px}
+@media(max-width:1100px){:root{--frame-pad:36px}}@media(max-width:780px){:root{--frame-pad:24px}}@media(max-width:540px){:root{--frame-pad:16px}}
+html{overflow-x:clip}
+.site-header-bar{position:sticky;top:0;z-index:40;margin-inline:calc(50% - 50vw);padding:16px max(var(--frame-pad),calc((100vw - 1440px)/2 + var(--frame-pad))) 12px;background:linear-gradient(#faf5ee calc(100% - 12px),#faf5ee00);pointer-events:none}
+.site-header-bar>.site-header.floating-pill{position:relative;top:auto;margin:0;width:100%;pointer-events:auto}
+@media(max-width:780px){.site-header-bar{padding-top:12px;padding-bottom:10px}}
+@media(max-width:540px){.site-header-bar{padding-top:10px}}
+.site-header .header-actions{gap:8px}
+.account-chip{position:relative}
+.account-popover{position:absolute;right:0;top:calc(100% + 10px);min-width:210px;padding:12px;border:1px solid #e6dbe7;border-radius:20px;background:#fffdf9;box-shadow:0 14px 34px #30263c1f;z-index:2}
+.account-popover p{margin:2px 6px 10px;font-weight:600;font-size:14px;overflow-wrap:anywhere}.account-popover small{display:block;font-weight:400;color:#786a83;margin-top:2px}
+.account-popover button{width:100%;min-height:40px;border:0;border-radius:999px;background:#f1e8f3;color:#30263c;font:500 14px 'Uncut Sans',sans-serif;cursor:pointer}.account-popover button:hover{background:#e9dff6}
