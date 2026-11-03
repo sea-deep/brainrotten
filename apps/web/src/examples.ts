@@ -12,7 +12,7 @@ export const FORMAT_HINTS:Record<string,string>={sketch:'Systems, request paths 
 
 export const EXAMPLES:Example[]=[
   {slug:'python-list-copy',format:'skit',title:'I copied the list. Why did both change?',project:'To-do list CLI',stack:'Python',level:'Beginner',language:'English',
-    session:'Removing a task from a “copy” of the to-do list also removed it from the original.',agentDid:'Explained that assignment shares one list, then showed .copy() and why nested tasks need deepcopy.',voices:'Motu & Dr Jhatka'},
+    session:'Removing a task from a “copy” of the to-do list also removed it from the original.',agentDid:'Explained that assignment shares one list, then showed .copy() and why nested tasks need deepcopy.',voices:'Motu & Patlu'},
   {slug:'node-await-foreach',format:'skit',title:'await lagaya, phir bhi wait nahi kiya?',project:'Signup emailer',stack:'Node.js',level:'Beginner',language:'Hinglish',
     session:'The script printed “done” before any signup email had been sent.',agentDid:'Replaced forEach with for…of, and showed Promise.all for sending in parallel.',voices:'Badri & Budhdev'},
   {slug:'css-center-card',format:'tierlist',title:'Ways to center a card, ranked',project:'First portfolio site',stack:'HTML & CSS',level:'Beginner',language:'English',
@@ -26,13 +26,13 @@ export const EXAMPLES:Example[]=[
   {slug:'flask-cors-preflight',format:'groupchat',title:'Who blocked my request?',project:'Shop frontend + API',stack:'React + Flask',level:'Intermediate',language:'English',
     session:'Every POST from the React app was blocked by CORS, though the API was running.',agentDid:'Explained the preflight request and allowed the frontend origin on the Flask side.',voices:'Taplu, Jack & John'},
   {slug:'flutter-setstate-dispose',format:'skit',title:'setState called after dispose?',project:'Weather app',stack:'Flutter',level:'Intermediate',language:'Hinglish',
-    session:'Leaving the weather screen during a fetch crashed with “setState called after dispose”.',agentDid:'Added a mounted check after the await, and noted that FutureBuilder handles it.',voices:'Jhaplu & Paplu'},
+    session:'Leaving the weather screen during a fetch crashed with “setState called after dispose”.',agentDid:'Added a mounted check after the await, and noted that FutureBuilder handles it.',voices:'Motu & Patlu'},
   {slug:'go-goroutine-leak',format:'sketch',title:'Why memory kept climbing',project:'Price aggregation service',stack:'Go',level:'Advanced',language:'English',
     session:'Memory grew every hour until the service was restarted.',agentDid:'Found goroutines stuck sending after a timeout; buffered the channel and passed a context.',voices:'John'},
   {slug:'k8s-oomkilled',format:'tierlist',title:'OOMKilled ke fixes, ranked',project:'API on Kubernetes',stack:'Node.js + Kubernetes',level:'Advanced',language:'Hinglish',
     session:'Pods were OOMKilled again and again under normal traffic.',agentDid:'Ranked five fixes, from removing the limit to fixing the leak.',voices:'Budhdev'},
   {slug:'rust-borrow-checker',format:'skit',title:'Why won’t Rust let me push here?',project:'Log file parser',stack:'Rust',level:'Advanced',language:'English',
-    session:'The parser failed to compile: cannot borrow the vector as mutable.',agentDid:'Explained why Rust blocks it, then collected the matches with an iterator chain.',voices:'John & Jack'},
+    session:'The parser failed to compile: cannot borrow the vector as mutable.',agentDid:'Explained why Rust blocks it, then collected the matches with an iterator chain.',voices:'Oggy & Jack'},
   {slug:'redis-rate-limiter',format:'prreview',title:'Rate limiter ka race fix',project:'Payments API',stack:'TypeScript + Redis',level:'Advanced',language:'Hinglish',
     session:'Bursts of requests got past the 100-per-minute limit.',agentDid:'Replaced a separate GET and SET with atomic INCR, and flagged the TTL edge case.',voices:'Dr Jhatka & Paplu'},
 ];

@@ -1,39 +1,39 @@
 {
- "jobId": "26ab0d42-7dce-4f74-bbd7-6dc258443b52",
+ "jobId": "84554b66-18c4-43ce-9f87-243017db8714",
  "state": "ready",
  "stage": "ready",
  "progress": 100,
  "prompt": "setState called after dispose?",
  "title": "setState called after dispose?",
- "createdAt": "2026-11-03T06:41:57.728Z",
- "updatedAt": "2026-11-03T06:42:21.653Z",
- "videoUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/video",
- "posterUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/poster",
- "audioUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/audio",
+ "createdAt": "2026-11-03T08:54:20.421Z",
+ "updatedAt": "2026-11-03T08:54:41.411Z",
+ "videoUrl": "/api/v1/videos/84554b66-18c4-43ce-9f87-243017db8714/video",
+ "posterUrl": "/api/v1/videos/84554b66-18c4-43ce-9f87-243017db8714/poster",
+ "audioUrl": "/api/v1/videos/84554b66-18c4-43ce-9f87-243017db8714/audio",
  "error": null,
- "durationSeconds": 44.435374,
+ "durationSeconds": 46.861927,
  "cast": "auto",
  "language": "hinglish",
  "voiceBackend": "elevenlabs",
  "participants": {
-  "learner": "jhaplu",
-  "expert": "paplu"
+  "learner": "motu",
+  "expert": "patlu"
  },
  "format": "skit",
  "script": {
   "title": "setState called after dispose?",
   "participants": {
-   "learner": "jhaplu",
-   "expert": "paplu"
+   "learner": "motu",
+   "expert": "patlu"
   },
   "dialogue": [
    {
-    "speaker": "jhaplu",
-    "text": "Mamu, weather screen se jaldi back dabaya toh app ne lal error phenka: setState called after dispose. Ye kya bawaal hai?"
+    "speaker": "motu",
+    "text": "Patlu, weather screen se jaldi back dabaya toh app ne lal error phenka: setState called after dispose. Ye kya bawaal hai?"
    },
    {
-    "speaker": "paplu",
-    "text": "Re baba, tumhara API call abhi chal raha tha. Jawab aaya tab tak screen band ho chuki thi, phir bhi setState chal gaya.",
+    "speaker": "patlu",
+    "text": "Motu, tumhara API call abhi chal raha tha. Jawab aaya tab tak screen band ho chuki thi, phir bhi setState chal gaya.",
     "broll": {
      "kind": "code",
      "code": "final data = await api.fetch(city);\nsetState(() => weather = data);",
@@ -41,11 +41,11 @@
     }
    },
    {
-    "speaker": "jhaplu",
+    "speaker": "motu",
     "text": "Toh screen band hone ke baad setState rokne ka koi tareeka hai kya?"
    },
    {
-    "speaker": "paplu",
+    "speaker": "patlu",
     "text": "Haan, await ke baad mounted check karo. Screen chali gayi ho toh chupchaap ruk jao.",
     "broll": {
      "kind": "code",
@@ -54,7 +54,7 @@
     }
    },
    {
-    "speaker": "jhaplu",
+    "speaker": "motu",
     "text": "Aur agar main FutureBuilder use karun, toh kya yeh check phir bhi likhna padega?",
     "pause": {
      "prompt": "If the screen uses FutureBuilder instead of calling setState yourself, do you still need the mounted check?",
@@ -67,7 +67,7 @@
     }
    },
    {
-    "speaker": "paplu",
+    "speaker": "patlu",
     "text": "Nahi. FutureBuilder khud dekh leta hai, widget hatne ke baad rebuild nahi karta. Bas future ko build ke andar mat banana."
    }
   ],
@@ -91,48 +91,48 @@
  },
  "learning": {
   "schemaVersion": "BrainrottenLearningPackV1",
-  "jobId": "26ab0d42-7dce-4f74-bbd7-6dc258443b52",
+  "jobId": "84554b66-18c4-43ce-9f87-243017db8714",
   "format": "skit",
   "title": "setState called after dispose?",
   "language": "hinglish",
-  "durationSeconds": 44.435374,
+  "durationSeconds": 46.861927,
   "takeaway": "After an await, check mounted before calling setState; FutureBuilder handles this for you.",
   "chapters": [
    {
     "id": "turn-0",
-    "title": "Mamu, weather screen se jaldi back dabaya toh",
+    "title": "Patlu, weather screen se jaldi back dabaya toh",
     "startMs": 0,
-    "endMs": 7500
+    "endMs": 8000
    },
    {
     "id": "turn-1",
-    "title": "Re baba, tumhara API call abhi chal raha",
-    "startMs": 7500,
-    "endMs": 14857
+    "title": "Motu, tumhara API call abhi chal raha tha.",
+    "startMs": 8000,
+    "endMs": 15786
    },
    {
     "id": "turn-2",
     "title": "Toh screen band hone ke baad setState rokne",
-    "startMs": 14857,
-    "endMs": 18357
+    "startMs": 15786,
+    "endMs": 19500
    },
    {
     "id": "turn-3",
     "title": "Haan, await ke baad mounted check karo. Screen",
-    "startMs": 18357,
-    "endMs": 23500
+    "startMs": 19500,
+    "endMs": 25000
    },
    {
     "id": "turn-4",
     "title": "Aur agar main FutureBuilder use karun, toh kya",
-    "startMs": 23500,
-    "endMs": 27143
+    "startMs": 25000,
+    "endMs": 29000
    },
    {
     "id": "turn-5",
     "title": "Nahi. FutureBuilder khud dekh leta hai, widget hatne",
-    "startMs": 37143,
-    "endMs": 44429
+    "startMs": 39000,
+    "endMs": 46862
    }
   ],
   "questions": [
@@ -151,7 +151,7 @@
      1
     ],
     "startMs": 0,
-    "endMs": 14857
+    "endMs": 15786
    },
    {
     "id": "pause-4",
@@ -167,8 +167,8 @@
      4,
      5
     ],
-    "startMs": 23500,
-    "endMs": 44429
+    "startMs": 25000,
+    "endMs": 46862
    }
   ],
   "flashcards": [
@@ -177,77 +177,77 @@
     "front": "Why did the app throw 'setState called after dispose'?",
     "back": "The fetch finished after the screen was closed — The await resumed after the State was disposed, and setState ran on a widget that no longer existed.",
     "startMs": 0,
-    "endMs": 14857
+    "endMs": 15786
    },
    {
     "id": "pause-4",
     "front": "If the screen uses FutureBuilder instead of calling setState yourself, do you still need the mounted check?",
     "back": "No, FutureBuilder stops rebuilding after dispose — Nahi. FutureBuilder khud dekh leta hai, widget hatne ke baad rebuild nahi karta. Bas future ko build ke andar mat banana.",
-    "startMs": 23500,
-    "endMs": 44429
+    "startMs": 25000,
+    "endMs": 46862
    }
   ],
   "transcript": [
    {
     "turnIndex": 0,
-    "speaker": "jhaplu",
-    "text": "Mamu, weather screen se jaldi back dabaya toh app ne lal error phenka: setState called after dispose. Ye kya bawaal hai?",
+    "speaker": "motu",
+    "text": "Patlu, weather screen se jaldi back dabaya toh app ne lal error phenka: setState called after dispose. Ye kya bawaal hai?",
     "startMs": 0,
-    "endMs": 7500
+    "endMs": 8000
    },
    {
     "turnIndex": 1,
-    "speaker": "paplu",
-    "text": "Re baba, tumhara API call abhi chal raha tha. Jawab aaya tab tak screen band ho chuki thi, phir bhi setState chal gaya.",
-    "startMs": 7500,
-    "endMs": 14857
+    "speaker": "patlu",
+    "text": "Motu, tumhara API call abhi chal raha tha. Jawab aaya tab tak screen band ho chuki thi, phir bhi setState chal gaya.",
+    "startMs": 8000,
+    "endMs": 15786
    },
    {
     "turnIndex": 2,
-    "speaker": "jhaplu",
+    "speaker": "motu",
     "text": "Toh screen band hone ke baad setState rokne ka koi tareeka hai kya?",
-    "startMs": 14857,
-    "endMs": 18357
+    "startMs": 15786,
+    "endMs": 19500
    },
    {
     "turnIndex": 3,
-    "speaker": "paplu",
+    "speaker": "patlu",
     "text": "Haan, await ke baad mounted check karo. Screen chali gayi ho toh chupchaap ruk jao.",
-    "startMs": 18357,
-    "endMs": 23500
+    "startMs": 19500,
+    "endMs": 25000
    },
    {
     "turnIndex": 4,
-    "speaker": "jhaplu",
+    "speaker": "motu",
     "text": "Aur agar main FutureBuilder use karun, toh kya yeh check phir bhi likhna padega?",
-    "startMs": 23500,
-    "endMs": 27143
+    "startMs": 25000,
+    "endMs": 29000
    },
    {
     "turnIndex": 5,
-    "speaker": "paplu",
+    "speaker": "patlu",
     "text": "Nahi. FutureBuilder khud dekh leta hai, widget hatne ke baad rebuild nahi karta. Bas future ko build ke andar mat banana.",
-    "startMs": 37143,
-    "endMs": 44429
+    "startMs": 39000,
+    "endMs": 46862
    }
   ]
  },
- "backgroundName": "Subway Surfers",
+ "backgroundName": "Minecraft · Lava",
  "sourceCredits": [
   {
-   "title": "Subway Surfers (2026) - Gameplay [4K 16x9] No Copyright",
-   "url": "https://www.youtube.com/watch?v=i0M4ARe9v0Y",
-   "attribution": "Subway Surfers gameplay — Subway Surfers, https://www.youtube.com/watch?v=i0M4ARe9v0Y. Excerpted, muted, cropped, resized and overlaid."
+   "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
+   "url": "https://www.youtube.com/watch?v=LofyMQts7hY",
+   "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=LofyMQts7hY. Muted, cropped, resized and overlaid."
   }
  ],
  "outputs": {
-  "learningUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/learning",
-  "notesUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/notes",
-  "captionsUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/captions",
-  "flashcardsUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/flashcards"
+  "learningUrl": "/api/v1/videos/84554b66-18c4-43ce-9f87-243017db8714/learning",
+  "notesUrl": "/api/v1/videos/84554b66-18c4-43ce-9f87-243017db8714/notes",
+  "captionsUrl": "/api/v1/videos/84554b66-18c4-43ce-9f87-243017db8714/captions",
+  "flashcardsUrl": "/api/v1/videos/84554b66-18c4-43ce-9f87-243017db8714/flashcards"
  },
  "voiceNames": {
-  "jhaplu": "Jhaplu",
-  "paplu": "Paplu"
+  "motu": "Motu",
+  "patlu": "Patlu"
  }
 }

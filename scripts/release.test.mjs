@@ -33,7 +33,7 @@ test('no third-party media is tracked in git (it lives in the private media buck
 });
 
 test('public gallery contains only the user-selected ElevenLabs voices, and every video is in the release manifest',async()=>{
-  const root='apps/web/public/examples',entries=JSON.parse(await fs.readFile(root+'/index.json','utf8')),approved=new Set(['jack','badri','budhdev','jhaplu','paplu','taplu','jhatka','john','motu']);assert.ok(entries.length>=3);
+  const root='apps/web/public/examples',entries=JSON.parse(await fs.readFile(root+'/index.json','utf8')),approved=new Set(['jack','badri','budhdev','jhaplu','paplu','taplu','jhatka','john','motu','oggy','patlu']);assert.ok(entries.length>=3);
   const slugs=new Set();for(const entry of entries){assert.equal(entry.voiceBackend,'elevenlabs');const speakers=new Set([...Object.values(entry.script.participants??{}),entry.script.narrator,...entry.script.dialogue.map(line=>line.speaker)].filter(Boolean));for(const character of speakers)assert.ok(approved.has(character),`Unapproved example speaker ${character}`);const slug=entry.videoUrl.split('/')[2];slugs.add(slug);const media=JSON.parse(await fs.readFile('examples/website-media.json','utf8')).videos[slug];assert.ok(media?.size>1000&&/^[0-9a-f]{64}$/.test(media.sha256),`${slug} has no video in examples/website-media.json`);const local=await fs.stat(`${root}/${slug}/video.mp4`).catch(()=>null);if(local)assert.equal(local.size,media.size,`${slug}: local video differs from the release; run pnpm examples:upload`);}
   for(const entry of await fs.readdir(root,{withFileTypes:true}))if(entry.isDirectory())assert.ok(slugs.has(entry.name),'An unlisted video directory would still be publicly shipped.');
 });

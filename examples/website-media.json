@@ -1,8 +1,8 @@
 {
   "videos": {
     "python-list-copy": {
-      "size": 13727692,
-      "sha256": "b319f47ff310bfcf52954e16b2572ffc11054ffc54256f196855ebd5ccb3275a"
+      "size": 15277378,
+      "sha256": "469bc6f57937e529923ad9af3c9dc338d2dd3e03d70028caa91518e80e73f3f3"
     },
     "node-await-foreach": {
       "size": 16500958,
@@ -29,8 +29,8 @@
       "sha256": "f8af3021382d46ead7cff3632ece6c6159bc1814972f48cb93a9633e80c3b6f1"
     },
     "flutter-setstate-dispose": {
-      "size": 14630904,
-      "sha256": "46db13f3d7f36b84fe91008c70bf784974d951793b522e71f741229e0c6b084a"
+      "size": 13960943,
+      "sha256": "70839bde03f14b40ff542aef4c0d3c81bb323ccaf33a41c661efdce7bcace59d"
     },
     "go-goroutine-leak": {
       "size": 4923199,
@@ -41,8 +41,8 @@
       "sha256": "b73ea65a6895a6cd88715bd969f0a60d85fb62ef567fbbb86185bab7267920ca"
     },
     "rust-borrow-checker": {
-      "size": 11575840,
-      "sha256": "92870063cc2396e9d57832e8fc6411d66c0a22b8b154b5c1478dcf6a5f192d37"
+      "size": 13692479,
+      "sha256": "c77b61a392c5b2f56ff48cf5ee0d690d2b1cd60b73310382283a4e6a9d50bc7a"
     },
     "redis-rate-limiter": {
       "size": 8426159,

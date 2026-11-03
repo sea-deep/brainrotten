@@ -1,30 +1,30 @@
 {
- "jobId": "48f8ded0-b68a-47a1-98f2-58b5d164a40e",
+ "jobId": "362f8b74-c15d-490d-b5cb-6e0022b4430f",
  "state": "ready",
  "stage": "ready",
  "progress": 100,
  "prompt": "I copied the list. Why did both change?",
  "title": "I copied the list. Why did both change?",
- "createdAt": "2026-11-03T06:39:31.048Z",
- "updatedAt": "2026-11-03T06:39:50.998Z",
- "videoUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/video",
- "posterUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/poster",
- "audioUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/audio",
+ "createdAt": "2026-11-03T08:53:55.320Z",
+ "updatedAt": "2026-11-03T08:54:16.394Z",
+ "videoUrl": "/api/v1/videos/362f8b74-c15d-490d-b5cb-6e0022b4430f/video",
+ "posterUrl": "/api/v1/videos/362f8b74-c15d-490d-b5cb-6e0022b4430f/poster",
+ "audioUrl": "/api/v1/videos/362f8b74-c15d-490d-b5cb-6e0022b4430f/audio",
  "error": null,
- "durationSeconds": 47.361565,
+ "durationSeconds": 48.002948,
  "cast": "auto",
  "language": "en",
  "voiceBackend": "elevenlabs",
  "participants": {
   "learner": "motu",
-  "expert": "jhatka"
+  "expert": "patlu"
  },
  "format": "skit",
  "script": {
   "title": "I copied the list. Why did both change?",
   "participants": {
    "learner": "motu",
-   "expert": "jhatka"
+   "expert": "patlu"
   },
   "dialogue": [
    {
@@ -32,7 +32,7 @@
     "text": "I copied my to-do list, removed a task from the copy, and the original lost it too! Why?"
    },
    {
-    "speaker": "jhatka",
+    "speaker": "patlu",
     "text": "Because you never copied it. backup equals tasks just gives the same list a second name, so both names point to one list.",
     "broll": {
      "kind": "code",
@@ -45,7 +45,7 @@
     "text": "So how do I get a real copy? Do I have to loop and append every task myself?"
    },
    {
-    "speaker": "jhatka",
+    "speaker": "patlu",
     "text": "No loop needed. tasks dot copy, or list of tasks, builds a brand new list with the same items.",
     "broll": {
      "kind": "code",
@@ -67,7 +67,7 @@
     }
    },
    {
-    "speaker": "jhatka",
+    "speaker": "patlu",
     "text": "The original changes too. copy is shallow: a new list, but the same dictionaries inside. For nested data, use copy dot deepcopy.",
     "broll": {
      "kind": "code",
@@ -96,11 +96,11 @@
  },
  "learning": {
   "schemaVersion": "BrainrottenLearningPackV1",
-  "jobId": "48f8ded0-b68a-47a1-98f2-58b5d164a40e",
+  "jobId": "362f8b74-c15d-490d-b5cb-6e0022b4430f",
   "format": "skit",
   "title": "I copied the list. Why did both change?",
   "language": "en",
-  "durationSeconds": 47.361565,
+  "durationSeconds": 48.002948,
   "takeaway": "Assigning a list gives it a second name; use .copy() for a new list, and copy.deepcopy when the items are nested.",
   "chapters": [
    {
@@ -113,31 +113,31 @@
     "id": "turn-1",
     "title": "Because you never copied it. backup equals tasks",
     "startMs": 5786,
-    "endMs": 13214
+    "endMs": 13500
    },
    {
     "id": "turn-2",
     "title": "So how do I get a real copy?",
-    "startMs": 13214,
-    "endMs": 17714
+    "startMs": 13500,
+    "endMs": 18071
    },
    {
     "id": "turn-3",
     "title": "No loop needed. tasks dot copy, or list",
-    "startMs": 17714,
-    "endMs": 23571
+    "startMs": 18071,
+    "endMs": 24071
    },
    {
     "id": "turn-4",
     "title": "Wait. What if every task is a dictionary,",
-    "startMs": 23571,
-    "endMs": 29214
+    "startMs": 24071,
+    "endMs": 29786
    },
    {
     "id": "turn-5",
     "title": "The original changes too. copy is shallow: a",
-    "startMs": 39214,
-    "endMs": 47362
+    "startMs": 39786,
+    "endMs": 48003
    }
   ],
   "questions": [
@@ -156,7 +156,7 @@
      1
     ],
     "startMs": 0,
-    "endMs": 13214
+    "endMs": 13500
    },
    {
     "id": "pause-4",
@@ -172,8 +172,8 @@
      4,
      5
     ],
-    "startMs": 23571,
-    "endMs": 47362
+    "startMs": 24071,
+    "endMs": 48003
    }
   ],
   "flashcards": [
@@ -182,14 +182,14 @@
     "front": "Why did removing a task from backup also change tasks?",
     "back": "backup = tasks made a second name for the same list — Assignment never copies a list; both names refer to the same object.",
     "startMs": 0,
-    "endMs": 13214
+    "endMs": 13500
    },
    {
     "id": "pause-4",
     "front": "You copy a list of dictionaries with .copy() and change one task's title in the copy. What happens to the original?",
     "back": "Its title changes too — The original changes too. copy is shallow: a new list, but the same dictionaries inside. For nested data, use copy dot deepcopy.",
-    "startMs": 23571,
-    "endMs": 47362
+    "startMs": 24071,
+    "endMs": 48003
    }
   ],
   "transcript": [
@@ -202,57 +202,57 @@
    },
    {
     "turnIndex": 1,
-    "speaker": "jhatka",
+    "speaker": "patlu",
     "text": "Because you never copied it. backup equals tasks just gives the same list a second name, so both names point to one list.",
     "startMs": 5786,
-    "endMs": 13214
+    "endMs": 13500
    },
    {
     "turnIndex": 2,
     "speaker": "motu",
     "text": "So how do I get a real copy? Do I have to loop and append every task myself?",
-    "startMs": 13214,
-    "endMs": 17714
+    "startMs": 13500,
+    "endMs": 18071
    },
    {
     "turnIndex": 3,
-    "speaker": "jhatka",
+    "speaker": "patlu",
     "text": "No loop needed. tasks dot copy, or list of tasks, builds a brand new list with the same items.",
-    "startMs": 17714,
-    "endMs": 23571
+    "startMs": 18071,
+    "endMs": 24071
    },
    {
     "turnIndex": 4,
     "speaker": "motu",
     "text": "Wait. What if every task is a dictionary, and I change a title in the copy? What happens to the original?",
-    "startMs": 23571,
-    "endMs": 29214
+    "startMs": 24071,
+    "endMs": 29786
    },
    {
     "turnIndex": 5,
-    "speaker": "jhatka",
+    "speaker": "patlu",
     "text": "The original changes too. copy is shallow: a new list, but the same dictionaries inside. For nested data, use copy dot deepcopy.",
-    "startMs": 39214,
-    "endMs": 47362
+    "startMs": 39786,
+    "endMs": 48003
    }
   ]
  },
- "backgroundName": "Minecraft · Lava",
+ "backgroundName": "Subway Surfers",
  "sourceCredits": [
   {
-   "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
-   "url": "https://www.youtube.com/watch?v=LofyMQts7hY",
-   "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=LofyMQts7hY. Muted, cropped, resized and overlaid."
+   "title": "Subway Surfers (2026) - Gameplay [4K 16x9] No Copyright",
+   "url": "https://www.youtube.com/watch?v=i0M4ARe9v0Y",
+   "attribution": "Subway Surfers gameplay — Subway Surfers, https://www.youtube.com/watch?v=i0M4ARe9v0Y. Excerpted, muted, cropped, resized and overlaid."
   }
  ],
  "outputs": {
-  "learningUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/learning",
-  "notesUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/notes",
-  "captionsUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/captions",
-  "flashcardsUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/flashcards"
+  "learningUrl": "/api/v1/videos/362f8b74-c15d-490d-b5cb-6e0022b4430f/learning",
+  "notesUrl": "/api/v1/videos/362f8b74-c15d-490d-b5cb-6e0022b4430f/notes",
+  "captionsUrl": "/api/v1/videos/362f8b74-c15d-490d-b5cb-6e0022b4430f/captions",
+  "flashcardsUrl": "/api/v1/videos/362f8b74-c15d-490d-b5cb-6e0022b4430f/flashcards"
  },
  "voiceNames": {
   "motu": "Motu",
-  "jhatka": "Dr Jhatka"
+  "patlu": "Patlu"
  }
 }
