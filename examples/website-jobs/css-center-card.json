@@ -1,0 +1,336 @@
+{
+ "jobId": "ebb4c677-a082-4f3f-8fb6-8ce050aecc23",
+ "state": "ready",
+ "stage": "ready",
+ "progress": 100,
+ "prompt": "Ways to center a card, ranked",
+ "title": "Ways to center a card, ranked",
+ "createdAt": "2026-11-03T06:40:23.062Z",
+ "updatedAt": "2026-11-03T06:40:42.618Z",
+ "videoUrl": "/api/v1/videos/ebb4c677-a082-4f3f-8fb6-8ce050aecc23/video",
+ "posterUrl": "/api/v1/videos/ebb4c677-a082-4f3f-8fb6-8ce050aecc23/poster",
+ "audioUrl": "/api/v1/videos/ebb4c677-a082-4f3f-8fb6-8ce050aecc23/audio",
+ "error": null,
+ "durationSeconds": 59.572925,
+ "cast": "auto",
+ "language": "en",
+ "voiceBackend": "elevenlabs",
+ "format": "tierlist",
+ "narrator": "jack",
+ "script": {
+  "title": "Ways to center a card, ranked",
+  "narrator": "jack",
+  "tierlist": {
+   "criterion": "centered both ways, any screen size",
+   "items": [
+    {
+     "id": "flex",
+     "label": "Flexbox center"
+    },
+    {
+     "id": "grid",
+     "label": "Grid place-items"
+    },
+    {
+     "id": "absolute",
+     "label": "Absolute + translate"
+    },
+    {
+     "id": "margin",
+     "label": "margin: auto"
+    },
+    {
+     "id": "text",
+     "label": "text-align: center"
+    },
+    {
+     "id": "center-tag",
+     "label": "<center> tag"
+    }
+   ]
+  },
+  "dialogue": [
+   {
+    "speaker": "jack",
+    "text": "Let's rank the ways to center a card on a portfolio page. One rule: centered horizontally and vertically, on any screen size."
+   },
+   {
+    "speaker": "jack",
+    "text": "The old center tag. It's deprecated, and it only centers horizontally. F tier.",
+    "tier": {
+     "place": {
+      "item": "center-tag",
+      "tier": "F"
+     }
+    }
+   },
+   {
+    "speaker": "jack",
+    "text": "text-align center. It centers the text inside the card, not the card itself. D tier.",
+    "tier": {
+     "place": {
+      "item": "text",
+      "tier": "D"
+     }
+    }
+   },
+   {
+    "speaker": "jack",
+    "text": "margin auto with a fixed width. Great horizontally, but in normal flow it does nothing vertically. C tier.",
+    "tier": {
+     "place": {
+      "item": "margin",
+      "tier": "C"
+     }
+    }
+   },
+   {
+    "speaker": "jack",
+    "text": "Absolute position, top and left fifty percent, then translate minus fifty percent. It works everywhere. So is it S tier?",
+    "tier": {
+     "focus": "absolute"
+    },
+    "pause": {
+     "prompt": "position: absolute + top/left 50% + translate(-50%, -50%). Where does it rank for centering a card?",
+     "choices": [
+      "S: perfect",
+      "B: works, but pulls the card out of the layout",
+      "F: broken"
+     ],
+     "answer": 1
+    }
+   },
+   {
+    "speaker": "jack",
+    "text": "B tier. It centers perfectly, but the card leaves the normal layout, so nothing else can flow around it.",
+    "tier": {
+     "place": {
+      "item": "absolute",
+      "tier": "B"
+     }
+    }
+   },
+   {
+    "speaker": "jack",
+    "text": "Grid with place-items center. Two lines on the parent, centered both ways. S tier.",
+    "tier": {
+     "place": {
+      "item": "grid",
+      "tier": "S"
+     }
+    }
+   },
+   {
+    "speaker": "jack",
+    "text": "Flexbox with justify-content and align-items center. Same result, works everywhere. Also S.",
+    "tier": {
+     "place": {
+      "item": "flex",
+      "tier": "S"
+     }
+    }
+   }
+  ],
+  "takeaway": "Use flexbox or grid on the parent to center both ways; margin auto only centers horizontally.",
+  "questions": [
+   {
+    "prompt": "Why is text-align: center only D tier?",
+    "choices": [
+     "It centers the text inside the card, not the card",
+     "It is deprecated",
+     "It only works in grid"
+    ],
+    "answer": 0,
+    "explanation": "text-align affects inline content inside an element, not the element's own position.",
+    "turnIndices": [
+     2
+    ]
+   }
+  ]
+ },
+ "learning": {
+  "schemaVersion": "BrainrottenLearningPackV1",
+  "jobId": "ebb4c677-a082-4f3f-8fb6-8ce050aecc23",
+  "format": "tierlist",
+  "title": "Ways to center a card, ranked",
+  "language": "en",
+  "durationSeconds": 59.572925,
+  "takeaway": "Use flexbox or grid on the parent to center both ways; margin auto only centers horizontally.",
+  "chapters": [
+   {
+    "id": "turn-0",
+    "title": "Let's rank the ways to center a card",
+    "startMs": 0,
+    "endMs": 7357
+   },
+   {
+    "id": "turn-1",
+    "title": "The old center tag. It's deprecated, and it",
+    "startMs": 7357,
+    "endMs": 12571
+   },
+   {
+    "id": "turn-2",
+    "title": "text-align center. It centers the text inside the",
+    "startMs": 12571,
+    "endMs": 18071
+   },
+   {
+    "id": "turn-3",
+    "title": "margin auto with a fixed width. Great horizontally,",
+    "startMs": 18071,
+    "endMs": 25000
+   },
+   {
+    "id": "turn-4",
+    "title": "Absolute position, top and left fifty percent, then",
+    "startMs": 25000,
+    "endMs": 32536
+   },
+   {
+    "id": "turn-5",
+    "title": "B tier. It centers perfectly, but the card",
+    "startMs": 42536,
+    "endMs": 47929
+   },
+   {
+    "id": "turn-6",
+    "title": "Grid with place-items center. Two lines on the",
+    "startMs": 47929,
+    "endMs": 53643
+   },
+   {
+    "id": "turn-7",
+    "title": "Flexbox with justify-content and align-items center. Same result,",
+    "startMs": 53643,
+    "endMs": 59573
+   }
+  ],
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Why is text-align: center only D tier?",
+    "choices": [
+     "It centers the text inside the card, not the card",
+     "It is deprecated",
+     "It only works in grid"
+    ],
+    "answer": 0,
+    "explanation": "text-align affects inline content inside an element, not the element's own position.",
+    "turnIndices": [
+     2
+    ],
+    "startMs": 12571,
+    "endMs": 18071
+   },
+   {
+    "id": "pause-4",
+    "prompt": "position: absolute + top/left 50% + translate(-50%, -50%). Where does it rank for centering a card?",
+    "choices": [
+     "S: perfect",
+     "B: works, but pulls the card out of the layout",
+     "F: broken"
+    ],
+    "answer": 1,
+    "explanation": "B tier. It centers perfectly, but the card leaves the normal layout, so nothing else can flow around it.",
+    "turnIndices": [
+     4,
+     5
+    ],
+    "startMs": 25000,
+    "endMs": 47929
+   }
+  ],
+  "flashcards": [
+   {
+    "id": "q1",
+    "front": "Why is text-align: center only D tier?",
+    "back": "It centers the text inside the card, not the card — text-align affects inline content inside an element, not the element's own position.",
+    "startMs": 12571,
+    "endMs": 18071
+   },
+   {
+    "id": "pause-4",
+    "front": "position: absolute + top/left 50% + translate(-50%, -50%). Where does it rank for centering a card?",
+    "back": "B: works, but pulls the card out of the layout — B tier. It centers perfectly, but the card leaves the normal layout, so nothing else can flow around it.",
+    "startMs": 25000,
+    "endMs": 47929
+   }
+  ],
+  "transcript": [
+   {
+    "turnIndex": 0,
+    "speaker": "jack",
+    "text": "Let's rank the ways to center a card on a portfolio page. One rule: centered horizontally and vertically, on any screen size.",
+    "startMs": 0,
+    "endMs": 7357
+   },
+   {
+    "turnIndex": 1,
+    "speaker": "jack",
+    "text": "The old center tag. It's deprecated, and it only centers horizontally. F tier.",
+    "startMs": 7357,
+    "endMs": 12571
+   },
+   {
+    "turnIndex": 2,
+    "speaker": "jack",
+    "text": "text-align center. It centers the text inside the card, not the card itself. D tier.",
+    "startMs": 12571,
+    "endMs": 18071
+   },
+   {
+    "turnIndex": 3,
+    "speaker": "jack",
+    "text": "margin auto with a fixed width. Great horizontally, but in normal flow it does nothing vertically. C tier.",
+    "startMs": 18071,
+    "endMs": 25000
+   },
+   {
+    "turnIndex": 4,
+    "speaker": "jack",
+    "text": "Absolute position, top and left fifty percent, then translate minus fifty percent. It works everywhere. So is it S tier?",
+    "startMs": 25000,
+    "endMs": 32536
+   },
+   {
+    "turnIndex": 5,
+    "speaker": "jack",
+    "text": "B tier. It centers perfectly, but the card leaves the normal layout, so nothing else can flow around it.",
+    "startMs": 42536,
+    "endMs": 47929
+   },
+   {
+    "turnIndex": 6,
+    "speaker": "jack",
+    "text": "Grid with place-items center. Two lines on the parent, centered both ways. S tier.",
+    "startMs": 47929,
+    "endMs": 53643
+   },
+   {
+    "turnIndex": 7,
+    "speaker": "jack",
+    "text": "Flexbox with justify-content and align-items center. Same result, works everywhere. Also S.",
+    "startMs": 53643,
+    "endMs": 59573
+   }
+  ]
+ },
+ "backgroundName": "GTA Stunts",
+ "sourceCredits": [
+  {
+   "title": "GTA 5 - Jump Stunts EP.27 Free To Use NO COPYRIGHT GAMEPLAY",
+   "url": "https://www.youtube.com/watch?v=KvS0MLj5IIE",
+   "attribution": "GTA 5 - Jump Stunts EP.27 — RipstaStylez, https://www.youtube.com/watch?v=KvS0MLj5IIE, Creative Commons Attribution. Muted, cropped, resized and overlaid. Original soundtrack is not included."
+  }
+ ],
+ "outputs": {
+  "learningUrl": "/api/v1/videos/ebb4c677-a082-4f3f-8fb6-8ce050aecc23/learning",
+  "notesUrl": "/api/v1/videos/ebb4c677-a082-4f3f-8fb6-8ce050aecc23/notes",
+  "captionsUrl": "/api/v1/videos/ebb4c677-a082-4f3f-8fb6-8ce050aecc23/captions",
+  "flashcardsUrl": "/api/v1/videos/ebb4c677-a082-4f3f-8fb6-8ce050aecc23/flashcards"
+ },
+ "voiceNames": {
+  "jack": "Jack"
+ }
+}

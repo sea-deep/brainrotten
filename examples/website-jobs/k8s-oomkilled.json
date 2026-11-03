@@ -1,0 +1,309 @@
+{
+ "jobId": "7683d77a-023b-4a0b-9216-374f193b2d39",
+ "state": "ready",
+ "stage": "ready",
+ "progress": 100,
+ "prompt": "OOMKilled ke fixes, ranked",
+ "title": "OOMKilled ke fixes, ranked",
+ "createdAt": "2026-11-03T06:42:43.022Z",
+ "updatedAt": "2026-11-03T06:43:04.531Z",
+ "videoUrl": "/api/v1/videos/7683d77a-023b-4a0b-9216-374f193b2d39/video",
+ "posterUrl": "/api/v1/videos/7683d77a-023b-4a0b-9216-374f193b2d39/poster",
+ "audioUrl": "/api/v1/videos/7683d77a-023b-4a0b-9216-374f193b2d39/audio",
+ "error": null,
+ "durationSeconds": 58.716259,
+ "cast": "auto",
+ "language": "hinglish",
+ "voiceBackend": "elevenlabs",
+ "format": "tierlist",
+ "narrator": "budhdev",
+ "script": {
+  "title": "OOMKilled ke fixes, ranked",
+  "narrator": "budhdev",
+  "tierlist": {
+   "criterion": "stops OOMKills without wasting memory",
+   "items": [
+    {
+     "id": "fix-leak",
+     "label": "Fix the leak"
+    },
+    {
+     "id": "heap-limit",
+     "label": "max-old-space-size"
+    },
+    {
+     "id": "raise-limit",
+     "label": "Raise memory limit"
+    },
+    {
+     "id": "nightly",
+     "label": "Restart pods nightly"
+    },
+    {
+     "id": "no-limit",
+     "label": "Remove the limit"
+    }
+   ]
+  },
+  "dialogue": [
+   {
+    "speaker": "budhdev",
+    "text": "Hamari Node API Kubernetes par baar baar OOMKilled ho rahi thi. Criterion ek hi: crash band ho, aur memory bhi barbaad na ho."
+   },
+   {
+    "speaker": "budhdev",
+    "text": "Limit hi hata do? Pod node ki saari memory kha sakta hai aur baaki pods ko bhi gira dega. Seedha F.",
+    "tier": {
+     "place": {
+      "item": "no-limit",
+      "tier": "F"
+     }
+    }
+   },
+   {
+    "speaker": "budhdev",
+    "text": "Har raat pods restart karo. Crash thoda kam dikhega, par leak wahin ka wahin. D tier.",
+    "tier": {
+     "place": {
+      "item": "nightly",
+      "tier": "D"
+     }
+    }
+   },
+   {
+    "speaker": "budhdev",
+    "text": "Memory limit badha do. Abhi ke liye theek, par leak hai toh bas thodi der se crash hoga. C tier.",
+    "tier": {
+     "place": {
+      "item": "raise-limit",
+      "tier": "C"
+     }
+    }
+   },
+   {
+    "speaker": "budhdev",
+    "text": "Ab Node ka max old space size, container ki limit se thoda kam. Yeh kitna kaam ka hai?",
+    "tier": {
+     "focus": "heap-limit"
+    },
+    "pause": {
+     "prompt": "Node's --max-old-space-size is set a bit below the container's memory limit. What does that change?",
+     "choices": [
+      "Node collects garbage harder before the kernel kills the pod",
+      "Nothing at all",
+      "It doubles the available memory"
+     ],
+     "answer": 0
+    }
+   },
+   {
+    "speaker": "budhdev",
+    "text": "Node limit ke paas pahunchne se pehle hi zor se garbage collection karta hai, kernel ke maarne se pehle. A tier.",
+    "tier": {
+     "place": {
+      "item": "heap-limit",
+      "tier": "A"
+     }
+    }
+   },
+   {
+    "speaker": "budhdev",
+    "text": "Aur leak dhoondh ke code theek karna, jaise kabhi na saaf hone wala cache. Asli ilaaj yahi hai. S tier.",
+    "tier": {
+     "place": {
+      "item": "fix-leak",
+      "tier": "S"
+     }
+    }
+   }
+  ],
+  "takeaway": "Find the leak; until then, keep Node's heap limit below the container limit so it collects garbage before the kernel kills it.",
+  "questions": [
+   {
+    "prompt": "Why is removing the memory limit F tier?",
+    "choices": [
+     "One leaking pod can eat the node's memory and take other pods down",
+     "Kubernetes forbids it",
+     "It makes the pod slower"
+    ],
+    "answer": 0,
+    "explanation": "Without a limit the leak grows until the whole node runs out of memory.",
+    "turnIndices": [
+     1
+    ]
+   }
+  ]
+ },
+ "learning": {
+  "schemaVersion": "BrainrottenLearningPackV1",
+  "jobId": "7683d77a-023b-4a0b-9216-374f193b2d39",
+  "format": "tierlist",
+  "title": "OOMKilled ke fixes, ranked",
+  "language": "hinglish",
+  "durationSeconds": 58.716259,
+  "takeaway": "Find the leak; until then, keep Node's heap limit below the container limit so it collects garbage before the kernel kills it.",
+  "chapters": [
+   {
+    "id": "turn-0",
+    "title": "Hamari Node API Kubernetes par baar baar OOMKilled",
+    "startMs": 0,
+    "endMs": 8536
+   },
+   {
+    "id": "turn-1",
+    "title": "Limit hi hata do? Pod node ki saari",
+    "startMs": 8536,
+    "endMs": 15286
+   },
+   {
+    "id": "turn-2",
+    "title": "Har raat pods restart karo. Crash thoda kam",
+    "startMs": 15286,
+    "endMs": 21536
+   },
+   {
+    "id": "turn-3",
+    "title": "Memory limit badha do. Abhi ke liye theek,",
+    "startMs": 21536,
+    "endMs": 28321
+   },
+   {
+    "id": "turn-4",
+    "title": "Ab Node ka max old space size, container",
+    "startMs": 28321,
+    "endMs": 34643
+   },
+   {
+    "id": "turn-5",
+    "title": "Node limit ke paas pahunchne se pehle hi",
+    "startMs": 44643,
+    "endMs": 51571
+   },
+   {
+    "id": "turn-6",
+    "title": "Aur leak dhoondh ke code theek karna, jaise",
+    "startMs": 51571,
+    "endMs": 58716
+   }
+  ],
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Why is removing the memory limit F tier?",
+    "choices": [
+     "One leaking pod can eat the node's memory and take other pods down",
+     "Kubernetes forbids it",
+     "It makes the pod slower"
+    ],
+    "answer": 0,
+    "explanation": "Without a limit the leak grows until the whole node runs out of memory.",
+    "turnIndices": [
+     1
+    ],
+    "startMs": 8536,
+    "endMs": 15286
+   },
+   {
+    "id": "pause-4",
+    "prompt": "Node's --max-old-space-size is set a bit below the container's memory limit. What does that change?",
+    "choices": [
+     "Node collects garbage harder before the kernel kills the pod",
+     "Nothing at all",
+     "It doubles the available memory"
+    ],
+    "answer": 0,
+    "explanation": "Node limit ke paas pahunchne se pehle hi zor se garbage collection karta hai, kernel ke maarne se pehle. A tier.",
+    "turnIndices": [
+     4,
+     5
+    ],
+    "startMs": 28321,
+    "endMs": 51571
+   }
+  ],
+  "flashcards": [
+   {
+    "id": "q1",
+    "front": "Why is removing the memory limit F tier?",
+    "back": "One leaking pod can eat the node's memory and take other pods down — Without a limit the leak grows until the whole node runs out of memory.",
+    "startMs": 8536,
+    "endMs": 15286
+   },
+   {
+    "id": "pause-4",
+    "front": "Node's --max-old-space-size is set a bit below the container's memory limit. What does that change?",
+    "back": "Node collects garbage harder before the kernel kills the pod — Node limit ke paas pahunchne se pehle hi zor se garbage collection karta hai, kernel ke maarne se pehle. A tier.",
+    "startMs": 28321,
+    "endMs": 51571
+   }
+  ],
+  "transcript": [
+   {
+    "turnIndex": 0,
+    "speaker": "budhdev",
+    "text": "Hamari Node API Kubernetes par baar baar OOMKilled ho rahi thi. Criterion ek hi: crash band ho, aur memory bhi barbaad na ho.",
+    "startMs": 0,
+    "endMs": 8536
+   },
+   {
+    "turnIndex": 1,
+    "speaker": "budhdev",
+    "text": "Limit hi hata do? Pod node ki saari memory kha sakta hai aur baaki pods ko bhi gira dega. Seedha F.",
+    "startMs": 8536,
+    "endMs": 15286
+   },
+   {
+    "turnIndex": 2,
+    "speaker": "budhdev",
+    "text": "Har raat pods restart karo. Crash thoda kam dikhega, par leak wahin ka wahin. D tier.",
+    "startMs": 15286,
+    "endMs": 21536
+   },
+   {
+    "turnIndex": 3,
+    "speaker": "budhdev",
+    "text": "Memory limit badha do. Abhi ke liye theek, par leak hai toh bas thodi der se crash hoga. C tier.",
+    "startMs": 21536,
+    "endMs": 28321
+   },
+   {
+    "turnIndex": 4,
+    "speaker": "budhdev",
+    "text": "Ab Node ka max old space size, container ki limit se thoda kam. Yeh kitna kaam ka hai?",
+    "startMs": 28321,
+    "endMs": 34643
+   },
+   {
+    "turnIndex": 5,
+    "speaker": "budhdev",
+    "text": "Node limit ke paas pahunchne se pehle hi zor se garbage collection karta hai, kernel ke maarne se pehle. A tier.",
+    "startMs": 44643,
+    "endMs": 51571
+   },
+   {
+    "turnIndex": 6,
+    "speaker": "budhdev",
+    "text": "Aur leak dhoondh ke code theek karna, jaise kabhi na saaf hone wala cache. Asli ilaaj yahi hai. S tier.",
+    "startMs": 51571,
+    "endMs": 58716
+   }
+  ]
+ },
+ "backgroundName": "Subway Surfers",
+ "sourceCredits": [
+  {
+   "title": "Subway Surfers (2026) - Gameplay [4K 16x9] No Copyright",
+   "url": "https://www.youtube.com/watch?v=i0M4ARe9v0Y",
+   "attribution": "Subway Surfers gameplay — Subway Surfers, https://www.youtube.com/watch?v=i0M4ARe9v0Y. Excerpted, muted, cropped, resized and overlaid."
+  }
+ ],
+ "outputs": {
+  "learningUrl": "/api/v1/videos/7683d77a-023b-4a0b-9216-374f193b2d39/learning",
+  "notesUrl": "/api/v1/videos/7683d77a-023b-4a0b-9216-374f193b2d39/notes",
+  "captionsUrl": "/api/v1/videos/7683d77a-023b-4a0b-9216-374f193b2d39/captions",
+  "flashcardsUrl": "/api/v1/videos/7683d77a-023b-4a0b-9216-374f193b2d39/flashcards"
+ },
+ "voiceNames": {
+  "budhdev": "Budhdev"
+ }
+}

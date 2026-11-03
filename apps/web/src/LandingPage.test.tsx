@@ -8,16 +8,18 @@ vi.mock('./AgentFlow.js',()=>({AgentFlow:()=>null}));
 beforeEach(()=>{vi.stubGlobal('IntersectionObserver',class{observe(){}unobserve(){}disconnect(){}});});
 afterEach(()=>{cleanup();vi.unstubAllGlobals();});
 describe('production landing page',()=>{
-  it('shows one real-session example per format and keeps playback explicit',()=>{
+  it('shows examples per format, lets you pick a stack, and keeps playback explicit',()=>{
     render(<LandingPage/>);expect(document.querySelector('video')).toBeNull();
     expect(screen.getByRole('heading',{level:1})).toHaveTextContent('Stop doomscrolling. Understand what your agent just changed.');
     expect(screen.getAllByRole('tab',{name:/Sketch board|Character skit|PR review|Tier list|Group chat/})).toHaveLength(5);
     expect(screen.getByRole('tab',{name:/Sketch board/})).toHaveAttribute('aria-selected','true');
     fireEvent.click(screen.getByRole('tab',{name:/PR review/}));
-    expect(screen.getByRole('tabpanel',{name:/PR review/})).toHaveTextContent('Accept real Cognito pool IDs');
+    expect(screen.getByRole('tabpanel',{name:/PR review/})).toHaveTextContent('Stop the useEffect request loop');
     expect(screen.getByText(/What the agent did/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'TypeScript + Redis'}));
+    expect(screen.getByRole('tabpanel',{name:/PR review/})).toHaveTextContent('Rate limiter ka race fix');
     fireEvent.click(screen.getByRole('button',{name:/Play example/}));
-    expect(document.querySelector('video')?.getAttribute('src')).toBe('/examples/session-prreview-cognito/video.mp4');
+    expect(document.querySelector('video')?.getAttribute('src')).toBe('/examples/redis-rate-limiter/video.mp4');
     fireEvent.keyDown(screen.getByRole('tab',{name:/PR review/}),{key:'ArrowRight'});
     expect(screen.getByRole('tab',{name:/Tier list/})).toHaveAttribute('aria-selected','true');
     expect(document.querySelector('video')).toBeNull();

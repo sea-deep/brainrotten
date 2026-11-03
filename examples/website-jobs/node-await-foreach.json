@@ -1,0 +1,258 @@
+{
+ "jobId": "6a3efac7-c50c-4bcc-a1b8-5f15b2d3a62f",
+ "state": "ready",
+ "stage": "ready",
+ "progress": 100,
+ "prompt": "await lagaya, phir bhi wait nahi kiya?",
+ "title": "await lagaya, phir bhi wait nahi kiya?",
+ "createdAt": "2026-11-03T06:39:52.902Z",
+ "updatedAt": "2026-11-03T06:40:19.862Z",
+ "videoUrl": "/api/v1/videos/6a3efac7-c50c-4bcc-a1b8-5f15b2d3a62f/video",
+ "posterUrl": "/api/v1/videos/6a3efac7-c50c-4bcc-a1b8-5f15b2d3a62f/poster",
+ "audioUrl": "/api/v1/videos/6a3efac7-c50c-4bcc-a1b8-5f15b2d3a62f/audio",
+ "error": null,
+ "durationSeconds": 50.506372,
+ "cast": "auto",
+ "language": "hinglish",
+ "voiceBackend": "elevenlabs",
+ "participants": {
+  "learner": "badri",
+  "expert": "budhdev"
+ },
+ "format": "skit",
+ "script": {
+  "title": "await lagaya, phir bhi wait nahi kiya?",
+  "participants": {
+   "learner": "badri",
+   "expert": "budhdev"
+  },
+  "dialogue": [
+   {
+    "speaker": "badri",
+    "text": "Dost, maine forEach ke andar await lagaya saare signup emails bhejne ke liye. Par script done pehle print kar deti hai! Kyun?"
+   },
+   {
+    "speaker": "budhdev",
+    "text": "Kyunki forEach await ka intezaar nahi karta. Har callback async hai, forEach unhe shuru karke seedha aage badh jaata hai.",
+    "broll": {
+     "kind": "code",
+     "code": "users.forEach(async (u) => {\n  await sendEmail(u);\n});\nconsole.log('done'); // runs first",
+     "language": "js"
+    }
+   },
+   {
+    "speaker": "badri",
+    "text": "Toh phir kya likhun? Kya ek normal for loop se kaam chalega?"
+   },
+   {
+    "speaker": "budhdev",
+    "text": "Haan. for of ke andar await sach mein rukta hai, toh ek ke baad ek email jaayegi.",
+    "broll": {
+     "kind": "code",
+     "code": "for (const u of users) {\n  await sendEmail(u);\n}",
+     "language": "js"
+    }
+   },
+   {
+    "speaker": "badri",
+    "text": "Par hazaar users hain, ek ek karke toh bahut der lagegi. Sab ek saath bhejne ka tareeka kya hai?",
+    "pause": {
+     "prompt": "Sending 1,000 emails one at a time is slow. Which sends them together and still waits for all of them?",
+     "choices": [
+      "await Promise.all(users.map(sendEmail))",
+      "users.forEach(await sendEmail)",
+      "Wrap the loop in setTimeout"
+     ],
+     "answer": 0
+    }
+   },
+   {
+    "speaker": "budhdev",
+    "text": "Promise dot all. Saare emails ek saath shuru karo aur sabke khatam hone ka wait karo. Bas provider ki rate limit ka dhyaan rakhna.",
+    "broll": {
+     "kind": "code",
+     "code": "await Promise.all(users.map(sendEmail));",
+     "language": "js"
+    }
+   }
+  ],
+  "takeaway": "forEach does not wait for async callbacks; use for...of to go one by one, or Promise.all to run them together and wait for all.",
+  "questions": [
+   {
+    "prompt": "Why did 'done' print before the emails were sent?",
+    "choices": [
+     "forEach does not wait for async callbacks",
+     "sendEmail is synchronous",
+     "console.log runs in parallel"
+    ],
+    "answer": 0,
+    "explanation": "forEach calls each async callback and moves on without awaiting the returned promises.",
+    "turnIndices": [
+     0,
+     1
+    ]
+   }
+  ]
+ },
+ "learning": {
+  "schemaVersion": "BrainrottenLearningPackV1",
+  "jobId": "6a3efac7-c50c-4bcc-a1b8-5f15b2d3a62f",
+  "format": "skit",
+  "title": "await lagaya, phir bhi wait nahi kiya?",
+  "language": "hinglish",
+  "durationSeconds": 50.506372,
+  "takeaway": "forEach does not wait for async callbacks; use for...of to go one by one, or Promise.all to run them together and wait for all.",
+  "chapters": [
+   {
+    "id": "turn-0",
+    "title": "Dost, maine forEach ke andar await lagaya saare",
+    "startMs": 0,
+    "endMs": 7643
+   },
+   {
+    "id": "turn-1",
+    "title": "Kyunki forEach await ka intezaar nahi karta. Har",
+    "startMs": 7643,
+    "endMs": 16179
+   },
+   {
+    "id": "turn-2",
+    "title": "Toh phir kya likhun? Kya ek normal for",
+    "startMs": 16179,
+    "endMs": 19786
+   },
+   {
+    "id": "turn-3",
+    "title": "Haan. for of ke andar await sach mein",
+    "startMs": 19786,
+    "endMs": 25857
+   },
+   {
+    "id": "turn-4",
+    "title": "Par hazaar users hain, ek ek karke toh",
+    "startMs": 25857,
+    "endMs": 31786
+   },
+   {
+    "id": "turn-5",
+    "title": "Promise dot all. Saare emails ek saath shuru",
+    "startMs": 41786,
+    "endMs": 50506
+   }
+  ],
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Why did 'done' print before the emails were sent?",
+    "choices": [
+     "forEach does not wait for async callbacks",
+     "sendEmail is synchronous",
+     "console.log runs in parallel"
+    ],
+    "answer": 0,
+    "explanation": "forEach calls each async callback and moves on without awaiting the returned promises.",
+    "turnIndices": [
+     0,
+     1
+    ],
+    "startMs": 0,
+    "endMs": 16179
+   },
+   {
+    "id": "pause-4",
+    "prompt": "Sending 1,000 emails one at a time is slow. Which sends them together and still waits for all of them?",
+    "choices": [
+     "await Promise.all(users.map(sendEmail))",
+     "users.forEach(await sendEmail)",
+     "Wrap the loop in setTimeout"
+    ],
+    "answer": 0,
+    "explanation": "Promise dot all. Saare emails ek saath shuru karo aur sabke khatam hone ka wait karo. Bas provider ki rate limit ka dhyaan rakhna.",
+    "turnIndices": [
+     4,
+     5
+    ],
+    "startMs": 25857,
+    "endMs": 50506
+   }
+  ],
+  "flashcards": [
+   {
+    "id": "q1",
+    "front": "Why did 'done' print before the emails were sent?",
+    "back": "forEach does not wait for async callbacks — forEach calls each async callback and moves on without awaiting the returned promises.",
+    "startMs": 0,
+    "endMs": 16179
+   },
+   {
+    "id": "pause-4",
+    "front": "Sending 1,000 emails one at a time is slow. Which sends them together and still waits for all of them?",
+    "back": "await Promise.all(users.map(sendEmail)) — Promise dot all. Saare emails ek saath shuru karo aur sabke khatam hone ka wait karo. Bas provider ki rate limit ka dhyaan rakhna.",
+    "startMs": 25857,
+    "endMs": 50506
+   }
+  ],
+  "transcript": [
+   {
+    "turnIndex": 0,
+    "speaker": "badri",
+    "text": "Dost, maine forEach ke andar await lagaya saare signup emails bhejne ke liye. Par script done pehle print kar deti hai! Kyun?",
+    "startMs": 0,
+    "endMs": 7643
+   },
+   {
+    "turnIndex": 1,
+    "speaker": "budhdev",
+    "text": "Kyunki forEach await ka intezaar nahi karta. Har callback async hai, forEach unhe shuru karke seedha aage badh jaata hai.",
+    "startMs": 7643,
+    "endMs": 16179
+   },
+   {
+    "turnIndex": 2,
+    "speaker": "badri",
+    "text": "Toh phir kya likhun? Kya ek normal for loop se kaam chalega?",
+    "startMs": 16179,
+    "endMs": 19786
+   },
+   {
+    "turnIndex": 3,
+    "speaker": "budhdev",
+    "text": "Haan. for of ke andar await sach mein rukta hai, toh ek ke baad ek email jaayegi.",
+    "startMs": 19786,
+    "endMs": 25857
+   },
+   {
+    "turnIndex": 4,
+    "speaker": "badri",
+    "text": "Par hazaar users hain, ek ek karke toh bahut der lagegi. Sab ek saath bhejne ka tareeka kya hai?",
+    "startMs": 25857,
+    "endMs": 31786
+   },
+   {
+    "turnIndex": 5,
+    "speaker": "budhdev",
+    "text": "Promise dot all. Saare emails ek saath shuru karo aur sabke khatam hone ka wait karo. Bas provider ki rate limit ka dhyaan rakhna.",
+    "startMs": 41786,
+    "endMs": 50506
+   }
+  ]
+ },
+ "backgroundName": "Subway Surfers",
+ "sourceCredits": [
+  {
+   "title": "Subway Surfers (2026) - Gameplay [4K 16x9] No Copyright",
+   "url": "https://www.youtube.com/watch?v=i0M4ARe9v0Y",
+   "attribution": "Subway Surfers gameplay — Subway Surfers, https://www.youtube.com/watch?v=i0M4ARe9v0Y. Excerpted, muted, cropped, resized and overlaid."
+  }
+ ],
+ "outputs": {
+  "learningUrl": "/api/v1/videos/6a3efac7-c50c-4bcc-a1b8-5f15b2d3a62f/learning",
+  "notesUrl": "/api/v1/videos/6a3efac7-c50c-4bcc-a1b8-5f15b2d3a62f/notes",
+  "captionsUrl": "/api/v1/videos/6a3efac7-c50c-4bcc-a1b8-5f15b2d3a62f/captions",
+  "flashcardsUrl": "/api/v1/videos/6a3efac7-c50c-4bcc-a1b8-5f15b2d3a62f/flashcards"
+ },
+ "voiceNames": {
+  "badri": "Badri",
+  "budhdev": "Budhdev"
+ }
+}

@@ -1,0 +1,338 @@
+{
+ "jobId": "4b4e041b-b9e1-4836-a297-f00d06d57b37",
+ "state": "ready",
+ "stage": "ready",
+ "progress": 100,
+ "prompt": "Why memory kept climbing",
+ "title": "Why memory kept climbing",
+ "createdAt": "2026-11-03T06:42:22.864Z",
+ "updatedAt": "2026-11-03T06:42:41.551Z",
+ "videoUrl": "/api/v1/videos/4b4e041b-b9e1-4836-a297-f00d06d57b37/video",
+ "posterUrl": "/api/v1/videos/4b4e041b-b9e1-4836-a297-f00d06d57b37/poster",
+ "audioUrl": "/api/v1/videos/4b4e041b-b9e1-4836-a297-f00d06d57b37/audio",
+ "error": null,
+ "durationSeconds": 44.506145,
+ "cast": "auto",
+ "language": "en",
+ "voiceBackend": "elevenlabs",
+ "format": "sketch",
+ "narrator": "john",
+ "script": {
+  "title": "Why memory kept climbing",
+  "narrator": "john",
+  "sketch": {
+   "nodes": [
+    {
+     "id": "handler",
+     "label": "HTTP handler",
+     "kind": "service",
+     "icon": "server"
+    },
+    {
+     "id": "fetch",
+     "label": "fetch goroutine",
+     "kind": "service",
+     "icon": "cpu"
+    },
+    {
+     "id": "ch",
+     "label": "result channel",
+     "kind": "queue",
+     "icon": "inbox"
+    },
+    {
+     "id": "timeout",
+     "label": "2s timeout",
+     "kind": "external",
+     "icon": "timer"
+    }
+   ],
+   "edges": [
+    {
+     "from": "handler",
+     "to": "fetch",
+     "label": "go fetch()"
+    },
+    {
+     "from": "fetch",
+     "to": "ch",
+     "label": "send"
+    },
+    {
+     "from": "ch",
+     "to": "handler",
+     "label": "receive"
+    },
+    {
+     "from": "timeout",
+     "to": "handler",
+     "label": "wins race"
+    }
+   ]
+  },
+  "dialogue": [
+   {
+    "speaker": "john",
+    "text": "Our Go price service used more memory every hour, until it got restarted. Here's the request path.",
+    "sketch": {
+     "show": [
+      "handler"
+     ]
+    }
+   },
+   {
+    "speaker": "john",
+    "text": "The handler starts a goroutine to fetch a price, then waits on a channel for the result.",
+    "sketch": {
+     "show": [
+      "fetch",
+      "ch",
+      "handler>fetch",
+      "fetch>ch",
+      "ch>handler"
+     ],
+     "focus": [
+      "handler>fetch"
+     ]
+    }
+   },
+   {
+    "speaker": "john",
+    "text": "It also has a two second timeout, so one slow API can't hang the whole request.",
+    "sketch": {
+     "show": [
+      "timeout",
+      "timeout>handler"
+     ],
+     "focus": [
+      "timeout"
+     ]
+    }
+   },
+   {
+    "speaker": "john",
+    "text": "Now the API takes five seconds. The handler times out and returns. What happens to that goroutine?",
+    "sketch": {
+     "focus": [
+      "fetch"
+     ]
+    },
+    "pause": {
+     "prompt": "The handler has returned. The goroutine later sends on an unbuffered channel that nobody reads. What happens?",
+     "choices": [
+      "It blocks forever and leaks",
+      "It exits automatically",
+      "It panics"
+     ],
+     "answer": 0
+    }
+   },
+   {
+    "speaker": "john",
+    "text": "It blocks forever. Nobody receives on that unbuffered channel anymore, so every slow request leaves one stuck goroutine behind.",
+    "sketch": {
+     "focus": [
+      "fetch",
+      "fetch>ch"
+     ],
+     "mark": "problem",
+     "note": {
+      "text": "stuck forever",
+      "near": "fetch"
+     }
+    }
+   },
+   {
+    "speaker": "john",
+    "text": "The fix: give the channel a buffer of one, so the send never blocks, and pass a context so the fetch stops early.",
+    "sketch": {
+     "focus": [
+      "ch"
+     ],
+     "mark": "fix",
+     "note": {
+      "text": "make(chan T, 1) + ctx",
+      "near": "ch"
+     }
+    }
+   }
+  ],
+  "takeaway": "A goroutine sending on an unbuffered channel nobody reads blocks forever; buffer the channel and pass a context.",
+  "questions": [
+   {
+    "prompt": "Why did each slow request leak a goroutine?",
+    "choices": [
+     "Its send on an unbuffered channel blocked forever after the handler left",
+     "Goroutines never exit in Go",
+     "The timeout killed the handler"
+    ],
+    "answer": 0,
+    "explanation": "An unbuffered send waits for a receiver; once the handler returned, no receiver remained.",
+    "turnIndices": [
+     3,
+     4
+    ]
+   }
+  ]
+ },
+ "learning": {
+  "schemaVersion": "BrainrottenLearningPackV1",
+  "jobId": "4b4e041b-b9e1-4836-a297-f00d06d57b37",
+  "format": "sketch",
+  "title": "Why memory kept climbing",
+  "language": "en",
+  "durationSeconds": 44.506145,
+  "takeaway": "A goroutine sending on an unbuffered channel nobody reads blocks forever; buffer the channel and pass a context.",
+  "chapters": [
+   {
+    "id": "turn-0",
+    "title": "Our Go price service used more memory every",
+    "startMs": 0,
+    "endMs": 5679
+   },
+   {
+    "id": "turn-1",
+    "title": "The handler starts a goroutine to fetch a",
+    "startMs": 5679,
+    "endMs": 10000
+   },
+   {
+    "id": "turn-2",
+    "title": "It also has a two second timeout, so",
+    "startMs": 10000,
+    "endMs": 14786
+   },
+   {
+    "id": "turn-3",
+    "title": "Now the API takes five seconds. The handler",
+    "startMs": 14786,
+    "endMs": 20321
+   },
+   {
+    "id": "turn-4",
+    "title": "It blocks forever. Nobody receives on that unbuffered",
+    "startMs": 30321,
+    "endMs": 37964
+   },
+   {
+    "id": "turn-5",
+    "title": "The fix: give the channel a buffer of",
+    "startMs": 37964,
+    "endMs": 44506
+   }
+  ],
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Why did each slow request leak a goroutine?",
+    "choices": [
+     "Its send on an unbuffered channel blocked forever after the handler left",
+     "Goroutines never exit in Go",
+     "The timeout killed the handler"
+    ],
+    "answer": 0,
+    "explanation": "An unbuffered send waits for a receiver; once the handler returned, no receiver remained.",
+    "turnIndices": [
+     3,
+     4
+    ],
+    "startMs": 14786,
+    "endMs": 37964
+   },
+   {
+    "id": "pause-3",
+    "prompt": "The handler has returned. The goroutine later sends on an unbuffered channel that nobody reads. What happens?",
+    "choices": [
+     "It blocks forever and leaks",
+     "It exits automatically",
+     "It panics"
+    ],
+    "answer": 0,
+    "explanation": "It blocks forever. Nobody receives on that unbuffered channel anymore, so every slow request leaves one stuck goroutine behind.",
+    "turnIndices": [
+     3,
+     4
+    ],
+    "startMs": 14786,
+    "endMs": 37964
+   }
+  ],
+  "flashcards": [
+   {
+    "id": "q1",
+    "front": "Why did each slow request leak a goroutine?",
+    "back": "Its send on an unbuffered channel blocked forever after the handler left — An unbuffered send waits for a receiver; once the handler returned, no receiver remained.",
+    "startMs": 14786,
+    "endMs": 37964
+   },
+   {
+    "id": "pause-3",
+    "front": "The handler has returned. The goroutine later sends on an unbuffered channel that nobody reads. What happens?",
+    "back": "It blocks forever and leaks — It blocks forever. Nobody receives on that unbuffered channel anymore, so every slow request leaves one stuck goroutine behind.",
+    "startMs": 14786,
+    "endMs": 37964
+   }
+  ],
+  "transcript": [
+   {
+    "turnIndex": 0,
+    "speaker": "john",
+    "text": "Our Go price service used more memory every hour, until it got restarted. Here's the request path.",
+    "startMs": 0,
+    "endMs": 5679
+   },
+   {
+    "turnIndex": 1,
+    "speaker": "john",
+    "text": "The handler starts a goroutine to fetch a price, then waits on a channel for the result.",
+    "startMs": 5679,
+    "endMs": 10000
+   },
+   {
+    "turnIndex": 2,
+    "speaker": "john",
+    "text": "It also has a two second timeout, so one slow API can't hang the whole request.",
+    "startMs": 10000,
+    "endMs": 14786
+   },
+   {
+    "turnIndex": 3,
+    "speaker": "john",
+    "text": "Now the API takes five seconds. The handler times out and returns. What happens to that goroutine?",
+    "startMs": 14786,
+    "endMs": 20321
+   },
+   {
+    "turnIndex": 4,
+    "speaker": "john",
+    "text": "It blocks forever. Nobody receives on that unbuffered channel anymore, so every slow request leaves one stuck goroutine behind.",
+    "startMs": 30321,
+    "endMs": 37964
+   },
+   {
+    "turnIndex": 5,
+    "speaker": "john",
+    "text": "The fix: give the channel a buffer of one, so the send never blocks, and pass a context so the fetch stops early.",
+    "startMs": 37964,
+    "endMs": 44506
+   }
+  ]
+ },
+ "backgroundName": "GTA Stunts",
+ "sourceCredits": [
+  {
+   "title": "GTA 5 - Jump Stunts EP.27 Free To Use NO COPYRIGHT GAMEPLAY",
+   "url": "https://www.youtube.com/watch?v=KvS0MLj5IIE",
+   "attribution": "GTA 5 - Jump Stunts EP.27 — RipstaStylez, https://www.youtube.com/watch?v=KvS0MLj5IIE, Creative Commons Attribution. Muted, cropped, resized and overlaid. Original soundtrack is not included."
+  }
+ ],
+ "outputs": {
+  "learningUrl": "/api/v1/videos/4b4e041b-b9e1-4836-a297-f00d06d57b37/learning",
+  "notesUrl": "/api/v1/videos/4b4e041b-b9e1-4836-a297-f00d06d57b37/notes",
+  "captionsUrl": "/api/v1/videos/4b4e041b-b9e1-4836-a297-f00d06d57b37/captions",
+  "flashcardsUrl": "/api/v1/videos/4b4e041b-b9e1-4836-a297-f00d06d57b37/flashcards"
+ },
+ "voiceNames": {
+  "john": "John"
+ }
+}

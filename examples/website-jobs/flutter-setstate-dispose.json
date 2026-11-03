@@ -1,0 +1,253 @@
+{
+ "jobId": "26ab0d42-7dce-4f74-bbd7-6dc258443b52",
+ "state": "ready",
+ "stage": "ready",
+ "progress": 100,
+ "prompt": "setState called after dispose?",
+ "title": "setState called after dispose?",
+ "createdAt": "2026-11-03T06:41:57.728Z",
+ "updatedAt": "2026-11-03T06:42:21.653Z",
+ "videoUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/video",
+ "posterUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/poster",
+ "audioUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/audio",
+ "error": null,
+ "durationSeconds": 44.435374,
+ "cast": "auto",
+ "language": "hinglish",
+ "voiceBackend": "elevenlabs",
+ "participants": {
+  "learner": "jhaplu",
+  "expert": "paplu"
+ },
+ "format": "skit",
+ "script": {
+  "title": "setState called after dispose?",
+  "participants": {
+   "learner": "jhaplu",
+   "expert": "paplu"
+  },
+  "dialogue": [
+   {
+    "speaker": "jhaplu",
+    "text": "Mamu, weather screen se jaldi back dabaya toh app ne lal error phenka: setState called after dispose. Ye kya bawaal hai?"
+   },
+   {
+    "speaker": "paplu",
+    "text": "Re baba, tumhara API call abhi chal raha tha. Jawab aaya tab tak screen band ho chuki thi, phir bhi setState chal gaya.",
+    "broll": {
+     "kind": "code",
+     "code": "final data = await api.fetch(city);\nsetState(() => weather = data);",
+     "language": "dart"
+    }
+   },
+   {
+    "speaker": "jhaplu",
+    "text": "Toh screen band hone ke baad setState rokne ka koi tareeka hai kya?"
+   },
+   {
+    "speaker": "paplu",
+    "text": "Haan, await ke baad mounted check karo. Screen chali gayi ho toh chupchaap ruk jao.",
+    "broll": {
+     "kind": "code",
+     "code": "final data = await api.fetch(city);\nif (!mounted) return;\nsetState(() => weather = data);",
+     "language": "dart"
+    }
+   },
+   {
+    "speaker": "jhaplu",
+    "text": "Aur agar main FutureBuilder use karun, toh kya yeh check phir bhi likhna padega?",
+    "pause": {
+     "prompt": "If the screen uses FutureBuilder instead of calling setState yourself, do you still need the mounted check?",
+     "choices": [
+      "No, FutureBuilder stops rebuilding after dispose",
+      "Yes, always",
+      "Only on iOS"
+     ],
+     "answer": 0
+    }
+   },
+   {
+    "speaker": "paplu",
+    "text": "Nahi. FutureBuilder khud dekh leta hai, widget hatne ke baad rebuild nahi karta. Bas future ko build ke andar mat banana."
+   }
+  ],
+  "takeaway": "After an await, check mounted before calling setState; FutureBuilder handles this for you.",
+  "questions": [
+   {
+    "prompt": "Why did the app throw 'setState called after dispose'?",
+    "choices": [
+     "The fetch finished after the screen was closed",
+     "The API returned an error",
+     "setState was called twice"
+    ],
+    "answer": 0,
+    "explanation": "The await resumed after the State was disposed, and setState ran on a widget that no longer existed.",
+    "turnIndices": [
+     0,
+     1
+    ]
+   }
+  ]
+ },
+ "learning": {
+  "schemaVersion": "BrainrottenLearningPackV1",
+  "jobId": "26ab0d42-7dce-4f74-bbd7-6dc258443b52",
+  "format": "skit",
+  "title": "setState called after dispose?",
+  "language": "hinglish",
+  "durationSeconds": 44.435374,
+  "takeaway": "After an await, check mounted before calling setState; FutureBuilder handles this for you.",
+  "chapters": [
+   {
+    "id": "turn-0",
+    "title": "Mamu, weather screen se jaldi back dabaya toh",
+    "startMs": 0,
+    "endMs": 7500
+   },
+   {
+    "id": "turn-1",
+    "title": "Re baba, tumhara API call abhi chal raha",
+    "startMs": 7500,
+    "endMs": 14857
+   },
+   {
+    "id": "turn-2",
+    "title": "Toh screen band hone ke baad setState rokne",
+    "startMs": 14857,
+    "endMs": 18357
+   },
+   {
+    "id": "turn-3",
+    "title": "Haan, await ke baad mounted check karo. Screen",
+    "startMs": 18357,
+    "endMs": 23500
+   },
+   {
+    "id": "turn-4",
+    "title": "Aur agar main FutureBuilder use karun, toh kya",
+    "startMs": 23500,
+    "endMs": 27143
+   },
+   {
+    "id": "turn-5",
+    "title": "Nahi. FutureBuilder khud dekh leta hai, widget hatne",
+    "startMs": 37143,
+    "endMs": 44429
+   }
+  ],
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Why did the app throw 'setState called after dispose'?",
+    "choices": [
+     "The fetch finished after the screen was closed",
+     "The API returned an error",
+     "setState was called twice"
+    ],
+    "answer": 0,
+    "explanation": "The await resumed after the State was disposed, and setState ran on a widget that no longer existed.",
+    "turnIndices": [
+     0,
+     1
+    ],
+    "startMs": 0,
+    "endMs": 14857
+   },
+   {
+    "id": "pause-4",
+    "prompt": "If the screen uses FutureBuilder instead of calling setState yourself, do you still need the mounted check?",
+    "choices": [
+     "No, FutureBuilder stops rebuilding after dispose",
+     "Yes, always",
+     "Only on iOS"
+    ],
+    "answer": 0,
+    "explanation": "Nahi. FutureBuilder khud dekh leta hai, widget hatne ke baad rebuild nahi karta. Bas future ko build ke andar mat banana.",
+    "turnIndices": [
+     4,
+     5
+    ],
+    "startMs": 23500,
+    "endMs": 44429
+   }
+  ],
+  "flashcards": [
+   {
+    "id": "q1",
+    "front": "Why did the app throw 'setState called after dispose'?",
+    "back": "The fetch finished after the screen was closed — The await resumed after the State was disposed, and setState ran on a widget that no longer existed.",
+    "startMs": 0,
+    "endMs": 14857
+   },
+   {
+    "id": "pause-4",
+    "front": "If the screen uses FutureBuilder instead of calling setState yourself, do you still need the mounted check?",
+    "back": "No, FutureBuilder stops rebuilding after dispose — Nahi. FutureBuilder khud dekh leta hai, widget hatne ke baad rebuild nahi karta. Bas future ko build ke andar mat banana.",
+    "startMs": 23500,
+    "endMs": 44429
+   }
+  ],
+  "transcript": [
+   {
+    "turnIndex": 0,
+    "speaker": "jhaplu",
+    "text": "Mamu, weather screen se jaldi back dabaya toh app ne lal error phenka: setState called after dispose. Ye kya bawaal hai?",
+    "startMs": 0,
+    "endMs": 7500
+   },
+   {
+    "turnIndex": 1,
+    "speaker": "paplu",
+    "text": "Re baba, tumhara API call abhi chal raha tha. Jawab aaya tab tak screen band ho chuki thi, phir bhi setState chal gaya.",
+    "startMs": 7500,
+    "endMs": 14857
+   },
+   {
+    "turnIndex": 2,
+    "speaker": "jhaplu",
+    "text": "Toh screen band hone ke baad setState rokne ka koi tareeka hai kya?",
+    "startMs": 14857,
+    "endMs": 18357
+   },
+   {
+    "turnIndex": 3,
+    "speaker": "paplu",
+    "text": "Haan, await ke baad mounted check karo. Screen chali gayi ho toh chupchaap ruk jao.",
+    "startMs": 18357,
+    "endMs": 23500
+   },
+   {
+    "turnIndex": 4,
+    "speaker": "jhaplu",
+    "text": "Aur agar main FutureBuilder use karun, toh kya yeh check phir bhi likhna padega?",
+    "startMs": 23500,
+    "endMs": 27143
+   },
+   {
+    "turnIndex": 5,
+    "speaker": "paplu",
+    "text": "Nahi. FutureBuilder khud dekh leta hai, widget hatne ke baad rebuild nahi karta. Bas future ko build ke andar mat banana.",
+    "startMs": 37143,
+    "endMs": 44429
+   }
+  ]
+ },
+ "backgroundName": "Subway Surfers",
+ "sourceCredits": [
+  {
+   "title": "Subway Surfers (2026) - Gameplay [4K 16x9] No Copyright",
+   "url": "https://www.youtube.com/watch?v=i0M4ARe9v0Y",
+   "attribution": "Subway Surfers gameplay — Subway Surfers, https://www.youtube.com/watch?v=i0M4ARe9v0Y. Excerpted, muted, cropped, resized and overlaid."
+  }
+ ],
+ "outputs": {
+  "learningUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/learning",
+  "notesUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/notes",
+  "captionsUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/captions",
+  "flashcardsUrl": "/api/v1/videos/26ab0d42-7dce-4f74-bbd7-6dc258443b52/flashcards"
+ },
+ "voiceNames": {
+  "jhaplu": "Jhaplu",
+  "paplu": "Paplu"
+ }
+}

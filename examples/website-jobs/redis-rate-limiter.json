@@ -1,0 +1,337 @@
+{
+ "jobId": "d0d9b746-beb5-4b2f-9912-a3e875bb32ef",
+ "state": "ready",
+ "stage": "ready",
+ "progress": 100,
+ "prompt": "Rate limiter ka race fix",
+ "title": "Rate limiter ka race fix",
+ "createdAt": "2026-11-03T06:43:30.216Z",
+ "updatedAt": "2026-11-03T06:43:49.345Z",
+ "videoUrl": "/api/v1/videos/d0d9b746-beb5-4b2f-9912-a3e875bb32ef/video",
+ "posterUrl": "/api/v1/videos/d0d9b746-beb5-4b2f-9912-a3e875bb32ef/poster",
+ "audioUrl": "/api/v1/videos/d0d9b746-beb5-4b2f-9912-a3e875bb32ef/audio",
+ "error": null,
+ "durationSeconds": 47.216576,
+ "cast": "auto",
+ "language": "hinglish",
+ "voiceBackend": "elevenlabs",
+ "format": "prreview",
+ "script": {
+  "title": "Rate limiter ka race fix",
+  "pr": {
+   "title": "Make the rate limiter atomic",
+   "repo": "arjun/payments-api",
+   "author": {
+    "name": "arjun",
+    "icon": "user"
+   },
+   "reviewers": [
+    {
+     "speaker": "jhatka",
+     "name": "senior-dev",
+     "icon": "user"
+    },
+    {
+     "speaker": "paplu",
+     "name": "sre",
+     "icon": "shield"
+    }
+   ],
+   "files": [
+    {
+     "path": "src/middleware/rateLimit.ts",
+     "language": "ts",
+     "lines": [
+      {
+       "kind": "ctx",
+       "code": "const key = `rl:${userId}`;"
+      },
+      {
+       "kind": "del",
+       "code": "const count = Number(await redis.get(key));"
+      },
+      {
+       "kind": "del",
+       "code": "await redis.set(key, count + 1, 'EX', 60);"
+      },
+      {
+       "kind": "add",
+       "code": "const count = await redis.incr(key);"
+      },
+      {
+       "kind": "add",
+       "code": "if (count === 1) await redis.expire(key, 60);"
+      },
+      {
+       "kind": "ctx",
+       "code": "if (count > 100) return res.status(429).end();"
+      }
+     ]
+    }
+   ],
+   "verdict": "approve"
+  },
+  "dialogue": [
+   {
+    "speaker": "jhatka",
+    "text": "Purane code mein get aur set alag alag the. Do requests ek saath aayi, toh dono ne same count padha.",
+    "pr": {
+     "file": 0,
+     "lines": [
+      1,
+      2
+     ],
+     "display": "get + set alag alag 💀 race condition",
+     "tone": "roast"
+    }
+   },
+   {
+    "speaker": "jhatka",
+    "text": "Matlab burst mein sau ki limit ke bawajood usse zyada requests nikal sakti thi.",
+    "pr": {
+     "file": 0,
+     "lines": [
+      5,
+      5
+     ],
+     "display": "100 ki limit, par burst mein zyada nikal gayi 😬",
+     "tone": "question"
+    }
+   },
+   {
+    "speaker": "paplu",
+    "text": "Ab incr use ho raha hai. Socho, do requests ek saath incr karein, toh kya hoga?",
+    "pr": {
+     "file": 0,
+     "lines": [
+      3,
+      3
+     ],
+     "display": "ab INCR. do requests ek saath? 🤔",
+     "tone": "question"
+    },
+    "pause": {
+     "prompt": "Two requests call INCR on the same key at the same moment. What do they get back?",
+     "choices": [
+      "1 and 2: Redis runs INCR atomically",
+      "Both get 1",
+      "An error"
+     ],
+     "answer": 0
+    }
+   },
+   {
+    "speaker": "paplu",
+    "text": "Ek ko ek milega, doosre ko do. Redis incr atomic hai, beech mein koi ghus nahi sakta.",
+    "pr": {
+     "file": 0,
+     "lines": [
+      3,
+      3
+     ],
+     "display": "INCR atomic hai ✅ 1 aur 2, koi race nahi",
+     "tone": "praise"
+    }
+   },
+   {
+    "speaker": "jhatka",
+    "text": "Ek baat: agar incr ke baad aur expire se pehle server crash ho gaya, toh key kabhi expire nahi hogi. Isse ek Lua script mein daal do.",
+    "pr": {
+     "file": 0,
+     "lines": [
+      4,
+      4
+     ],
+     "display": "nit: INCR ke baad crash → key bina TTL ke 👀 Lua script mein daalo",
+     "tone": "nit"
+    }
+   },
+   {
+    "speaker": "jhatka",
+    "text": "Approve, follow up ke saath. Counter ke kaam mein hamesha atomic operation use karo.",
+    "pr": {
+     "display": "LGTM 🚀 counters = atomic ops",
+     "tone": "praise"
+    }
+   }
+  ],
+  "takeaway": "For counters under concurrency, use an atomic operation like INCR instead of a separate read and write.",
+  "questions": [
+   {
+    "prompt": "Why could the old limiter let more than 100 requests through?",
+    "choices": [
+     "Two requests could read the same count before either wrote",
+     "Redis drops writes",
+     "The TTL was too long"
+    ],
+    "answer": 0,
+    "explanation": "A separate GET and SET is not atomic, so concurrent requests overwrite each other's count.",
+    "turnIndices": [
+     0,
+     1
+    ]
+   }
+  ]
+ },
+ "learning": {
+  "schemaVersion": "BrainrottenLearningPackV1",
+  "jobId": "d0d9b746-beb5-4b2f-9912-a3e875bb32ef",
+  "format": "prreview",
+  "title": "Rate limiter ka race fix",
+  "language": "hinglish",
+  "durationSeconds": 47.216576,
+  "takeaway": "For counters under concurrency, use an atomic operation like INCR instead of a separate read and write.",
+  "chapters": [
+   {
+    "id": "turn-0",
+    "title": "Purane code mein get aur set alag alag",
+    "startMs": 0,
+    "endMs": 6429
+   },
+   {
+    "id": "turn-1",
+    "title": "Matlab burst mein sau ki limit ke bawajood",
+    "startMs": 6429,
+    "endMs": 11500
+   },
+   {
+    "id": "turn-2",
+    "title": "Ab incr use ho raha hai. Socho, do",
+    "startMs": 11500,
+    "endMs": 17214
+   },
+   {
+    "id": "turn-3",
+    "title": "Ek ko ek milega, doosre ko do. Redis",
+    "startMs": 27214,
+    "endMs": 33643
+   },
+   {
+    "id": "turn-4",
+    "title": "Ek baat: agar incr ke baad aur expire",
+    "startMs": 33643,
+    "endMs": 42596
+   },
+   {
+    "id": "turn-5",
+    "title": "Approve, follow up ke saath. Counter ke kaam",
+    "startMs": 42596,
+    "endMs": 47217
+   }
+  ],
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Why could the old limiter let more than 100 requests through?",
+    "choices": [
+     "Two requests could read the same count before either wrote",
+     "Redis drops writes",
+     "The TTL was too long"
+    ],
+    "answer": 0,
+    "explanation": "A separate GET and SET is not atomic, so concurrent requests overwrite each other's count.",
+    "turnIndices": [
+     0,
+     1
+    ],
+    "startMs": 0,
+    "endMs": 11500
+   },
+   {
+    "id": "pause-2",
+    "prompt": "Two requests call INCR on the same key at the same moment. What do they get back?",
+    "choices": [
+     "1 and 2: Redis runs INCR atomically",
+     "Both get 1",
+     "An error"
+    ],
+    "answer": 0,
+    "explanation": "INCR atomic hai ✅ 1 aur 2, koi race nahi",
+    "turnIndices": [
+     2,
+     3
+    ],
+    "startMs": 11500,
+    "endMs": 33643
+   }
+  ],
+  "flashcards": [
+   {
+    "id": "q1",
+    "front": "Why could the old limiter let more than 100 requests through?",
+    "back": "Two requests could read the same count before either wrote — A separate GET and SET is not atomic, so concurrent requests overwrite each other's count.",
+    "startMs": 0,
+    "endMs": 11500
+   },
+   {
+    "id": "pause-2",
+    "front": "Two requests call INCR on the same key at the same moment. What do they get back?",
+    "back": "1 and 2: Redis runs INCR atomically — INCR atomic hai ✅ 1 aur 2, koi race nahi",
+    "startMs": 11500,
+    "endMs": 33643
+   }
+  ],
+  "transcript": [
+   {
+    "turnIndex": 0,
+    "speaker": "jhatka",
+    "text": "Purane code mein get aur set alag alag the. Do requests ek saath aayi, toh dono ne same count padha.",
+    "startMs": 0,
+    "endMs": 6429
+   },
+   {
+    "turnIndex": 1,
+    "speaker": "jhatka",
+    "text": "Matlab burst mein sau ki limit ke bawajood usse zyada requests nikal sakti thi.",
+    "startMs": 6429,
+    "endMs": 11500
+   },
+   {
+    "turnIndex": 2,
+    "speaker": "paplu",
+    "text": "Ab incr use ho raha hai. Socho, do requests ek saath incr karein, toh kya hoga?",
+    "startMs": 11500,
+    "endMs": 17214
+   },
+   {
+    "turnIndex": 3,
+    "speaker": "paplu",
+    "text": "Ek ko ek milega, doosre ko do. Redis incr atomic hai, beech mein koi ghus nahi sakta.",
+    "startMs": 27214,
+    "endMs": 33643
+   },
+   {
+    "turnIndex": 4,
+    "speaker": "jhatka",
+    "text": "Ek baat: agar incr ke baad aur expire se pehle server crash ho gaya, toh key kabhi expire nahi hogi. Isse ek Lua script mein daal do.",
+    "startMs": 33643,
+    "endMs": 42596
+   },
+   {
+    "turnIndex": 5,
+    "speaker": "jhatka",
+    "text": "Approve, follow up ke saath. Counter ke kaam mein hamesha atomic operation use karo.",
+    "startMs": 42596,
+    "endMs": 47217
+   }
+  ]
+ },
+ "backgroundName": "Minecraft · Lava",
+ "sourceCredits": [
+  {
+   "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
+   "url": "https://www.youtube.com/watch?v=LofyMQts7hY",
+   "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=LofyMQts7hY. Muted, cropped, resized and overlaid."
+  }
+ ],
+ "outputs": {
+  "learningUrl": "/api/v1/videos/d0d9b746-beb5-4b2f-9912-a3e875bb32ef/learning",
+  "notesUrl": "/api/v1/videos/d0d9b746-beb5-4b2f-9912-a3e875bb32ef/notes",
+  "captionsUrl": "/api/v1/videos/d0d9b746-beb5-4b2f-9912-a3e875bb32ef/captions",
+  "flashcardsUrl": "/api/v1/videos/d0d9b746-beb5-4b2f-9912-a3e875bb32ef/flashcards"
+ },
+ "voiceNames": {
+  "jhatka": "Dr Jhatka",
+  "paplu": "Paplu"
+ }
+}

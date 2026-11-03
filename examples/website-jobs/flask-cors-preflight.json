@@ -1,0 +1,297 @@
+{
+ "jobId": "75ac7f48-2be6-41f2-93c9-194176b7fa3c",
+ "state": "ready",
+ "stage": "ready",
+ "progress": 100,
+ "prompt": "Who blocked my request?",
+ "title": "Who blocked my request?",
+ "createdAt": "2026-11-03T06:41:41.280Z",
+ "updatedAt": "2026-11-03T06:41:57.192Z",
+ "videoUrl": "/api/v1/videos/75ac7f48-2be6-41f2-93c9-194176b7fa3c/video",
+ "posterUrl": "/api/v1/videos/75ac7f48-2be6-41f2-93c9-194176b7fa3c/poster",
+ "audioUrl": "/api/v1/videos/75ac7f48-2be6-41f2-93c9-194176b7fa3c/audio",
+ "error": null,
+ "durationSeconds": 42.289138,
+ "cast": "auto",
+ "language": "en",
+ "voiceBackend": "elevenlabs",
+ "format": "groupchat",
+ "script": {
+  "title": "Who blocked my request?",
+  "chat": {
+   "title": "shop-frontend 🛒",
+   "members": [
+    {
+     "speaker": "taplu",
+     "name": "React app",
+     "icon": "react",
+     "you": true
+    },
+    {
+     "speaker": "jack",
+     "name": "Browser",
+     "icon": "globe"
+    },
+    {
+     "speaker": "john",
+     "name": "Flask API",
+     "icon": "flask"
+    }
+   ]
+  },
+  "dialogue": [
+   {
+    "speaker": "taplu",
+    "text": "I called the API with a JSON body and got blocked by CORS. The server is literally running!",
+    "chat": {
+     "display": "called the API, CORS blocked me 😤 server is literally up"
+    }
+   },
+   {
+    "speaker": "jack",
+    "text": "Different origin, so before your POST I sent a preflight OPTIONS request asking if that's allowed.",
+    "chat": {
+     "display": "different origin → I sent a preflight OPTIONS first ✈️"
+    }
+   },
+   {
+    "speaker": "john",
+    "text": "I got an OPTIONS request I don't handle, so I answered without any Access-Control headers.",
+    "chat": {
+     "display": "got OPTIONS, replied with no CORS headers 🤷"
+    }
+   },
+   {
+    "speaker": "taplu",
+    "text": "So who actually blocked it? The server or the browser?",
+    "chat": {
+     "display": "so who blocked it?? server or browser?"
+    },
+    "pause": {
+     "prompt": "The preflight response had no Access-Control-Allow-Origin header. Who blocks the request?",
+     "choices": [
+      "The browser",
+      "The Flask server",
+      "React"
+     ],
+     "answer": 0
+    }
+   },
+   {
+    "speaker": "jack",
+    "text": "Me. The server never refused anything. I block the response because it didn't say your origin is allowed.",
+    "chat": {
+     "display": "me 🙋 the server never refused, I block when your origin isn't allowed",
+     "reaction": "😳"
+    }
+   },
+   {
+    "speaker": "john",
+    "text": "The fix is on my side: allow your origin. Two lines.",
+    "chat": {
+     "display": "fix is on my side, 2 lines ✅",
+     "code": "from flask_cors import CORS\nCORS(app, origins=[FRONTEND])"
+    }
+   },
+   {
+    "speaker": "taplu",
+    "text": "And no wildcard star in production. Got it.",
+    "chat": {
+     "display": "no * in prod. noted 📝"
+    }
+   }
+  ],
+  "takeaway": "CORS is enforced by the browser; the server fixes it by sending Access-Control-Allow-Origin for the origins it allows.",
+  "questions": [
+   {
+    "prompt": "Who enforces CORS?",
+    "choices": [
+     "The browser",
+     "The API server",
+     "The React app"
+    ],
+    "answer": 0,
+    "explanation": "The server only sends headers; the browser decides whether the page may read the response.",
+    "turnIndices": [
+     3,
+     4
+    ]
+   }
+  ]
+ },
+ "learning": {
+  "schemaVersion": "BrainrottenLearningPackV1",
+  "jobId": "75ac7f48-2be6-41f2-93c9-194176b7fa3c",
+  "format": "groupchat",
+  "title": "Who blocked my request?",
+  "language": "en",
+  "durationSeconds": 42.289138,
+  "takeaway": "CORS is enforced by the browser; the server fixes it by sending Access-Control-Allow-Origin for the origins it allows.",
+  "chapters": [
+   {
+    "id": "turn-0",
+    "title": "I called the API with a JSON body",
+    "startMs": 0,
+    "endMs": 5929
+   },
+   {
+    "id": "turn-1",
+    "title": "Different origin, so before your POST I sent",
+    "startMs": 5929,
+    "endMs": 11357
+   },
+   {
+    "id": "turn-2",
+    "title": "I got an OPTIONS request I don't handle,",
+    "startMs": 11357,
+    "endMs": 16571
+   },
+   {
+    "id": "turn-3",
+    "title": "So who actually blocked it? The server or",
+    "startMs": 16571,
+    "endMs": 19929
+   },
+   {
+    "id": "turn-4",
+    "title": "Me. The server never refused anything. I block",
+    "startMs": 29929,
+    "endMs": 35786
+   },
+   {
+    "id": "turn-5",
+    "title": "The fix is on my side: allow your",
+    "startMs": 35786,
+    "endMs": 39571
+   },
+   {
+    "id": "turn-6",
+    "title": "And no wildcard star in production. Got it.",
+    "startMs": 39571,
+    "endMs": 42289
+   }
+  ],
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Who enforces CORS?",
+    "choices": [
+     "The browser",
+     "The API server",
+     "The React app"
+    ],
+    "answer": 0,
+    "explanation": "The server only sends headers; the browser decides whether the page may read the response.",
+    "turnIndices": [
+     3,
+     4
+    ],
+    "startMs": 16571,
+    "endMs": 35786
+   },
+   {
+    "id": "pause-3",
+    "prompt": "The preflight response had no Access-Control-Allow-Origin header. Who blocks the request?",
+    "choices": [
+     "The browser",
+     "The Flask server",
+     "React"
+    ],
+    "answer": 0,
+    "explanation": "me 🙋 the server never refused, I block when your origin isn't allowed",
+    "turnIndices": [
+     3,
+     4
+    ],
+    "startMs": 16571,
+    "endMs": 35786
+   }
+  ],
+  "flashcards": [
+   {
+    "id": "q1",
+    "front": "Who enforces CORS?",
+    "back": "The browser — The server only sends headers; the browser decides whether the page may read the response.",
+    "startMs": 16571,
+    "endMs": 35786
+   },
+   {
+    "id": "pause-3",
+    "front": "The preflight response had no Access-Control-Allow-Origin header. Who blocks the request?",
+    "back": "The browser — me 🙋 the server never refused, I block when your origin isn't allowed",
+    "startMs": 16571,
+    "endMs": 35786
+   }
+  ],
+  "transcript": [
+   {
+    "turnIndex": 0,
+    "speaker": "taplu",
+    "text": "I called the API with a JSON body and got blocked by CORS. The server is literally running!",
+    "startMs": 0,
+    "endMs": 5929
+   },
+   {
+    "turnIndex": 1,
+    "speaker": "jack",
+    "text": "Different origin, so before your POST I sent a preflight OPTIONS request asking if that's allowed.",
+    "startMs": 5929,
+    "endMs": 11357
+   },
+   {
+    "turnIndex": 2,
+    "speaker": "john",
+    "text": "I got an OPTIONS request I don't handle, so I answered without any Access-Control headers.",
+    "startMs": 11357,
+    "endMs": 16571
+   },
+   {
+    "turnIndex": 3,
+    "speaker": "taplu",
+    "text": "So who actually blocked it? The server or the browser?",
+    "startMs": 16571,
+    "endMs": 19929
+   },
+   {
+    "turnIndex": 4,
+    "speaker": "jack",
+    "text": "Me. The server never refused anything. I block the response because it didn't say your origin is allowed.",
+    "startMs": 29929,
+    "endMs": 35786
+   },
+   {
+    "turnIndex": 5,
+    "speaker": "john",
+    "text": "The fix is on my side: allow your origin. Two lines.",
+    "startMs": 35786,
+    "endMs": 39571
+   },
+   {
+    "turnIndex": 6,
+    "speaker": "taplu",
+    "text": "And no wildcard star in production. Got it.",
+    "startMs": 39571,
+    "endMs": 42289
+   }
+  ]
+ },
+ "backgroundName": "Minecraft · End",
+ "sourceCredits": [
+  {
+   "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
+   "url": "https://www.youtube.com/watch?v=1nIGWHLMsFA",
+   "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=1nIGWHLMsFA. Muted, cropped, resized and overlaid."
+  }
+ ],
+ "outputs": {
+  "learningUrl": "/api/v1/videos/75ac7f48-2be6-41f2-93c9-194176b7fa3c/learning",
+  "notesUrl": "/api/v1/videos/75ac7f48-2be6-41f2-93c9-194176b7fa3c/notes",
+  "captionsUrl": "/api/v1/videos/75ac7f48-2be6-41f2-93c9-194176b7fa3c/captions",
+  "flashcardsUrl": "/api/v1/videos/75ac7f48-2be6-41f2-93c9-194176b7fa3c/flashcards"
+ },
+ "voiceNames": {
+  "taplu": "Taplu",
+  "jack": "Jack",
+  "john": "John"
+ }
+}

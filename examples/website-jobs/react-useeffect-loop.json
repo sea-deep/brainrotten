@@ -1,0 +1,357 @@
+{
+ "jobId": "b71b8fa9-9473-4cd5-811b-ab5d983368f5",
+ "state": "ready",
+ "stage": "ready",
+ "progress": 100,
+ "prompt": "Stop the useEffect request loop",
+ "title": "Stop the useEffect request loop",
+ "createdAt": "2026-11-03T06:41:01.066Z",
+ "updatedAt": "2026-11-03T06:41:18.098Z",
+ "videoUrl": "/api/v1/videos/b71b8fa9-9473-4cd5-811b-ab5d983368f5/video",
+ "posterUrl": "/api/v1/videos/b71b8fa9-9473-4cd5-811b-ab5d983368f5/poster",
+ "audioUrl": "/api/v1/videos/b71b8fa9-9473-4cd5-811b-ab5d983368f5/audio",
+ "error": null,
+ "durationSeconds": 50.501837,
+ "cast": "auto",
+ "language": "en",
+ "voiceBackend": "elevenlabs",
+ "format": "prreview",
+ "script": {
+  "title": "Stop the useEffect request loop",
+  "pr": {
+   "title": "Fix order polling loop in useOrders",
+   "repo": "riya/store-dashboard",
+   "author": {
+    "name": "riya",
+    "icon": "user"
+   },
+   "reviewers": [
+    {
+     "speaker": "jhatka",
+     "name": "senior-dev",
+     "icon": "user"
+    },
+    {
+     "speaker": "john",
+     "name": "perf-bot",
+     "icon": "bot"
+    }
+   ],
+   "files": [
+    {
+     "path": "src/hooks/useOrders.ts",
+     "language": "ts",
+     "lines": [
+      {
+       "kind": "ctx",
+       "code": "export function useOrders(filters) {"
+      },
+      {
+       "kind": "ctx",
+       "code": "  const [orders, setOrders] = useState([]);"
+      },
+      {
+       "kind": "del",
+       "code": "  const query = { ...filters, page: 1 };"
+      },
+      {
+       "kind": "add",
+       "code": "  const query = useMemo("
+      },
+      {
+       "kind": "add",
+       "code": "    () => ({ ...filters, page: 1 }),"
+      },
+      {
+       "kind": "add",
+       "code": "    [filters.status, filters.from]);"
+      },
+      {
+       "kind": "ctx",
+       "code": "  useEffect(() => {"
+      },
+      {
+       "kind": "ctx",
+       "code": "    fetchOrders(query).then(setOrders);"
+      },
+      {
+       "kind": "ctx",
+       "code": "  }, [query]);"
+      },
+      {
+       "kind": "ctx",
+       "code": "  return orders;"
+      },
+      {
+       "kind": "ctx",
+       "code": "}"
+      }
+     ]
+    }
+   ],
+   "verdict": "approve"
+  },
+  "dialogue": [
+   {
+    "speaker": "jhatka",
+    "text": "This line was the bug. A new query object is built on every render, so the effect sees a changed dependency every single time.",
+    "pr": {
+     "file": 0,
+     "lines": [
+      2,
+      2
+     ],
+     "display": "new object every render = effect every render 💀",
+     "tone": "roast"
+    }
+   },
+   {
+    "speaker": "jhatka",
+    "text": "And the effect calls setOrders, which renders again, which builds a new object again. That loop hammered the orders API.",
+    "pr": {
+     "file": 0,
+     "lines": [
+      6,
+      8
+     ],
+     "display": "setOrders → rerender → new object → effect again 🔁",
+     "tone": "question"
+    }
+   },
+   {
+    "speaker": "john",
+    "text": "The fix wraps the object in useMemo. Quick check: when does it actually build a new object now?",
+    "pr": {
+     "file": 0,
+     "lines": [
+      3,
+      5
+     ],
+     "display": "useMemo now. when does it rebuild? 🤔",
+     "tone": "question"
+    },
+    "pause": {
+     "prompt": "useMemo(() => ({ ...filters, page: 1 }), [filters.status, filters.from]). When does it build a new object?",
+     "choices": [
+      "Only when status or from change",
+      "On every render",
+      "Only on the first render"
+     ],
+     "answer": 0
+    }
+   },
+   {
+    "speaker": "john",
+    "text": "Only when status or from change. Those are plain strings, compared by value, so the effect runs once per real filter change.",
+    "pr": {
+     "file": 0,
+     "lines": [
+      3,
+      5
+     ],
+     "display": "deps are strings → compared by value ✅ one fetch per real change",
+     "tone": "praise"
+    }
+   },
+   {
+    "speaker": "jhatka",
+    "text": "One follow-up: if someone adds a new filter field later, it must join this dependency list too, or the orders go stale.",
+    "pr": {
+     "file": 0,
+     "lines": [
+      5,
+      5
+     ],
+     "display": "nit: new filter fields must join these deps or data goes stale 👀",
+     "tone": "nit"
+    }
+   },
+   {
+    "speaker": "jhatka",
+    "text": "Approving. Lesson: effect dependencies should be values, not objects you rebuild on every render.",
+    "pr": {
+     "display": "LGTM 🚀 deps = values, not fresh objects",
+     "tone": "praise"
+    }
+   }
+  ],
+  "takeaway": "Effect dependencies should be values, not objects rebuilt on every render.",
+  "questions": [
+   {
+    "prompt": "Why did the old hook keep calling the API?",
+    "choices": [
+     "A new query object each render changed the effect's dependency every time",
+     "fetchOrders retries forever",
+     "useState resets on every render"
+    ],
+    "answer": 0,
+    "explanation": "The object was recreated every render, so React saw a new dependency and re-ran the effect, which set state and rendered again.",
+    "turnIndices": [
+     0,
+     1
+    ]
+   }
+  ]
+ },
+ "learning": {
+  "schemaVersion": "BrainrottenLearningPackV1",
+  "jobId": "b71b8fa9-9473-4cd5-811b-ab5d983368f5",
+  "format": "prreview",
+  "title": "Stop the useEffect request loop",
+  "language": "en",
+  "durationSeconds": 50.501837,
+  "takeaway": "Effect dependencies should be values, not objects rebuilt on every render.",
+  "chapters": [
+   {
+    "id": "turn-0",
+    "title": "This line was the bug. A new query",
+    "startMs": 0,
+    "endMs": 7357
+   },
+   {
+    "id": "turn-1",
+    "title": "And the effect calls setOrders, which renders again,",
+    "startMs": 7357,
+    "endMs": 14143
+   },
+   {
+    "id": "turn-2",
+    "title": "The fix wraps the object in useMemo. Quick",
+    "startMs": 14143,
+    "endMs": 19714
+   },
+   {
+    "id": "turn-3",
+    "title": "Only when status or from change. Those are",
+    "startMs": 29714,
+    "endMs": 37786
+   },
+   {
+    "id": "turn-4",
+    "title": "One follow-up: if someone adds a new filter",
+    "startMs": 37786,
+    "endMs": 44214
+   },
+   {
+    "id": "turn-5",
+    "title": "Approving. Lesson: effect dependencies should be values, not",
+    "startMs": 44214,
+    "endMs": 50502
+   }
+  ],
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Why did the old hook keep calling the API?",
+    "choices": [
+     "A new query object each render changed the effect's dependency every time",
+     "fetchOrders retries forever",
+     "useState resets on every render"
+    ],
+    "answer": 0,
+    "explanation": "The object was recreated every render, so React saw a new dependency and re-ran the effect, which set state and rendered again.",
+    "turnIndices": [
+     0,
+     1
+    ],
+    "startMs": 0,
+    "endMs": 14143
+   },
+   {
+    "id": "pause-2",
+    "prompt": "useMemo(() => ({ ...filters, page: 1 }), [filters.status, filters.from]). When does it build a new object?",
+    "choices": [
+     "Only when status or from change",
+     "On every render",
+     "Only on the first render"
+    ],
+    "answer": 0,
+    "explanation": "deps are strings → compared by value ✅ one fetch per real change",
+    "turnIndices": [
+     2,
+     3
+    ],
+    "startMs": 14143,
+    "endMs": 37786
+   }
+  ],
+  "flashcards": [
+   {
+    "id": "q1",
+    "front": "Why did the old hook keep calling the API?",
+    "back": "A new query object each render changed the effect's dependency every time — The object was recreated every render, so React saw a new dependency and re-ran the effect, which set state and rendered again.",
+    "startMs": 0,
+    "endMs": 14143
+   },
+   {
+    "id": "pause-2",
+    "front": "useMemo(() => ({ ...filters, page: 1 }), [filters.status, filters.from]). When does it build a new object?",
+    "back": "Only when status or from change — deps are strings → compared by value ✅ one fetch per real change",
+    "startMs": 14143,
+    "endMs": 37786
+   }
+  ],
+  "transcript": [
+   {
+    "turnIndex": 0,
+    "speaker": "jhatka",
+    "text": "This line was the bug. A new query object is built on every render, so the effect sees a changed dependency every single time.",
+    "startMs": 0,
+    "endMs": 7357
+   },
+   {
+    "turnIndex": 1,
+    "speaker": "jhatka",
+    "text": "And the effect calls setOrders, which renders again, which builds a new object again. That loop hammered the orders API.",
+    "startMs": 7357,
+    "endMs": 14143
+   },
+   {
+    "turnIndex": 2,
+    "speaker": "john",
+    "text": "The fix wraps the object in useMemo. Quick check: when does it actually build a new object now?",
+    "startMs": 14143,
+    "endMs": 19714
+   },
+   {
+    "turnIndex": 3,
+    "speaker": "john",
+    "text": "Only when status or from change. Those are plain strings, compared by value, so the effect runs once per real filter change.",
+    "startMs": 29714,
+    "endMs": 37786
+   },
+   {
+    "turnIndex": 4,
+    "speaker": "jhatka",
+    "text": "One follow-up: if someone adds a new filter field later, it must join this dependency list too, or the orders go stale.",
+    "startMs": 37786,
+    "endMs": 44214
+   },
+   {
+    "turnIndex": 5,
+    "speaker": "jhatka",
+    "text": "Approving. Lesson: effect dependencies should be values, not objects you rebuild on every render.",
+    "startMs": 44214,
+    "endMs": 50502
+   }
+  ]
+ },
+ "backgroundName": "GTA Stunts",
+ "sourceCredits": [
+  {
+   "title": "GTA 5 - Jump Stunts EP.27 Free To Use NO COPYRIGHT GAMEPLAY",
+   "url": "https://www.youtube.com/watch?v=KvS0MLj5IIE",
+   "attribution": "GTA 5 - Jump Stunts EP.27 — RipstaStylez, https://www.youtube.com/watch?v=KvS0MLj5IIE, Creative Commons Attribution. Muted, cropped, resized and overlaid. Original soundtrack is not included."
+  }
+ ],
+ "outputs": {
+  "learningUrl": "/api/v1/videos/b71b8fa9-9473-4cd5-811b-ab5d983368f5/learning",
+  "notesUrl": "/api/v1/videos/b71b8fa9-9473-4cd5-811b-ab5d983368f5/notes",
+  "captionsUrl": "/api/v1/videos/b71b8fa9-9473-4cd5-811b-ab5d983368f5/captions",
+  "flashcardsUrl": "/api/v1/videos/b71b8fa9-9473-4cd5-811b-ab5d983368f5/flashcards"
+ },
+ "voiceNames": {
+  "jhatka": "Dr Jhatka",
+  "john": "John"
+ }
+}

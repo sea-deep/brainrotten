@@ -28,15 +28,15 @@ It works in **English, Hinglish and Benglish**, and the first five videos on the
 
 ## Five ways to explain a change
 
-Every example below was written by a coding agent about real work in this repository.
+Twelve example sessions, beginner to advanced, across Python, JavaScript, Go, Rust, Flutter, Kubernetes and more, in English and Hinglish. All of them are on the [examples page](https://d3sk6lwsh4ufyv.cloudfront.net/examples).
 
 | Format | Best for | Example |
 |---|---|---|
-| **Sketch board** | Systems, request paths, bugs across components. An Excalidraw-style diagram builds up, the problem in red, the fix in green. | [Why the Lambda couldn't find its handler](https://d3sk6lwsh4ufyv.cloudfront.net/examples/session-sketch-lambda/video.mp4) |
-| **Character skit** | A concept or a misconception. One character asks, the other explains, with real follow-up questions. | [Signed in, but still "invalid"?](https://d3sk6lwsh4ufyv.cloudfront.net/examples/session-skit-cognito/video.mp4) |
-| **PR review** | A real diff, line by line, as GitHub-style review comments. | [Accept real Cognito pool IDs](https://d3sk6lwsh4ufyv.cloudfront.net/examples/session-prreview-cognito/video.mp4) |
-| **Tier list** | Several options weighed against one rule, ranked S to F. | [Where to host on a new AWS account](https://d3sk6lwsh4ufyv.cloudfront.net/examples/session-tierlist-hosting/video.mp4) |
-| **Group chat** | Parts of a system "talking" in a WhatsApp-style chat. | [Why the first request took 18 seconds](https://d3sk6lwsh4ufyv.cloudfront.net/examples/session-groupchat-coldstart/video.mp4) |
+| **Sketch board** | Systems, request paths, bugs across components. An Excalidraw-style diagram builds up, the problem in red, the fix in green. | [Blog itna slow kyun hai?](https://d3sk6lwsh4ufyv.cloudfront.net/examples/django-n-plus-one/video.mp4), [Why memory kept climbing](https://d3sk6lwsh4ufyv.cloudfront.net/examples/go-goroutine-leak/video.mp4) |
+| **Character skit** | A concept or a misconception. One character asks, the other explains, with real follow-up questions. | [I copied the list. Why did both change?](https://d3sk6lwsh4ufyv.cloudfront.net/examples/python-list-copy/video.mp4), [Why won’t Rust let me push here?](https://d3sk6lwsh4ufyv.cloudfront.net/examples/rust-borrow-checker/video.mp4) |
+| **PR review** | A real diff, line by line, as GitHub-style review comments. | [Stop the useEffect request loop](https://d3sk6lwsh4ufyv.cloudfront.net/examples/react-useeffect-loop/video.mp4), [Rate limiter ka race fix](https://d3sk6lwsh4ufyv.cloudfront.net/examples/redis-rate-limiter/video.mp4) |
+| **Tier list** | Several options weighed against one rule, ranked S to F. | [Ways to center a card, ranked](https://d3sk6lwsh4ufyv.cloudfront.net/examples/css-center-card/video.mp4), [OOMKilled ke fixes, ranked](https://d3sk6lwsh4ufyv.cloudfront.net/examples/k8s-oomkilled/video.mp4) |
+| **Group chat** | Parts of a system "talking" in a WhatsApp-style chat. | [Who blocked my request?](https://d3sk6lwsh4ufyv.cloudfront.net/examples/flask-cors-preflight/video.mp4), [Detached HEAD: kaam gaya kya?](https://d3sk6lwsh4ufyv.cloudfront.net/examples/git-detached-head/video.mp4) |
 
 Videos can pause for **Pause & Predict**: the screen asks what happens next, gives you a few seconds to think, then shows the answer.
 

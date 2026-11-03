@@ -28,7 +28,7 @@ Brainrotten Studio, MCP and a shared asynchronous REST API. Playful cream/lavend
 
 ## Evidence on Hand
 
-Five landing examples were written by the coding agent from real sessions in this repository, one per format (Lambda handler bug, Cognito pool ID check, its PR, hosting choice on a new AWS account, Lambda cold starts). Hosted sign-in and generation are live-tested.
+Twelve illustrative example sessions (scripts in scripts/website-examples.py) cover beginner to advanced projects across stacks, every format, in English and Hinglish. The earlier examples from real sessions in this repository are archived in examples/website-archive. Hosted sign-in and generation are live-tested.
 
 ## Product Principles
 

@@ -120,7 +120,7 @@ export function AgentFlow({heading}:{heading?:React.ReactNode}):React.ReactEleme
             <header><span className="flow-num">4</span><h3>Sketch video</h3></header>
             <div className="flow-reel-body">
               <div className="flow-phone">
-                <img src="/examples/session-sketch-lambda/poster.png" alt="Sketch board explaining why the Lambda could not find its handler" width="360" height="640" loading="lazy"/>
+                <img src="/flow/sketch-lambda.png" alt="Sketch board explaining why the Lambda could not find its handler" width="360" height="640" loading="lazy"/>
                 <div className="flow-phone-shade" style={{opacity:phase>=4?0:.82-renderProgress*.62}}/>
                 {phase>=4?<span className="flow-play"><Icon name="play" size={14}/>Ready</span>:<span className="flow-percent">{phase>=3?`${Math.round(renderProgress*100)}%`:'…'}</span>}
                 <span className="flow-bar"><span style={{transform:`scaleX(${phase>=4?1:renderProgress})`}}/></span>

@@ -1,0 +1,253 @@
+{
+ "jobId": "bb58804b-54af-4c17-8226-4d3794ae5993",
+ "state": "ready",
+ "stage": "ready",
+ "progress": 100,
+ "prompt": "Why won't Rust let me push here?",
+ "title": "Why won't Rust let me push here?",
+ "createdAt": "2026-11-03T06:43:09.511Z",
+ "updatedAt": "2026-11-03T06:43:28.890Z",
+ "videoUrl": "/api/v1/videos/bb58804b-54af-4c17-8226-4d3794ae5993/video",
+ "posterUrl": "/api/v1/videos/bb58804b-54af-4c17-8226-4d3794ae5993/poster",
+ "audioUrl": "/api/v1/videos/bb58804b-54af-4c17-8226-4d3794ae5993/audio",
+ "error": null,
+ "durationSeconds": 45.007392,
+ "cast": "auto",
+ "language": "en",
+ "voiceBackend": "elevenlabs",
+ "participants": {
+  "learner": "john",
+  "expert": "jack"
+ },
+ "format": "skit",
+ "script": {
+  "title": "Why won't Rust let me push here?",
+  "participants": {
+   "learner": "john",
+   "expert": "jack"
+  },
+  "dialogue": [
+   {
+    "speaker": "john",
+    "text": "Rust won't compile my log parser. I push to a vector while looping over it, and it says cannot borrow as mutable. Why so strict?"
+   },
+   {
+    "speaker": "jack",
+    "text": "Because pushing can move the vector to new memory, while your loop still holds a reference into the old memory. Rust stops it at compile time.",
+    "broll": {
+     "kind": "code",
+     "code": "for line in &lines {\n    if line.contains(\"ERROR\") {\n        lines.push(line.clone());\n    }\n}",
+     "language": "rust"
+    }
+   },
+   {
+    "speaker": "john",
+    "text": "So in C, this would just crash at runtime instead?"
+   },
+   {
+    "speaker": "jack",
+    "text": "Or quietly read freed memory, which is worse. Rust turns that bug into a compiler error."
+   },
+   {
+    "speaker": "john",
+    "text": "Fine, but I still need the error lines. What's the clean way to collect them?",
+    "pause": {
+     "prompt": "You need the ERROR lines without changing the vector you're iterating over. What's the idiomatic fix?",
+     "choices": [
+      "Collect them into a new vector with filter",
+      "Use unsafe",
+      "Clone the vector on every iteration"
+     ],
+     "answer": 0
+    }
+   },
+   {
+    "speaker": "jack",
+    "text": "Build a new vector instead of growing the one you're reading. One iterator chain, and no fight with the borrow checker.",
+    "broll": {
+     "kind": "code",
+     "code": "let errors: Vec<_> = lines\n    .iter()\n    .filter(|l| l.contains(\"ERROR\"))\n    .cloned()\n    .collect();",
+     "language": "rust"
+    }
+   }
+  ],
+  "takeaway": "Don't grow a vector while iterating over it; build a new one with an iterator chain instead.",
+  "questions": [
+   {
+    "prompt": "Why does Rust reject pushing while iterating?",
+    "choices": [
+     "A push can reallocate the vector while the loop still references it",
+     "Vectors are immutable",
+     "Loops are always read-only"
+    ],
+    "answer": 0,
+    "explanation": "Reallocation would leave the loop's reference pointing at freed memory.",
+    "turnIndices": [
+     0,
+     1
+    ]
+   }
+  ]
+ },
+ "learning": {
+  "schemaVersion": "BrainrottenLearningPackV1",
+  "jobId": "bb58804b-54af-4c17-8226-4d3794ae5993",
+  "format": "skit",
+  "title": "Why won't Rust let me push here?",
+  "language": "en",
+  "durationSeconds": 45.007392,
+  "takeaway": "Don't grow a vector while iterating over it; build a new one with an iterator chain instead.",
+  "chapters": [
+   {
+    "id": "turn-0",
+    "title": "Rust won't compile my log parser. I push",
+    "startMs": 0,
+    "endMs": 7857
+   },
+   {
+    "id": "turn-1",
+    "title": "Because pushing can move the vector to new",
+    "startMs": 7857,
+    "endMs": 15929
+   },
+   {
+    "id": "turn-2",
+    "title": "So in C, this would just crash at",
+    "startMs": 15929,
+    "endMs": 19214
+   },
+   {
+    "id": "turn-3",
+    "title": "Or quietly read freed memory, which is worse.",
+    "startMs": 19214,
+    "endMs": 25143
+   },
+   {
+    "id": "turn-4",
+    "title": "Fine, but I still need the error lines.",
+    "startMs": 25143,
+    "endMs": 29000
+   },
+   {
+    "id": "turn-5",
+    "title": "Build a new vector instead of growing the",
+    "startMs": 39000,
+    "endMs": 45007
+   }
+  ],
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Why does Rust reject pushing while iterating?",
+    "choices": [
+     "A push can reallocate the vector while the loop still references it",
+     "Vectors are immutable",
+     "Loops are always read-only"
+    ],
+    "answer": 0,
+    "explanation": "Reallocation would leave the loop's reference pointing at freed memory.",
+    "turnIndices": [
+     0,
+     1
+    ],
+    "startMs": 0,
+    "endMs": 15929
+   },
+   {
+    "id": "pause-4",
+    "prompt": "You need the ERROR lines without changing the vector you're iterating over. What's the idiomatic fix?",
+    "choices": [
+     "Collect them into a new vector with filter",
+     "Use unsafe",
+     "Clone the vector on every iteration"
+    ],
+    "answer": 0,
+    "explanation": "Build a new vector instead of growing the one you're reading. One iterator chain, and no fight with the borrow checker.",
+    "turnIndices": [
+     4,
+     5
+    ],
+    "startMs": 25143,
+    "endMs": 45007
+   }
+  ],
+  "flashcards": [
+   {
+    "id": "q1",
+    "front": "Why does Rust reject pushing while iterating?",
+    "back": "A push can reallocate the vector while the loop still references it — Reallocation would leave the loop's reference pointing at freed memory.",
+    "startMs": 0,
+    "endMs": 15929
+   },
+   {
+    "id": "pause-4",
+    "front": "You need the ERROR lines without changing the vector you're iterating over. What's the idiomatic fix?",
+    "back": "Collect them into a new vector with filter — Build a new vector instead of growing the one you're reading. One iterator chain, and no fight with the borrow checker.",
+    "startMs": 25143,
+    "endMs": 45007
+   }
+  ],
+  "transcript": [
+   {
+    "turnIndex": 0,
+    "speaker": "john",
+    "text": "Rust won't compile my log parser. I push to a vector while looping over it, and it says cannot borrow as mutable. Why so strict?",
+    "startMs": 0,
+    "endMs": 7857
+   },
+   {
+    "turnIndex": 1,
+    "speaker": "jack",
+    "text": "Because pushing can move the vector to new memory, while your loop still holds a reference into the old memory. Rust stops it at compile time.",
+    "startMs": 7857,
+    "endMs": 15929
+   },
+   {
+    "turnIndex": 2,
+    "speaker": "john",
+    "text": "So in C, this would just crash at runtime instead?",
+    "startMs": 15929,
+    "endMs": 19214
+   },
+   {
+    "turnIndex": 3,
+    "speaker": "jack",
+    "text": "Or quietly read freed memory, which is worse. Rust turns that bug into a compiler error.",
+    "startMs": 19214,
+    "endMs": 25143
+   },
+   {
+    "turnIndex": 4,
+    "speaker": "john",
+    "text": "Fine, but I still need the error lines. What's the clean way to collect them?",
+    "startMs": 25143,
+    "endMs": 29000
+   },
+   {
+    "turnIndex": 5,
+    "speaker": "jack",
+    "text": "Build a new vector instead of growing the one you're reading. One iterator chain, and no fight with the borrow checker.",
+    "startMs": 39000,
+    "endMs": 45007
+   }
+  ]
+ },
+ "backgroundName": "GTA Stunts",
+ "sourceCredits": [
+  {
+   "title": "GTA 5 - Jump Stunts EP.27 Free To Use NO COPYRIGHT GAMEPLAY",
+   "url": "https://www.youtube.com/watch?v=KvS0MLj5IIE",
+   "attribution": "GTA 5 - Jump Stunts EP.27 — RipstaStylez, https://www.youtube.com/watch?v=KvS0MLj5IIE, Creative Commons Attribution. Muted, cropped, resized and overlaid. Original soundtrack is not included."
+  }
+ ],
+ "outputs": {
+  "learningUrl": "/api/v1/videos/bb58804b-54af-4c17-8226-4d3794ae5993/learning",
+  "notesUrl": "/api/v1/videos/bb58804b-54af-4c17-8226-4d3794ae5993/notes",
+  "captionsUrl": "/api/v1/videos/bb58804b-54af-4c17-8226-4d3794ae5993/captions",
+  "flashcardsUrl": "/api/v1/videos/bb58804b-54af-4c17-8226-4d3794ae5993/flashcards"
+ },
+ "voiceNames": {
+  "john": "John",
+  "jack": "Jack"
+ }
+}

@@ -31,9 +31,9 @@ const tree=h('div',{width:1280,height:640,background:cream,position:'relative',f
     text({fontSize:24,lineHeight:1.45,marginTop:18,color:'#5d4f69'},'With a quiz, so you understand the change instead of just accepting it.'),
     h('div',{flexWrap:'wrap',marginTop:30,width:600},chip('Sketch board',lavender),chip('Character skit',yellow),chip('PR review',coral),chip('Tier list',lavender),chip('Group chat',yellow)),
     text({fontSize:21,marginTop:22,color:purple,fontFamily:'Uncut Sans'},'MCP · REST API · Studio · npx brainrotten-mcp')),
-  phone('session-tierlist-hosting',-8,730,120,1),
-  phone('session-groupchat-coldstart',8,975,115,1),
-  phone('session-sketch-lambda',0,852,90,2),
+  phone('k8s-oomkilled',-8,730,120,1),
+  phone('flask-cors-preflight',8,975,115,1),
+  phone('django-n-plus-one',0,852,90,2),
 );
 
 const svg=await satori(tree,{width:1280,height:640,fonts:[

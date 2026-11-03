@@ -1,0 +1,277 @@
+{
+ "jobId": "2fe04a5a-ab5d-4cc3-8447-52a8b1b1313c",
+ "state": "ready",
+ "stage": "ready",
+ "progress": 100,
+ "prompt": "Detached HEAD: kaam gaya kya?",
+ "title": "Detached HEAD: kaam gaya kya?",
+ "createdAt": "2026-11-03T06:40:43.122Z",
+ "updatedAt": "2026-11-03T06:40:59.824Z",
+ "videoUrl": "/api/v1/videos/2fe04a5a-ab5d-4cc3-8447-52a8b1b1313c/video",
+ "posterUrl": "/api/v1/videos/2fe04a5a-ab5d-4cc3-8447-52a8b1b1313c/poster",
+ "audioUrl": "/api/v1/videos/2fe04a5a-ab5d-4cc3-8447-52a8b1b1313c/audio",
+ "error": null,
+ "durationSeconds": 39.784014,
+ "cast": "auto",
+ "language": "hinglish",
+ "voiceBackend": "elevenlabs",
+ "format": "groupchat",
+ "script": {
+  "title": "Detached HEAD: kaam gaya kya?",
+  "chat": {
+   "title": "dbms-project 🎓",
+   "members": [
+    {
+     "speaker": "taplu",
+     "name": "You",
+     "icon": "user",
+     "you": true
+    },
+    {
+     "speaker": "jack",
+     "name": "Git",
+     "icon": "git"
+    },
+    {
+     "speaker": "john",
+     "name": "main branch",
+     "icon": "git-branch"
+    }
+   ]
+  },
+  "dialogue": [
+   {
+    "speaker": "taplu",
+    "text": "Maine purana commit checkout kiya aur ab Git bol raha hai detached HEAD. Mera kaam gaya kya?",
+    "chat": {
+     "display": "git bol raha detached HEAD 😭 mera kaam gaya kya??"
+    }
+   },
+   {
+    "speaker": "jack",
+    "text": "Kuch nahi gaya. HEAD abhi kisi branch par nahi, seedha ek commit par khada hai.",
+    "chat": {
+     "display": "kuch nahi gaya 😌 HEAD ek commit pe khada hai, kisi branch pe nahi"
+    }
+   },
+   {
+    "speaker": "john",
+    "text": "Main toh wahin hoon jahan tha. Tumne mujhe chhua hi nahi.",
+    "chat": {
+     "display": "main toh wahin hoon bro, mujhe chhua hi nahi 🤷"
+    }
+   },
+   {
+    "speaker": "taplu",
+    "text": "Par maine yahan do naye commits bhi kar diye. Agar ab main branch pe switch karun, toh unka kya hoga?",
+    "chat": {
+     "display": "par maine yahan 2 commits bhi kar diye… ab main pe gaya toh unka kya hoga? 🤔"
+    },
+    "pause": {
+     "prompt": "You made 2 commits on a detached HEAD and switch back to main. What happens to those commits?",
+     "choices": [
+      "No branch points to them, so they are easy to lose",
+      "They merge into main automatically",
+      "Git deletes them right away"
+     ],
+     "answer": 0
+    }
+   },
+   {
+    "speaker": "jack",
+    "text": "Woh kisi branch par nahi hain, toh dheere dheere kho sakte hain. Abhi ek branch bana lo, unka ghar ban jaayega.",
+    "chat": {
+     "display": "unka koi ghar nahi 👻 abhi branch bana lo",
+     "code": "git switch -c fix-login"
+    }
+   },
+   {
+    "speaker": "john",
+    "text": "Phir mujhme merge kar dena, sab safe rahega.",
+    "chat": {
+     "display": "phir mujhme merge kar dena ✅",
+     "reaction": "👍"
+    }
+   }
+  ],
+  "takeaway": "A detached HEAD points at a commit, not a branch; create a branch before switching away so new commits are kept.",
+  "questions": [
+   {
+    "prompt": "Why create a branch before switching away from a detached HEAD?",
+    "choices": [
+     "So a branch points to your new commits and they are kept",
+     "Git requires it to push",
+     "It deletes the old commits"
+    ],
+    "answer": 0,
+    "explanation": "Commits that no branch points to can be lost; a branch keeps them reachable.",
+    "turnIndices": [
+     3,
+     4
+    ]
+   }
+  ]
+ },
+ "learning": {
+  "schemaVersion": "BrainrottenLearningPackV1",
+  "jobId": "2fe04a5a-ab5d-4cc3-8447-52a8b1b1313c",
+  "format": "groupchat",
+  "title": "Detached HEAD: kaam gaya kya?",
+  "language": "hinglish",
+  "durationSeconds": 39.784014,
+  "takeaway": "A detached HEAD points at a commit, not a branch; create a branch before switching away so new commits are kept.",
+  "chapters": [
+   {
+    "id": "turn-0",
+    "title": "Maine purana commit checkout kiya aur ab Git",
+    "startMs": 0,
+    "endMs": 5786
+   },
+   {
+    "id": "turn-1",
+    "title": "Kuch nahi gaya. HEAD abhi kisi branch par",
+    "startMs": 5786,
+    "endMs": 10857
+   },
+   {
+    "id": "turn-2",
+    "title": "Main toh wahin hoon jahan tha. Tumne mujhe",
+    "startMs": 10857,
+    "endMs": 14286
+   },
+   {
+    "id": "turn-3",
+    "title": "Par maine yahan do naye commits bhi kar",
+    "startMs": 14286,
+    "endMs": 19857
+   },
+   {
+    "id": "turn-4",
+    "title": "Woh kisi branch par nahi hain, toh dheere",
+    "startMs": 29857,
+    "endMs": 36857
+   },
+   {
+    "id": "turn-5",
+    "title": "Phir mujhme merge kar dena, sab safe rahega.",
+    "startMs": 36857,
+    "endMs": 39784
+   }
+  ],
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Why create a branch before switching away from a detached HEAD?",
+    "choices": [
+     "So a branch points to your new commits and they are kept",
+     "Git requires it to push",
+     "It deletes the old commits"
+    ],
+    "answer": 0,
+    "explanation": "Commits that no branch points to can be lost; a branch keeps them reachable.",
+    "turnIndices": [
+     3,
+     4
+    ],
+    "startMs": 14286,
+    "endMs": 36857
+   },
+   {
+    "id": "pause-3",
+    "prompt": "You made 2 commits on a detached HEAD and switch back to main. What happens to those commits?",
+    "choices": [
+     "No branch points to them, so they are easy to lose",
+     "They merge into main automatically",
+     "Git deletes them right away"
+    ],
+    "answer": 0,
+    "explanation": "unka koi ghar nahi 👻 abhi branch bana lo",
+    "turnIndices": [
+     3,
+     4
+    ],
+    "startMs": 14286,
+    "endMs": 36857
+   }
+  ],
+  "flashcards": [
+   {
+    "id": "q1",
+    "front": "Why create a branch before switching away from a detached HEAD?",
+    "back": "So a branch points to your new commits and they are kept — Commits that no branch points to can be lost; a branch keeps them reachable.",
+    "startMs": 14286,
+    "endMs": 36857
+   },
+   {
+    "id": "pause-3",
+    "front": "You made 2 commits on a detached HEAD and switch back to main. What happens to those commits?",
+    "back": "No branch points to them, so they are easy to lose — unka koi ghar nahi 👻 abhi branch bana lo",
+    "startMs": 14286,
+    "endMs": 36857
+   }
+  ],
+  "transcript": [
+   {
+    "turnIndex": 0,
+    "speaker": "taplu",
+    "text": "Maine purana commit checkout kiya aur ab Git bol raha hai detached HEAD. Mera kaam gaya kya?",
+    "startMs": 0,
+    "endMs": 5786
+   },
+   {
+    "turnIndex": 1,
+    "speaker": "jack",
+    "text": "Kuch nahi gaya. HEAD abhi kisi branch par nahi, seedha ek commit par khada hai.",
+    "startMs": 5786,
+    "endMs": 10857
+   },
+   {
+    "turnIndex": 2,
+    "speaker": "john",
+    "text": "Main toh wahin hoon jahan tha. Tumne mujhe chhua hi nahi.",
+    "startMs": 10857,
+    "endMs": 14286
+   },
+   {
+    "turnIndex": 3,
+    "speaker": "taplu",
+    "text": "Par maine yahan do naye commits bhi kar diye. Agar ab main branch pe switch karun, toh unka kya hoga?",
+    "startMs": 14286,
+    "endMs": 19857
+   },
+   {
+    "turnIndex": 4,
+    "speaker": "jack",
+    "text": "Woh kisi branch par nahi hain, toh dheere dheere kho sakte hain. Abhi ek branch bana lo, unka ghar ban jaayega.",
+    "startMs": 29857,
+    "endMs": 36857
+   },
+   {
+    "turnIndex": 5,
+    "speaker": "john",
+    "text": "Phir mujhme merge kar dena, sab safe rahega.",
+    "startMs": 36857,
+    "endMs": 39784
+   }
+  ]
+ },
+ "backgroundName": "GTA Stunts",
+ "sourceCredits": [
+  {
+   "title": "GTA 5 - Jump Stunts EP.27 Free To Use NO COPYRIGHT GAMEPLAY",
+   "url": "https://www.youtube.com/watch?v=KvS0MLj5IIE",
+   "attribution": "GTA 5 - Jump Stunts EP.27 — RipstaStylez, https://www.youtube.com/watch?v=KvS0MLj5IIE, Creative Commons Attribution. Muted, cropped, resized and overlaid. Original soundtrack is not included."
+  }
+ ],
+ "outputs": {
+  "learningUrl": "/api/v1/videos/2fe04a5a-ab5d-4cc3-8447-52a8b1b1313c/learning",
+  "notesUrl": "/api/v1/videos/2fe04a5a-ab5d-4cc3-8447-52a8b1b1313c/notes",
+  "captionsUrl": "/api/v1/videos/2fe04a5a-ab5d-4cc3-8447-52a8b1b1313c/captions",
+  "flashcardsUrl": "/api/v1/videos/2fe04a5a-ab5d-4cc3-8447-52a8b1b1313c/flashcards"
+ },
+ "voiceNames": {
+  "taplu": "Taplu",
+  "jack": "Jack",
+  "john": "John"
+ }
+}

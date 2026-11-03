@@ -1,0 +1,333 @@
+{
+ "jobId": "3aac2bde-ebb5-40b2-98d6-7a1d68294f91",
+ "state": "ready",
+ "stage": "ready",
+ "progress": 100,
+ "prompt": "Blog itna slow kyun hai?",
+ "title": "Blog itna slow kyun hai?",
+ "createdAt": "2026-11-03T06:41:21.147Z",
+ "updatedAt": "2026-11-03T06:41:40.462Z",
+ "videoUrl": "/api/v1/videos/3aac2bde-ebb5-40b2-98d6-7a1d68294f91/video",
+ "posterUrl": "/api/v1/videos/3aac2bde-ebb5-40b2-98d6-7a1d68294f91/poster",
+ "audioUrl": "/api/v1/videos/3aac2bde-ebb5-40b2-98d6-7a1d68294f91/audio",
+ "error": null,
+ "durationSeconds": 45.35966,
+ "cast": "auto",
+ "language": "hinglish",
+ "voiceBackend": "elevenlabs",
+ "format": "sketch",
+ "narrator": "badri",
+ "script": {
+  "title": "Blog itna slow kyun hai?",
+  "narrator": "badri",
+  "sketch": {
+   "nodes": [
+    {
+     "id": "page",
+     "label": "Blog page",
+     "kind": "actor",
+     "icon": "monitor"
+    },
+    {
+     "id": "view",
+     "label": "Django view",
+     "kind": "service",
+     "icon": "django"
+    },
+    {
+     "id": "orm",
+     "label": "ORM",
+     "kind": "service",
+     "icon": "layers"
+    },
+    {
+     "id": "db",
+     "label": "PostgreSQL",
+     "kind": "store",
+     "icon": "postgresql"
+    }
+   ],
+   "edges": [
+    {
+     "from": "page",
+     "to": "view",
+     "label": "GET /posts"
+    },
+    {
+     "from": "view",
+     "to": "orm",
+     "label": "posts + authors"
+    },
+    {
+     "from": "orm",
+     "to": "db",
+     "label": "SQL queries"
+    }
+   ]
+  },
+  "dialogue": [
+   {
+    "speaker": "badri",
+    "text": "Blog ka home page bahut slow load ho raha tha. Chalo dekhte hain request kahan kahan jaati hai.",
+    "sketch": {
+     "show": [
+      "page",
+      "view",
+      "page>view"
+     ]
+    }
+   },
+   {
+    "speaker": "badri",
+    "text": "Django view saare posts laata hai, aur har post ke saath uske author ka naam dikhata hai.",
+    "sketch": {
+     "show": [
+      "orm",
+      "view>orm"
+     ],
+     "focus": [
+      "view>orm"
+     ]
+    }
+   },
+   {
+    "speaker": "badri",
+    "text": "ORM yeh sab PostgreSQL se SQL queries chala ke laata hai.",
+    "sketch": {
+     "show": [
+      "db",
+      "orm>db"
+     ],
+     "focus": [
+      "orm>db"
+     ]
+    }
+   },
+   {
+    "speaker": "badri",
+    "text": "Ab socho. Sau posts hain, aur template har post ke liye post dot author padhta hai. Kitni queries chalengi?",
+    "sketch": {
+     "focus": [
+      "orm>db"
+     ]
+    },
+    "pause": {
+     "prompt": "100 posts, and the template reads post.author for each one. How many SQL queries run?",
+     "choices": [
+      "101: one for posts, one per author",
+      "Just 1",
+      "2"
+     ],
+     "answer": 0
+    }
+   },
+   {
+    "speaker": "badri",
+    "text": "Ek sau ek. Ek query posts ke liye, phir har author ke liye alag. Isse N plus one problem kehte hain.",
+    "sketch": {
+     "focus": [
+      "orm>db",
+      "db"
+     ],
+     "mark": "problem",
+     "note": {
+      "text": "1 + 100 queries!",
+      "near": "db"
+     }
+    }
+   },
+   {
+    "speaker": "badri",
+    "text": "Fix hai select related author. ORM ek hi JOIN query mein posts aur authors dono le aata hai.",
+    "sketch": {
+     "focus": [
+      "orm",
+      "orm>db"
+     ],
+     "mark": "fix",
+     "note": {
+      "text": "select_related: 1 query",
+      "near": "orm"
+     }
+    }
+   }
+  ],
+  "takeaway": "Load related rows in the same query (select_related) instead of one query per row.",
+  "questions": [
+   {
+    "prompt": "Why did the blog page run 101 queries?",
+    "choices": [
+     "Each post's author was loaded with its own query",
+     "PostgreSQL splits big queries",
+     "Django caches nothing"
+    ],
+    "answer": 0,
+    "explanation": "Reading post.author lazily runs one query per post; select_related joins them into one.",
+    "turnIndices": [
+     3,
+     4
+    ]
+   }
+  ]
+ },
+ "learning": {
+  "schemaVersion": "BrainrottenLearningPackV1",
+  "jobId": "3aac2bde-ebb5-40b2-98d6-7a1d68294f91",
+  "format": "sketch",
+  "title": "Blog itna slow kyun hai?",
+  "language": "hinglish",
+  "durationSeconds": 45.35966,
+  "takeaway": "Load related rows in the same query (select_related) instead of one query per row.",
+  "chapters": [
+   {
+    "id": "turn-0",
+    "title": "Blog ka home page bahut slow load ho",
+    "startMs": 0,
+    "endMs": 5250
+   },
+   {
+    "id": "turn-1",
+    "title": "Django view saare posts laata hai, aur har",
+    "startMs": 5250,
+    "endMs": 10571
+   },
+   {
+    "id": "turn-2",
+    "title": "ORM yeh sab PostgreSQL se SQL queries chala",
+    "startMs": 10571,
+    "endMs": 15500
+   },
+   {
+    "id": "turn-3",
+    "title": "Ab socho. Sau posts hain, aur template har",
+    "startMs": 15500,
+    "endMs": 22000
+   },
+   {
+    "id": "turn-4",
+    "title": "Ek sau ek. Ek query posts ke liye,",
+    "startMs": 32000,
+    "endMs": 38786
+   },
+   {
+    "id": "turn-5",
+    "title": "Fix hai select related author. ORM ek hi",
+    "startMs": 38786,
+    "endMs": 45360
+   }
+  ],
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Why did the blog page run 101 queries?",
+    "choices": [
+     "Each post's author was loaded with its own query",
+     "PostgreSQL splits big queries",
+     "Django caches nothing"
+    ],
+    "answer": 0,
+    "explanation": "Reading post.author lazily runs one query per post; select_related joins them into one.",
+    "turnIndices": [
+     3,
+     4
+    ],
+    "startMs": 15500,
+    "endMs": 38786
+   },
+   {
+    "id": "pause-3",
+    "prompt": "100 posts, and the template reads post.author for each one. How many SQL queries run?",
+    "choices": [
+     "101: one for posts, one per author",
+     "Just 1",
+     "2"
+    ],
+    "answer": 0,
+    "explanation": "Ek sau ek. Ek query posts ke liye, phir har author ke liye alag. Isse N plus one problem kehte hain.",
+    "turnIndices": [
+     3,
+     4
+    ],
+    "startMs": 15500,
+    "endMs": 38786
+   }
+  ],
+  "flashcards": [
+   {
+    "id": "q1",
+    "front": "Why did the blog page run 101 queries?",
+    "back": "Each post's author was loaded with its own query — Reading post.author lazily runs one query per post; select_related joins them into one.",
+    "startMs": 15500,
+    "endMs": 38786
+   },
+   {
+    "id": "pause-3",
+    "front": "100 posts, and the template reads post.author for each one. How many SQL queries run?",
+    "back": "101: one for posts, one per author — Ek sau ek. Ek query posts ke liye, phir har author ke liye alag. Isse N plus one problem kehte hain.",
+    "startMs": 15500,
+    "endMs": 38786
+   }
+  ],
+  "transcript": [
+   {
+    "turnIndex": 0,
+    "speaker": "badri",
+    "text": "Blog ka home page bahut slow load ho raha tha. Chalo dekhte hain request kahan kahan jaati hai.",
+    "startMs": 0,
+    "endMs": 5250
+   },
+   {
+    "turnIndex": 1,
+    "speaker": "badri",
+    "text": "Django view saare posts laata hai, aur har post ke saath uske author ka naam dikhata hai.",
+    "startMs": 5250,
+    "endMs": 10571
+   },
+   {
+    "turnIndex": 2,
+    "speaker": "badri",
+    "text": "ORM yeh sab PostgreSQL se SQL queries chala ke laata hai.",
+    "startMs": 10571,
+    "endMs": 15500
+   },
+   {
+    "turnIndex": 3,
+    "speaker": "badri",
+    "text": "Ab socho. Sau posts hain, aur template har post ke liye post dot author padhta hai. Kitni queries chalengi?",
+    "startMs": 15500,
+    "endMs": 22000
+   },
+   {
+    "turnIndex": 4,
+    "speaker": "badri",
+    "text": "Ek sau ek. Ek query posts ke liye, phir har author ke liye alag. Isse N plus one problem kehte hain.",
+    "startMs": 32000,
+    "endMs": 38786
+   },
+   {
+    "turnIndex": 5,
+    "speaker": "badri",
+    "text": "Fix hai select related author. ORM ek hi JOIN query mein posts aur authors dono le aata hai.",
+    "startMs": 38786,
+    "endMs": 45360
+   }
+  ]
+ },
+ "backgroundName": "Subway Surfers",
+ "sourceCredits": [
+  {
+   "title": "Subway Surfers (2026) - Gameplay [4K 16x9] No Copyright",
+   "url": "https://www.youtube.com/watch?v=i0M4ARe9v0Y",
+   "attribution": "Subway Surfers gameplay — Subway Surfers, https://www.youtube.com/watch?v=i0M4ARe9v0Y. Excerpted, muted, cropped, resized and overlaid."
+  }
+ ],
+ "outputs": {
+  "learningUrl": "/api/v1/videos/3aac2bde-ebb5-40b2-98d6-7a1d68294f91/learning",
+  "notesUrl": "/api/v1/videos/3aac2bde-ebb5-40b2-98d6-7a1d68294f91/notes",
+  "captionsUrl": "/api/v1/videos/3aac2bde-ebb5-40b2-98d6-7a1d68294f91/captions",
+  "flashcardsUrl": "/api/v1/videos/3aac2bde-ebb5-40b2-98d6-7a1d68294f91/flashcards"
+ },
+ "voiceNames": {
+  "badri": "Badri"
+ }
+}

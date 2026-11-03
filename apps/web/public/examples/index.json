@@ -1,701 +1,1135 @@
 [
   {
-    "jobId": "c93d8794-a730-4e37-90f1-173133320722",
+    "jobId": "48f8ded0-b68a-47a1-98f2-58b5d164a40e",
     "state": "ready",
     "stage": "ready",
     "progress": 100,
-    "prompt": "Lambda ko handler kyun nahi mila?",
-    "title": "Lambda ko handler kyun nahi mila?",
-    "createdAt": "2026-11-02T09:12:00.975Z",
-    "updatedAt": "2026-11-02T09:12:40.604Z",
-    "videoUrl": "/examples/session-sketch-lambda/video.mp4",
-    "posterUrl": "/examples/session-sketch-lambda/poster.png",
-    "audioUrl": null,
+    "prompt": "I copied the list. Why did both change?",
+    "title": "I copied the list. Why did both change?",
+    "createdAt": "2026-11-03T06:39:31.048Z",
+    "updatedAt": "2026-11-03T06:39:50.998Z",
     "error": null,
-    "durationSeconds": 65.938367,
+    "durationSeconds": 47.361565,
+    "cast": "auto",
+    "language": "en",
+    "voiceBackend": "elevenlabs",
+    "participants": {
+      "learner": "motu",
+      "expert": "jhatka"
+    },
+    "format": "skit",
+    "script": {
+      "title": "I copied the list. Why did both change?",
+      "participants": {
+        "learner": "motu",
+        "expert": "jhatka"
+      },
+      "dialogue": [
+        {
+          "speaker": "motu",
+          "text": "I copied my to-do list, removed a task from the copy, and the original lost it too! Why?"
+        },
+        {
+          "speaker": "jhatka",
+          "text": "Because you never copied it. backup equals tasks just gives the same list a second name, so both names point to one list.",
+          "broll": {
+            "kind": "code",
+            "code": "tasks = ['buy milk', 'study']\nbackup = tasks\nbackup.remove('study')\nprint(tasks)  # ['buy milk']",
+            "language": "python"
+          }
+        },
+        {
+          "speaker": "motu",
+          "text": "So how do I get a real copy? Do I have to loop and append every task myself?"
+        },
+        {
+          "speaker": "jhatka",
+          "text": "No loop needed. tasks dot copy, or list of tasks, builds a brand new list with the same items.",
+          "broll": {
+            "kind": "code",
+            "code": "backup = tasks.copy()",
+            "language": "python"
+          }
+        },
+        {
+          "speaker": "motu",
+          "text": "Wait. What if every task is a dictionary, and I change a title in the copy? What happens to the original?",
+          "pause": {
+            "prompt": "You copy a list of dictionaries with .copy() and change one task's title in the copy. What happens to the original?",
+            "choices": [
+              "Its title changes too",
+              "It stays the same",
+              "Python raises an error"
+            ],
+            "answer": 0
+          }
+        },
+        {
+          "speaker": "jhatka",
+          "text": "The original changes too. copy is shallow: a new list, but the same dictionaries inside. For nested data, use copy dot deepcopy.",
+          "broll": {
+            "kind": "code",
+            "code": "import copy\nbackup = copy.deepcopy(tasks)",
+            "language": "python"
+          }
+        }
+      ],
+      "takeaway": "Assigning a list gives it a second name; use .copy() for a new list, and copy.deepcopy when the items are nested.",
+      "questions": [
+        {
+          "prompt": "Why did removing a task from backup also change tasks?",
+          "choices": [
+            "backup = tasks made a second name for the same list",
+            "remove() edits every list",
+            "Python copies lists lazily"
+          ],
+          "answer": 0,
+          "explanation": "Assignment never copies a list; both names refer to the same object.",
+          "turnIndices": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "learning": {
+      "schemaVersion": "BrainrottenLearningPackV1",
+      "jobId": "48f8ded0-b68a-47a1-98f2-58b5d164a40e",
+      "format": "skit",
+      "title": "I copied the list. Why did both change?",
+      "language": "en",
+      "durationSeconds": 47.361565,
+      "takeaway": "Assigning a list gives it a second name; use .copy() for a new list, and copy.deepcopy when the items are nested.",
+      "chapters": [
+        {
+          "id": "turn-0",
+          "title": "I copied my to-do list, removed a task",
+          "startMs": 0,
+          "endMs": 5786
+        },
+        {
+          "id": "turn-1",
+          "title": "Because you never copied it. backup equals tasks",
+          "startMs": 5786,
+          "endMs": 13214
+        },
+        {
+          "id": "turn-2",
+          "title": "So how do I get a real copy?",
+          "startMs": 13214,
+          "endMs": 17714
+        },
+        {
+          "id": "turn-3",
+          "title": "No loop needed. tasks dot copy, or list",
+          "startMs": 17714,
+          "endMs": 23571
+        },
+        {
+          "id": "turn-4",
+          "title": "Wait. What if every task is a dictionary,",
+          "startMs": 23571,
+          "endMs": 29214
+        },
+        {
+          "id": "turn-5",
+          "title": "The original changes too. copy is shallow: a",
+          "startMs": 39214,
+          "endMs": 47362
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Why did removing a task from backup also change tasks?",
+          "choices": [
+            "backup = tasks made a second name for the same list",
+            "remove() edits every list",
+            "Python copies lists lazily"
+          ],
+          "answer": 0,
+          "explanation": "Assignment never copies a list; both names refer to the same object.",
+          "turnIndices": [
+            0,
+            1
+          ],
+          "startMs": 0,
+          "endMs": 13214
+        },
+        {
+          "id": "pause-4",
+          "prompt": "You copy a list of dictionaries with .copy() and change one task's title in the copy. What happens to the original?",
+          "choices": [
+            "Its title changes too",
+            "It stays the same",
+            "Python raises an error"
+          ],
+          "answer": 0,
+          "explanation": "The original changes too. copy is shallow: a new list, but the same dictionaries inside. For nested data, use copy dot deepcopy.",
+          "turnIndices": [
+            4,
+            5
+          ],
+          "startMs": 23571,
+          "endMs": 47362
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "q1",
+          "front": "Why did removing a task from backup also change tasks?",
+          "back": "backup = tasks made a second name for the same list — Assignment never copies a list; both names refer to the same object.",
+          "startMs": 0,
+          "endMs": 13214
+        },
+        {
+          "id": "pause-4",
+          "front": "You copy a list of dictionaries with .copy() and change one task's title in the copy. What happens to the original?",
+          "back": "Its title changes too — The original changes too. copy is shallow: a new list, but the same dictionaries inside. For nested data, use copy dot deepcopy.",
+          "startMs": 23571,
+          "endMs": 47362
+        }
+      ],
+      "transcript": [
+        {
+          "turnIndex": 0,
+          "speaker": "motu",
+          "text": "I copied my to-do list, removed a task from the copy, and the original lost it too! Why?",
+          "startMs": 0,
+          "endMs": 5786
+        },
+        {
+          "turnIndex": 1,
+          "speaker": "jhatka",
+          "text": "Because you never copied it. backup equals tasks just gives the same list a second name, so both names point to one list.",
+          "startMs": 5786,
+          "endMs": 13214
+        },
+        {
+          "turnIndex": 2,
+          "speaker": "motu",
+          "text": "So how do I get a real copy? Do I have to loop and append every task myself?",
+          "startMs": 13214,
+          "endMs": 17714
+        },
+        {
+          "turnIndex": 3,
+          "speaker": "jhatka",
+          "text": "No loop needed. tasks dot copy, or list of tasks, builds a brand new list with the same items.",
+          "startMs": 17714,
+          "endMs": 23571
+        },
+        {
+          "turnIndex": 4,
+          "speaker": "motu",
+          "text": "Wait. What if every task is a dictionary, and I change a title in the copy? What happens to the original?",
+          "startMs": 23571,
+          "endMs": 29214
+        },
+        {
+          "turnIndex": 5,
+          "speaker": "jhatka",
+          "text": "The original changes too. copy is shallow: a new list, but the same dictionaries inside. For nested data, use copy dot deepcopy.",
+          "startMs": 39214,
+          "endMs": 47362
+        }
+      ]
+    },
+    "backgroundName": "Minecraft · Lava",
+    "sourceCredits": [
+      {
+        "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
+        "url": "https://www.youtube.com/watch?v=LofyMQts7hY",
+        "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=LofyMQts7hY. Muted, cropped, resized and overlaid."
+      }
+    ],
+    "voiceNames": {
+      "motu": "Motu",
+      "jhatka": "Dr Jhatka"
+    },
+    "videoUrl": "/examples/python-list-copy/video.mp4",
+    "downloadUrl": "/examples/python-list-copy/video.mp4",
+    "posterUrl": "/examples/python-list-copy/poster.png",
+    "audioUrl": null
+  },
+  {
+    "jobId": "6a3efac7-c50c-4bcc-a1b8-5f15b2d3a62f",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "await lagaya, phir bhi wait nahi kiya?",
+    "title": "await lagaya, phir bhi wait nahi kiya?",
+    "createdAt": "2026-11-03T06:39:52.902Z",
+    "updatedAt": "2026-11-03T06:40:19.862Z",
+    "error": null,
+    "durationSeconds": 50.506372,
     "cast": "auto",
     "language": "hinglish",
     "voiceBackend": "elevenlabs",
-    "format": "sketch",
+    "participants": {
+      "learner": "badri",
+      "expert": "budhdev"
+    },
+    "format": "skit",
+    "script": {
+      "title": "await lagaya, phir bhi wait nahi kiya?",
+      "participants": {
+        "learner": "badri",
+        "expert": "budhdev"
+      },
+      "dialogue": [
+        {
+          "speaker": "badri",
+          "text": "Dost, maine forEach ke andar await lagaya saare signup emails bhejne ke liye. Par script done pehle print kar deti hai! Kyun?"
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Kyunki forEach await ka intezaar nahi karta. Har callback async hai, forEach unhe shuru karke seedha aage badh jaata hai.",
+          "broll": {
+            "kind": "code",
+            "code": "users.forEach(async (u) => {\n  await sendEmail(u);\n});\nconsole.log('done'); // runs first",
+            "language": "js"
+          }
+        },
+        {
+          "speaker": "badri",
+          "text": "Toh phir kya likhun? Kya ek normal for loop se kaam chalega?"
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Haan. for of ke andar await sach mein rukta hai, toh ek ke baad ek email jaayegi.",
+          "broll": {
+            "kind": "code",
+            "code": "for (const u of users) {\n  await sendEmail(u);\n}",
+            "language": "js"
+          }
+        },
+        {
+          "speaker": "badri",
+          "text": "Par hazaar users hain, ek ek karke toh bahut der lagegi. Sab ek saath bhejne ka tareeka kya hai?",
+          "pause": {
+            "prompt": "Sending 1,000 emails one at a time is slow. Which sends them together and still waits for all of them?",
+            "choices": [
+              "await Promise.all(users.map(sendEmail))",
+              "users.forEach(await sendEmail)",
+              "Wrap the loop in setTimeout"
+            ],
+            "answer": 0
+          }
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Promise dot all. Saare emails ek saath shuru karo aur sabke khatam hone ka wait karo. Bas provider ki rate limit ka dhyaan rakhna.",
+          "broll": {
+            "kind": "code",
+            "code": "await Promise.all(users.map(sendEmail));",
+            "language": "js"
+          }
+        }
+      ],
+      "takeaway": "forEach does not wait for async callbacks; use for...of to go one by one, or Promise.all to run them together and wait for all.",
+      "questions": [
+        {
+          "prompt": "Why did 'done' print before the emails were sent?",
+          "choices": [
+            "forEach does not wait for async callbacks",
+            "sendEmail is synchronous",
+            "console.log runs in parallel"
+          ],
+          "answer": 0,
+          "explanation": "forEach calls each async callback and moves on without awaiting the returned promises.",
+          "turnIndices": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "learning": {
+      "schemaVersion": "BrainrottenLearningPackV1",
+      "jobId": "6a3efac7-c50c-4bcc-a1b8-5f15b2d3a62f",
+      "format": "skit",
+      "title": "await lagaya, phir bhi wait nahi kiya?",
+      "language": "hinglish",
+      "durationSeconds": 50.506372,
+      "takeaway": "forEach does not wait for async callbacks; use for...of to go one by one, or Promise.all to run them together and wait for all.",
+      "chapters": [
+        {
+          "id": "turn-0",
+          "title": "Dost, maine forEach ke andar await lagaya saare",
+          "startMs": 0,
+          "endMs": 7643
+        },
+        {
+          "id": "turn-1",
+          "title": "Kyunki forEach await ka intezaar nahi karta. Har",
+          "startMs": 7643,
+          "endMs": 16179
+        },
+        {
+          "id": "turn-2",
+          "title": "Toh phir kya likhun? Kya ek normal for",
+          "startMs": 16179,
+          "endMs": 19786
+        },
+        {
+          "id": "turn-3",
+          "title": "Haan. for of ke andar await sach mein",
+          "startMs": 19786,
+          "endMs": 25857
+        },
+        {
+          "id": "turn-4",
+          "title": "Par hazaar users hain, ek ek karke toh",
+          "startMs": 25857,
+          "endMs": 31786
+        },
+        {
+          "id": "turn-5",
+          "title": "Promise dot all. Saare emails ek saath shuru",
+          "startMs": 41786,
+          "endMs": 50506
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Why did 'done' print before the emails were sent?",
+          "choices": [
+            "forEach does not wait for async callbacks",
+            "sendEmail is synchronous",
+            "console.log runs in parallel"
+          ],
+          "answer": 0,
+          "explanation": "forEach calls each async callback and moves on without awaiting the returned promises.",
+          "turnIndices": [
+            0,
+            1
+          ],
+          "startMs": 0,
+          "endMs": 16179
+        },
+        {
+          "id": "pause-4",
+          "prompt": "Sending 1,000 emails one at a time is slow. Which sends them together and still waits for all of them?",
+          "choices": [
+            "await Promise.all(users.map(sendEmail))",
+            "users.forEach(await sendEmail)",
+            "Wrap the loop in setTimeout"
+          ],
+          "answer": 0,
+          "explanation": "Promise dot all. Saare emails ek saath shuru karo aur sabke khatam hone ka wait karo. Bas provider ki rate limit ka dhyaan rakhna.",
+          "turnIndices": [
+            4,
+            5
+          ],
+          "startMs": 25857,
+          "endMs": 50506
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "q1",
+          "front": "Why did 'done' print before the emails were sent?",
+          "back": "forEach does not wait for async callbacks — forEach calls each async callback and moves on without awaiting the returned promises.",
+          "startMs": 0,
+          "endMs": 16179
+        },
+        {
+          "id": "pause-4",
+          "front": "Sending 1,000 emails one at a time is slow. Which sends them together and still waits for all of them?",
+          "back": "await Promise.all(users.map(sendEmail)) — Promise dot all. Saare emails ek saath shuru karo aur sabke khatam hone ka wait karo. Bas provider ki rate limit ka dhyaan rakhna.",
+          "startMs": 25857,
+          "endMs": 50506
+        }
+      ],
+      "transcript": [
+        {
+          "turnIndex": 0,
+          "speaker": "badri",
+          "text": "Dost, maine forEach ke andar await lagaya saare signup emails bhejne ke liye. Par script done pehle print kar deti hai! Kyun?",
+          "startMs": 0,
+          "endMs": 7643
+        },
+        {
+          "turnIndex": 1,
+          "speaker": "budhdev",
+          "text": "Kyunki forEach await ka intezaar nahi karta. Har callback async hai, forEach unhe shuru karke seedha aage badh jaata hai.",
+          "startMs": 7643,
+          "endMs": 16179
+        },
+        {
+          "turnIndex": 2,
+          "speaker": "badri",
+          "text": "Toh phir kya likhun? Kya ek normal for loop se kaam chalega?",
+          "startMs": 16179,
+          "endMs": 19786
+        },
+        {
+          "turnIndex": 3,
+          "speaker": "budhdev",
+          "text": "Haan. for of ke andar await sach mein rukta hai, toh ek ke baad ek email jaayegi.",
+          "startMs": 19786,
+          "endMs": 25857
+        },
+        {
+          "turnIndex": 4,
+          "speaker": "badri",
+          "text": "Par hazaar users hain, ek ek karke toh bahut der lagegi. Sab ek saath bhejne ka tareeka kya hai?",
+          "startMs": 25857,
+          "endMs": 31786
+        },
+        {
+          "turnIndex": 5,
+          "speaker": "budhdev",
+          "text": "Promise dot all. Saare emails ek saath shuru karo aur sabke khatam hone ka wait karo. Bas provider ki rate limit ka dhyaan rakhna.",
+          "startMs": 41786,
+          "endMs": 50506
+        }
+      ]
+    },
+    "backgroundName": "Subway Surfers",
+    "sourceCredits": [
+      {
+        "title": "Subway Surfers (2026) - Gameplay [4K 16x9] No Copyright",
+        "url": "https://www.youtube.com/watch?v=i0M4ARe9v0Y",
+        "attribution": "Subway Surfers gameplay — Subway Surfers, https://www.youtube.com/watch?v=i0M4ARe9v0Y. Excerpted, muted, cropped, resized and overlaid."
+      }
+    ],
+    "voiceNames": {
+      "badri": "Badri",
+      "budhdev": "Budhdev"
+    },
+    "videoUrl": "/examples/node-await-foreach/video.mp4",
+    "downloadUrl": "/examples/node-await-foreach/video.mp4",
+    "posterUrl": "/examples/node-await-foreach/poster.png",
+    "audioUrl": null
+  },
+  {
+    "jobId": "ebb4c677-a082-4f3f-8fb6-8ce050aecc23",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Ways to center a card, ranked",
+    "title": "Ways to center a card, ranked",
+    "createdAt": "2026-11-03T06:40:23.062Z",
+    "updatedAt": "2026-11-03T06:40:42.618Z",
+    "error": null,
+    "durationSeconds": 59.572925,
+    "cast": "auto",
+    "language": "en",
+    "voiceBackend": "elevenlabs",
+    "format": "tierlist",
     "narrator": "jack",
     "script": {
-      "title": "Lambda ko handler kyun nahi mila?",
+      "title": "Ways to center a card, ranked",
       "narrator": "jack",
-      "sketch": {
-        "nodes": [
+      "tierlist": {
+        "criterion": "centered both ways, any screen size",
+        "items": [
           {
-            "id": "gw",
-            "label": "API Gateway",
-            "kind": "service",
-            "icon": "server"
+            "id": "flex",
+            "label": "Flexbox center"
           },
           {
-            "id": "lambda",
-            "label": "Lambda image",
-            "kind": "service",
-            "icon": "box"
+            "id": "grid",
+            "label": "Grid place-items"
           },
           {
-            "id": "ric",
-            "label": "Runtime client",
-            "kind": "service",
-            "icon": "cpu"
+            "id": "absolute",
+            "label": "Absolute + translate"
           },
           {
-            "id": "handler",
-            "label": "api.handler",
-            "kind": "external",
-            "icon": "file-code"
+            "id": "margin",
+            "label": "margin: auto"
           },
           {
-            "id": "boot",
-            "label": "bootstrap.mjs",
-            "kind": "service",
-            "icon": "rocket"
-          }
-        ],
-        "edges": [
-          {
-            "from": "gw",
-            "to": "lambda",
-            "label": "request"
+            "id": "text",
+            "label": "text-align: center"
           },
           {
-            "from": "lambda",
-            "to": "ric",
-            "label": "starts"
-          },
-          {
-            "from": "ric",
-            "to": "handler",
-            "label": "loads"
-          },
-          {
-            "from": "boot",
-            "to": "ric",
-            "label": "sets _HANDLER"
+            "id": "center-tag",
+            "label": "<center> tag"
           }
         ]
       },
       "dialogue": [
         {
           "speaker": "jack",
-          "text": "Hosted API live kiya, aur har request pe five hundred error aa raha tha. Shuru se dekhte hain.",
-          "sketch": {
-            "show": [
-              "gw",
-              "lambda",
-              "gw>lambda"
-            ]
+          "text": "Let's rank the ways to center a card on a portfolio page. One rule: centered horizontally and vertically, on any screen size."
+        },
+        {
+          "speaker": "jack",
+          "text": "The old center tag. It's deprecated, and it only centers horizontally. F tier.",
+          "tier": {
+            "place": {
+              "item": "center-tag",
+              "tier": "F"
+            }
           }
         },
         {
           "speaker": "jack",
-          "text": "API Gateway request Lambda ko deta hai. Lambda humari Docker image chalata hai, jismein AWS ka runtime client hai.",
-          "sketch": {
-            "show": [
-              "ric",
-              "lambda>ric"
-            ],
-            "focus": [
-              "lambda>ric"
-            ]
+          "text": "text-align center. It centers the text inside the card, not the card itself. D tier.",
+          "tier": {
+            "place": {
+              "item": "text",
+              "tier": "D"
+            }
           }
         },
         {
           "speaker": "jack",
-          "text": "Runtime client ko batana padta hai kaunsa handler load kare. Humne image ke command mein argument diya: cloud dist api dot handler.",
-          "sketch": {
-            "show": [
-              "handler",
-              "ric>handler"
-            ],
-            "focus": [
-              "handler"
-            ]
+          "text": "margin auto with a fixed width. Great horizontally, but in normal flow it does nothing vertically. C tier.",
+          "tier": {
+            "place": {
+              "item": "margin",
+              "tier": "C"
+            }
           }
         },
         {
           "speaker": "jack",
-          "text": "Argument diya, phir bhi error aaya: cannot find module api. Socho, kyun?",
-          "sketch": {
-            "focus": [
-              "ric>handler"
-            ]
+          "text": "Absolute position, top and left fifty percent, then translate minus fifty percent. It works everywhere. So is it S tier?",
+          "tier": {
+            "focus": "absolute"
           },
           "pause": {
-            "prompt": "We passed the handler as an argument. Why can't the runtime find it?",
+            "prompt": "position: absolute + top/left 50% + translate(-50%, -50%). Where does it rank for centering a card?",
             "choices": [
-              "Version 4 ignores the argument and reads env variables",
-              "The file was never built",
-              "API Gateway sent the wrong path"
+              "S: perfect",
+              "B: works, but pulls the card out of the layout",
+              "F: broken"
             ],
-            "answer": 0
+            "answer": 1
           }
         },
         {
           "speaker": "jack",
-          "text": "Runtime client ka version chaar argument dekhta hi nahi. Woh sirf underscore HANDLER aur LAMBDA TASK ROOT environment variables padhta hai.",
-          "sketch": {
-            "focus": [
-              "ric",
-              "ric>handler"
-            ],
-            "mark": "problem",
-            "note": {
-              "text": "argument ignored!",
-              "near": "ric"
+          "text": "B tier. It centers perfectly, but the card leaves the normal layout, so nothing else can flow around it.",
+          "tier": {
+            "place": {
+              "item": "absolute",
+              "tier": "B"
             }
           }
         },
         {
           "speaker": "jack",
-          "text": "Fix ek chhota bootstrap file hai. Woh argument ko underscore HANDLER mein daalta hai, task root set karta hai, phir runtime client start karta hai.",
-          "sketch": {
-            "show": [
-              "boot",
-              "boot>ric"
-            ],
-            "focus": [
-              "boot",
-              "boot>ric"
-            ],
-            "mark": "fix",
-            "note": {
-              "text": "sets env first",
-              "near": "boot"
+          "text": "Grid with place-items center. Two lines on the parent, centered both ways. S tier.",
+          "tier": {
+            "place": {
+              "item": "grid",
+              "tier": "S"
             }
           }
         },
         {
           "speaker": "jack",
-          "text": "Locally wahi environment variables set karke test kiya. Sahi handler load hua, aur galat naam pe wahi purana error aaya.",
-          "sketch": {
-            "focus": [
-              "ric>handler",
-              "handler"
-            ],
-            "mark": "fix"
-          }
-        },
-        {
-          "speaker": "jack",
-          "text": "Deploy ke baad health check do sau deta hai. Lesson: runtime ka version badle, toh uska startup contract dobara padho.",
-          "sketch": {
-            "focus": [
-              "gw>lambda"
-            ],
-            "mark": "fix"
+          "text": "Flexbox with justify-content and align-items center. Same result, works everywhere. Also S.",
+          "tier": {
+            "place": {
+              "item": "flex",
+              "tier": "S"
+            }
           }
         }
       ],
-      "takeaway": "aws-lambda-ric 4 reads _HANDLER and LAMBDA_TASK_ROOT, not the command argument, so a tiny bootstrap sets them first.",
+      "takeaway": "Use flexbox or grid on the parent to center both ways; margin auto only centers horizontally.",
       "questions": [
         {
-          "prompt": "Why did the Lambda fail to find the handler?",
+          "prompt": "Why is text-align: center only D tier?",
           "choices": [
-            "aws-lambda-ric 4 only reads _HANDLER and LAMBDA_TASK_ROOT",
-            "The handler file was missing from the image",
-            "API Gateway called the wrong route"
+            "It centers the text inside the card, not the card",
+            "It is deprecated",
+            "It only works in grid"
           ],
           "answer": 0,
-          "explanation": "The command argument was ignored; the runtime needed environment variables, which the bootstrap now sets.",
+          "explanation": "text-align affects inline content inside an element, not the element's own position.",
           "turnIndices": [
-            3,
-            4
+            2
           ]
         }
       ]
     },
     "learning": {
       "schemaVersion": "BrainrottenLearningPackV1",
-      "jobId": "c93d8794-a730-4e37-90f1-173133320722",
-      "format": "sketch",
-      "title": "Lambda ko handler kyun nahi mila?",
-      "language": "hinglish",
-      "durationSeconds": 65.938367,
-      "takeaway": "aws-lambda-ric 4 reads _HANDLER and LAMBDA_TASK_ROOT, not the command argument, so a tiny bootstrap sets them first.",
+      "jobId": "ebb4c677-a082-4f3f-8fb6-8ce050aecc23",
+      "format": "tierlist",
+      "title": "Ways to center a card, ranked",
+      "language": "en",
+      "durationSeconds": 59.572925,
+      "takeaway": "Use flexbox or grid on the parent to center both ways; margin auto only centers horizontally.",
       "chapters": [
         {
           "id": "turn-0",
-          "title": "Hosted API live kiya, aur har request pe",
+          "title": "Let's rank the ways to center a card",
           "startMs": 0,
-          "endMs": 5643
+          "endMs": 7357
         },
         {
           "id": "turn-1",
-          "title": "API Gateway request Lambda ko deta hai. Lambda",
-          "startMs": 5643,
-          "endMs": 12786
+          "title": "The old center tag. It's deprecated, and it",
+          "startMs": 7357,
+          "endMs": 12571
         },
         {
           "id": "turn-2",
-          "title": "Runtime client ko batana padta hai kaunsa handler",
-          "startMs": 12786,
-          "endMs": 20679
+          "title": "text-align center. It centers the text inside the",
+          "startMs": 12571,
+          "endMs": 18071
         },
         {
           "id": "turn-3",
-          "title": "Argument diya, phir bhi error aaya: cannot find",
-          "startMs": 20679,
-          "endMs": 25643
+          "title": "margin auto with a fixed width. Great horizontally,",
+          "startMs": 18071,
+          "endMs": 25000
         },
         {
           "id": "turn-4",
-          "title": "Runtime client ka version chaar argument dekhta hi",
-          "startMs": 35643,
-          "endMs": 44213
+          "title": "Absolute position, top and left fifty percent, then",
+          "startMs": 25000,
+          "endMs": 32536
         },
         {
           "id": "turn-5",
-          "title": "Fix ek chhota bootstrap file hai. Woh argument",
-          "startMs": 44213,
-          "endMs": 52357
+          "title": "B tier. It centers perfectly, but the card",
+          "startMs": 42536,
+          "endMs": 47929
         },
         {
           "id": "turn-6",
-          "title": "Locally wahi environment variables set karke test kiya.",
-          "startMs": 52357,
-          "endMs": 58857
+          "title": "Grid with place-items center. Two lines on the",
+          "startMs": 47929,
+          "endMs": 53643
         },
         {
           "id": "turn-7",
-          "title": "Deploy ke baad health check do sau deta",
-          "startMs": 58857,
-          "endMs": 65929
+          "title": "Flexbox with justify-content and align-items center. Same result,",
+          "startMs": 53643,
+          "endMs": 59573
         }
       ],
       "questions": [
         {
           "id": "q1",
-          "prompt": "Why did the Lambda fail to find the handler?",
+          "prompt": "Why is text-align: center only D tier?",
           "choices": [
-            "aws-lambda-ric 4 only reads _HANDLER and LAMBDA_TASK_ROOT",
-            "The handler file was missing from the image",
-            "API Gateway called the wrong route"
+            "It centers the text inside the card, not the card",
+            "It is deprecated",
+            "It only works in grid"
           ],
           "answer": 0,
-          "explanation": "The command argument was ignored; the runtime needed environment variables, which the bootstrap now sets.",
+          "explanation": "text-align affects inline content inside an element, not the element's own position.",
           "turnIndices": [
-            3,
-            4
+            2
           ],
-          "startMs": 20679,
-          "endMs": 44213
+          "startMs": 12571,
+          "endMs": 18071
         },
         {
-          "id": "pause-3",
-          "prompt": "We passed the handler as an argument. Why can't the runtime find it?",
+          "id": "pause-4",
+          "prompt": "position: absolute + top/left 50% + translate(-50%, -50%). Where does it rank for centering a card?",
           "choices": [
-            "Version 4 ignores the argument and reads env variables",
-            "The file was never built",
-            "API Gateway sent the wrong path"
+            "S: perfect",
+            "B: works, but pulls the card out of the layout",
+            "F: broken"
           ],
-          "answer": 0,
-          "explanation": "Runtime client ka version chaar argument dekhta hi nahi. Woh sirf underscore HANDLER aur LAMBDA TASK ROOT environment variables padhta hai.",
+          "answer": 1,
+          "explanation": "B tier. It centers perfectly, but the card leaves the normal layout, so nothing else can flow around it.",
           "turnIndices": [
-            3,
-            4
+            4,
+            5
           ],
-          "startMs": 20679,
-          "endMs": 44213
+          "startMs": 25000,
+          "endMs": 47929
         }
       ],
       "flashcards": [
         {
           "id": "q1",
-          "front": "Why did the Lambda fail to find the handler?",
-          "back": "aws-lambda-ric 4 only reads _HANDLER and LAMBDA_TASK_ROOT — The command argument was ignored; the runtime needed environment variables, which the bootstrap now sets.",
-          "startMs": 20679,
-          "endMs": 44213
+          "front": "Why is text-align: center only D tier?",
+          "back": "It centers the text inside the card, not the card — text-align affects inline content inside an element, not the element's own position.",
+          "startMs": 12571,
+          "endMs": 18071
         },
         {
-          "id": "pause-3",
-          "front": "We passed the handler as an argument. Why can't the runtime find it?",
-          "back": "Version 4 ignores the argument and reads env variables — Runtime client ka version chaar argument dekhta hi nahi. Woh sirf underscore HANDLER aur LAMBDA TASK ROOT environment variables padhta hai.",
-          "startMs": 20679,
-          "endMs": 44213
+          "id": "pause-4",
+          "front": "position: absolute + top/left 50% + translate(-50%, -50%). Where does it rank for centering a card?",
+          "back": "B: works, but pulls the card out of the layout — B tier. It centers perfectly, but the card leaves the normal layout, so nothing else can flow around it.",
+          "startMs": 25000,
+          "endMs": 47929
         }
       ],
       "transcript": [
         {
           "turnIndex": 0,
           "speaker": "jack",
-          "text": "Hosted API live kiya, aur har request pe five hundred error aa raha tha. Shuru se dekhte hain.",
+          "text": "Let's rank the ways to center a card on a portfolio page. One rule: centered horizontally and vertically, on any screen size.",
           "startMs": 0,
-          "endMs": 5643
+          "endMs": 7357
         },
         {
           "turnIndex": 1,
           "speaker": "jack",
-          "text": "API Gateway request Lambda ko deta hai. Lambda humari Docker image chalata hai, jismein AWS ka runtime client hai.",
-          "startMs": 5643,
-          "endMs": 12786
+          "text": "The old center tag. It's deprecated, and it only centers horizontally. F tier.",
+          "startMs": 7357,
+          "endMs": 12571
         },
         {
           "turnIndex": 2,
           "speaker": "jack",
-          "text": "Runtime client ko batana padta hai kaunsa handler load kare. Humne image ke command mein argument diya: cloud dist api dot handler.",
-          "startMs": 12786,
-          "endMs": 20679
+          "text": "text-align center. It centers the text inside the card, not the card itself. D tier.",
+          "startMs": 12571,
+          "endMs": 18071
         },
         {
           "turnIndex": 3,
           "speaker": "jack",
-          "text": "Argument diya, phir bhi error aaya: cannot find module api. Socho, kyun?",
-          "startMs": 20679,
-          "endMs": 25643
+          "text": "margin auto with a fixed width. Great horizontally, but in normal flow it does nothing vertically. C tier.",
+          "startMs": 18071,
+          "endMs": 25000
         },
         {
           "turnIndex": 4,
           "speaker": "jack",
-          "text": "Runtime client ka version chaar argument dekhta hi nahi. Woh sirf underscore HANDLER aur LAMBDA TASK ROOT environment variables padhta hai.",
-          "startMs": 35643,
-          "endMs": 44213
+          "text": "Absolute position, top and left fifty percent, then translate minus fifty percent. It works everywhere. So is it S tier?",
+          "startMs": 25000,
+          "endMs": 32536
         },
         {
           "turnIndex": 5,
           "speaker": "jack",
-          "text": "Fix ek chhota bootstrap file hai. Woh argument ko underscore HANDLER mein daalta hai, task root set karta hai, phir runtime client start karta hai.",
-          "startMs": 44213,
-          "endMs": 52357
+          "text": "B tier. It centers perfectly, but the card leaves the normal layout, so nothing else can flow around it.",
+          "startMs": 42536,
+          "endMs": 47929
         },
         {
           "turnIndex": 6,
           "speaker": "jack",
-          "text": "Locally wahi environment variables set karke test kiya. Sahi handler load hua, aur galat naam pe wahi purana error aaya.",
-          "startMs": 52357,
-          "endMs": 58857
+          "text": "Grid with place-items center. Two lines on the parent, centered both ways. S tier.",
+          "startMs": 47929,
+          "endMs": 53643
         },
         {
           "turnIndex": 7,
           "speaker": "jack",
-          "text": "Deploy ke baad health check do sau deta hai. Lesson: runtime ka version badle, toh uska startup contract dobara padho.",
-          "startMs": 58857,
-          "endMs": 65929
+          "text": "Flexbox with justify-content and align-items center. Same result, works everywhere. Also S.",
+          "startMs": 53643,
+          "endMs": 59573
         }
       ]
     },
-    "backgroundName": "Minecraft · End",
+    "backgroundName": "GTA Stunts",
     "sourceCredits": [
       {
-        "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
-        "url": "https://www.youtube.com/watch?v=1nIGWHLMsFA",
-        "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=1nIGWHLMsFA. Muted, cropped, resized and overlaid."
+        "title": "GTA 5 - Jump Stunts EP.27 Free To Use NO COPYRIGHT GAMEPLAY",
+        "url": "https://www.youtube.com/watch?v=KvS0MLj5IIE",
+        "attribution": "GTA 5 - Jump Stunts EP.27 — RipstaStylez, https://www.youtube.com/watch?v=KvS0MLj5IIE, Creative Commons Attribution. Muted, cropped, resized and overlaid. Original soundtrack is not included."
       }
     ],
     "voiceNames": {
       "jack": "Jack"
     },
-    "downloadUrl": "/examples/session-sketch-lambda/video.mp4"
+    "videoUrl": "/examples/css-center-card/video.mp4",
+    "downloadUrl": "/examples/css-center-card/video.mp4",
+    "posterUrl": "/examples/css-center-card/poster.png",
+    "audioUrl": null
   },
   {
-    "jobId": "f5f76aae-f31c-417c-9a3f-4ba68cd6cf8e",
+    "jobId": "2fe04a5a-ab5d-4cc3-8447-52a8b1b1313c",
     "state": "ready",
     "stage": "ready",
     "progress": 100,
-    "prompt": "Login ho gaya, phir bhi invalid?",
-    "title": "Login ho gaya, phir bhi invalid?",
-    "createdAt": "2026-11-02T09:26:27.887Z",
-    "updatedAt": "2026-11-02T09:27:13.279Z",
-    "videoUrl": "/examples/session-skit-cognito/video.mp4",
-    "posterUrl": "/examples/session-skit-cognito/poster.png",
-    "audioUrl": null,
+    "prompt": "Detached HEAD: kaam gaya kya?",
+    "title": "Detached HEAD: kaam gaya kya?",
+    "createdAt": "2026-11-03T06:40:43.122Z",
+    "updatedAt": "2026-11-03T06:40:59.824Z",
     "error": null,
-    "durationSeconds": 57.581746,
+    "durationSeconds": 39.784014,
     "cast": "auto",
     "language": "hinglish",
     "voiceBackend": "elevenlabs",
-    "participants": {
-      "learner": "jhaplu",
-      "expert": "paplu"
-    },
-    "format": "skit",
+    "format": "groupchat",
     "script": {
-      "title": "Login ho gaya, phir bhi invalid?",
-      "participants": {
-        "learner": "jhaplu",
-        "expert": "paplu"
+      "title": "Detached HEAD: kaam gaya kya?",
+      "chat": {
+        "title": "dbms-project 🎓",
+        "members": [
+          {
+            "speaker": "taplu",
+            "name": "You",
+            "icon": "user",
+            "you": true
+          },
+          {
+            "speaker": "jack",
+            "name": "Git",
+            "icon": "git"
+          },
+          {
+            "speaker": "john",
+            "name": "main branch",
+            "icon": "git-branch"
+          }
+        ]
       },
       "dialogue": [
         {
-          "speaker": "jhaplu",
-          "text": "Paplu, maine terminal se login kiya, Google pe sign in bhi ho gaya. Phir bhi likha aaya, invalid Cognito sign-in configuration!"
-        },
-        {
-          "speaker": "paplu",
-          "text": "Google login sahi tha, Jhaplu. Galti humare check mein thi. Hum token ka issuer ek regex se verify karte hain, taaki koi nakli server token na de sake.",
-          "broll": {
-            "kind": "code",
-            "code": "/amazonaws\\.com\\/[a-z0-9_-]+$/\n  .test(auth.issuer)",
-            "language": "ts"
+          "speaker": "taplu",
+          "text": "Maine purana commit checkout kiya aur ab Git bol raha hai detached HEAD. Mera kaam gaya kya?",
+          "chat": {
+            "display": "git bol raha detached HEAD 😭 mera kaam gaya kya??"
           }
         },
         {
-          "speaker": "jhaplu",
-          "text": "Par URL toh asli Cognito ka hi tha na? Regex ko usmein kya bura laga?"
+          "speaker": "jack",
+          "text": "Kuch nahi gaya. HEAD abhi kisi branch par nahi, seedha ek commit par khada hai.",
+          "chat": {
+            "display": "kuch nahi gaya 😌 HEAD ek commit pe khada hai, kisi branch pe nahi"
+          }
         },
         {
-          "speaker": "paplu",
-          "text": "Pool ID dekho. ap south one, underscore, Q I Y a O two Hex. Usmein capital letters hain."
+          "speaker": "john",
+          "text": "Main toh wahin hoon jahan tha. Tumne mujhe chhua hi nahi.",
+          "chat": {
+            "display": "main toh wahin hoon bro, mujhe chhua hi nahi 🤷"
+          }
         },
         {
-          "speaker": "jhaplu",
-          "text": "Achha. Toh jab regex ne capital Q aur capital I dekhe, tab usne kya kiya?",
+          "speaker": "taplu",
+          "text": "Par maine yahan do naye commits bhi kar diye. Agar ab main branch pe switch karun, toh unka kya hoga?",
+          "chat": {
+            "display": "par maine yahan 2 commits bhi kar diye… ab main pe gaya toh unka kya hoga? 🤔"
+          },
           "pause": {
-            "prompt": "The regex only allows lowercase. What happens to the real pool ID ap-south-1_QIYaO2Hex?",
+            "prompt": "You made 2 commits on a detached HEAD and switch back to main. What happens to those commits?",
             "choices": [
-              "It is rejected as invalid",
-              "It passes",
-              "It is lowercased first"
+              "No branch points to them, so they are easy to lose",
+              "They merge into main automatically",
+              "Git deletes them right away"
             ],
             "answer": 0
           }
         },
         {
-          "speaker": "paplu",
-          "text": "Asli pool ko bhi reject kar diya. Humare tests mein sirf chhote letters wale fake IDs the, isliye ye kabhi pakda hi nahi gaya."
+          "speaker": "jack",
+          "text": "Woh kisi branch par nahi hain, toh dheere dheere kho sakte hain. Abhi ek branch bana lo, unka ghar ban jaayega.",
+          "chat": {
+            "display": "unka koi ghar nahi 👻 abhi branch bana lo",
+            "code": "git switch -c fix-login"
+          }
         },
         {
-          "speaker": "jhaplu",
-          "text": "Toh regex hi hata kyun nahi dete? Jhanjhat khatam ho jaayega na?"
-        },
-        {
-          "speaker": "paplu",
-          "text": "Nahi, check zaroori hai. Naya regex region ka format aur pool ID ke capital letters maanta hai. Test mein asli ID bhi hai, aur ek nakli domain bhi jo fail hona chahiye.",
-          "broll": {
-            "kind": "code",
-            "code": "/[a-z]{2}(?:-[a-z]+)+-\\d_[A-Za-z0-9]+$/",
-            "language": "ts"
+          "speaker": "john",
+          "text": "Phir mujhme merge kar dena, sab safe rahega.",
+          "chat": {
+            "display": "phir mujhme merge kar dena ✅",
+            "reaction": "👍"
           }
         }
       ],
-      "takeaway": "Validate tokens against real production values: a lowercase-only pattern rejected the real Cognito pool ID.",
+      "takeaway": "A detached HEAD points at a commit, not a branch; create a branch before switching away so new commits are kept.",
       "questions": [
         {
-          "prompt": "Why did the real sign-in fail?",
+          "prompt": "Why create a branch before switching away from a detached HEAD?",
           "choices": [
-            "The issuer check only allowed lowercase, but the pool ID has capitals",
-            "Google rejected the account",
-            "The token had expired"
+            "So a branch points to your new commits and they are kept",
+            "Git requires it to push",
+            "It deletes the old commits"
           ],
           "answer": 0,
-          "explanation": "The pattern was written against lowercase test data, so the real mixed-case pool ID failed.",
+          "explanation": "Commits that no branch points to can be lost; a branch keeps them reachable.",
           "turnIndices": [
             3,
-            5
+            4
           ]
         }
       ]
     },
     "learning": {
       "schemaVersion": "BrainrottenLearningPackV1",
-      "jobId": "f5f76aae-f31c-417c-9a3f-4ba68cd6cf8e",
-      "format": "skit",
-      "title": "Login ho gaya, phir bhi invalid?",
+      "jobId": "2fe04a5a-ab5d-4cc3-8447-52a8b1b1313c",
+      "format": "groupchat",
+      "title": "Detached HEAD: kaam gaya kya?",
       "language": "hinglish",
-      "durationSeconds": 57.581746,
-      "takeaway": "Validate tokens against real production values: a lowercase-only pattern rejected the real Cognito pool ID.",
+      "durationSeconds": 39.784014,
+      "takeaway": "A detached HEAD points at a commit, not a branch; create a branch before switching away so new commits are kept.",
       "chapters": [
         {
           "id": "turn-0",
-          "title": "Paplu, maine terminal se login kiya, Google pe",
+          "title": "Maine purana commit checkout kiya aur ab Git",
           "startMs": 0,
-          "endMs": 5999
+          "endMs": 5786
         },
         {
           "id": "turn-1",
-          "title": "Google login sahi tha, Jhaplu. Galti humare check",
-          "startMs": 5999,
-          "endMs": 14356
+          "title": "Kuch nahi gaya. HEAD abhi kisi branch par",
+          "startMs": 5786,
+          "endMs": 10857
         },
         {
           "id": "turn-2",
-          "title": "Par URL toh asli Cognito ka hi tha",
-          "startMs": 14356,
-          "endMs": 17856
+          "title": "Main toh wahin hoon jahan tha. Tumne mujhe",
+          "startMs": 10857,
+          "endMs": 14286
         },
         {
           "id": "turn-3",
-          "title": "Pool ID dekho. ap south one, underscore, Q",
-          "startMs": 17856,
-          "endMs": 24500
+          "title": "Par maine yahan do naye commits bhi kar",
+          "startMs": 14286,
+          "endMs": 19857
         },
         {
           "id": "turn-4",
-          "title": "Achha. Toh jab regex ne capital Q aur",
-          "startMs": 24500,
-          "endMs": 28785
+          "title": "Woh kisi branch par nahi hain, toh dheere",
+          "startMs": 29857,
+          "endMs": 36857
         },
         {
           "id": "turn-5",
-          "title": "Asli pool ko bhi reject kar diya. Humare",
-          "startMs": 38785,
-          "endMs": 45143
-        },
-        {
-          "id": "turn-6",
-          "title": "Toh regex hi hata kyun nahi dete? Jhanjhat",
-          "startMs": 45143,
-          "endMs": 48071
-        },
-        {
-          "id": "turn-7",
-          "title": "Nahi, check zaroori hai. Naya regex region ka",
-          "startMs": 48071,
-          "endMs": 57571
+          "title": "Phir mujhme merge kar dena, sab safe rahega.",
+          "startMs": 36857,
+          "endMs": 39784
         }
       ],
       "questions": [
         {
           "id": "q1",
-          "prompt": "Why did the real sign-in fail?",
+          "prompt": "Why create a branch before switching away from a detached HEAD?",
           "choices": [
-            "The issuer check only allowed lowercase, but the pool ID has capitals",
-            "Google rejected the account",
-            "The token had expired"
+            "So a branch points to your new commits and they are kept",
+            "Git requires it to push",
+            "It deletes the old commits"
           ],
           "answer": 0,
-          "explanation": "The pattern was written against lowercase test data, so the real mixed-case pool ID failed.",
+          "explanation": "Commits that no branch points to can be lost; a branch keeps them reachable.",
           "turnIndices": [
             3,
-            5
+            4
           ],
-          "startMs": 17856,
-          "endMs": 45143
+          "startMs": 14286,
+          "endMs": 36857
         },
         {
-          "id": "pause-4",
-          "prompt": "The regex only allows lowercase. What happens to the real pool ID ap-south-1_QIYaO2Hex?",
+          "id": "pause-3",
+          "prompt": "You made 2 commits on a detached HEAD and switch back to main. What happens to those commits?",
           "choices": [
-            "It is rejected as invalid",
-            "It passes",
-            "It is lowercased first"
+            "No branch points to them, so they are easy to lose",
+            "They merge into main automatically",
+            "Git deletes them right away"
           ],
           "answer": 0,
-          "explanation": "Asli pool ko bhi reject kar diya. Humare tests mein sirf chhote letters wale fake IDs the, isliye ye kabhi pakda hi nahi gaya.",
+          "explanation": "unka koi ghar nahi 👻 abhi branch bana lo",
           "turnIndices": [
-            4,
-            5
+            3,
+            4
           ],
-          "startMs": 24500,
-          "endMs": 45143
+          "startMs": 14286,
+          "endMs": 36857
         }
       ],
       "flashcards": [
         {
           "id": "q1",
-          "front": "Why did the real sign-in fail?",
-          "back": "The issuer check only allowed lowercase, but the pool ID has capitals — The pattern was written against lowercase test data, so the real mixed-case pool ID failed.",
-          "startMs": 17856,
-          "endMs": 45143
+          "front": "Why create a branch before switching away from a detached HEAD?",
+          "back": "So a branch points to your new commits and they are kept — Commits that no branch points to can be lost; a branch keeps them reachable.",
+          "startMs": 14286,
+          "endMs": 36857
         },
         {
-          "id": "pause-4",
-          "front": "The regex only allows lowercase. What happens to the real pool ID ap-south-1_QIYaO2Hex?",
-          "back": "It is rejected as invalid — Asli pool ko bhi reject kar diya. Humare tests mein sirf chhote letters wale fake IDs the, isliye ye kabhi pakda hi nahi gaya.",
-          "startMs": 24500,
-          "endMs": 45143
+          "id": "pause-3",
+          "front": "You made 2 commits on a detached HEAD and switch back to main. What happens to those commits?",
+          "back": "No branch points to them, so they are easy to lose — unka koi ghar nahi 👻 abhi branch bana lo",
+          "startMs": 14286,
+          "endMs": 36857
         }
       ],
       "transcript": [
         {
           "turnIndex": 0,
-          "speaker": "jhaplu",
-          "text": "Paplu, maine terminal se login kiya, Google pe sign in bhi ho gaya. Phir bhi likha aaya, invalid Cognito sign-in configuration!",
+          "speaker": "taplu",
+          "text": "Maine purana commit checkout kiya aur ab Git bol raha hai detached HEAD. Mera kaam gaya kya?",
           "startMs": 0,
-          "endMs": 5999
+          "endMs": 5786
         },
         {
           "turnIndex": 1,
-          "speaker": "paplu",
-          "text": "Google login sahi tha, Jhaplu. Galti humare check mein thi. Hum token ka issuer ek regex se verify karte hain, taaki koi nakli server token na de sake.",
-          "startMs": 5999,
-          "endMs": 14356
+          "speaker": "jack",
+          "text": "Kuch nahi gaya. HEAD abhi kisi branch par nahi, seedha ek commit par khada hai.",
+          "startMs": 5786,
+          "endMs": 10857
         },
         {
           "turnIndex": 2,
-          "speaker": "jhaplu",
-          "text": "Par URL toh asli Cognito ka hi tha na? Regex ko usmein kya bura laga?",
-          "startMs": 14356,
-          "endMs": 17856
+          "speaker": "john",
+          "text": "Main toh wahin hoon jahan tha. Tumne mujhe chhua hi nahi.",
+          "startMs": 10857,
+          "endMs": 14286
         },
         {
           "turnIndex": 3,
-          "speaker": "paplu",
-          "text": "Pool ID dekho. ap south one, underscore, Q I Y a O two Hex. Usmein capital letters hain.",
-          "startMs": 17856,
-          "endMs": 24500
+          "speaker": "taplu",
+          "text": "Par maine yahan do naye commits bhi kar diye. Agar ab main branch pe switch karun, toh unka kya hoga?",
+          "startMs": 14286,
+          "endMs": 19857
         },
         {
           "turnIndex": 4,
-          "speaker": "jhaplu",
-          "text": "Achha. Toh jab regex ne capital Q aur capital I dekhe, tab usne kya kiya?",
-          "startMs": 24500,
-          "endMs": 28785
+          "speaker": "jack",
+          "text": "Woh kisi branch par nahi hain, toh dheere dheere kho sakte hain. Abhi ek branch bana lo, unka ghar ban jaayega.",
+          "startMs": 29857,
+          "endMs": 36857
         },
         {
           "turnIndex": 5,
-          "speaker": "paplu",
-          "text": "Asli pool ko bhi reject kar diya. Humare tests mein sirf chhote letters wale fake IDs the, isliye ye kabhi pakda hi nahi gaya.",
-          "startMs": 38785,
-          "endMs": 45143
-        },
-        {
-          "turnIndex": 6,
-          "speaker": "jhaplu",
-          "text": "Toh regex hi hata kyun nahi dete? Jhanjhat khatam ho jaayega na?",
-          "startMs": 45143,
-          "endMs": 48071
-        },
-        {
-          "turnIndex": 7,
-          "speaker": "paplu",
-          "text": "Nahi, check zaroori hai. Naya regex region ka format aur pool ID ke capital letters maanta hai. Test mein asli ID bhi hai, aur ek nakli domain bhi jo fail hona chahiye.",
-          "startMs": 48071,
-          "endMs": 57571
+          "speaker": "john",
+          "text": "Phir mujhme merge kar dena, sab safe rahega.",
+          "startMs": 36857,
+          "endMs": 39784
         }
       ]
     },
-    "backgroundName": "Minecraft · End",
+    "backgroundName": "GTA Stunts",
     "sourceCredits": [
       {
-        "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
-        "url": "https://www.youtube.com/watch?v=1nIGWHLMsFA",
-        "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=1nIGWHLMsFA. Muted, cropped, resized and overlaid."
+        "title": "GTA 5 - Jump Stunts EP.27 Free To Use NO COPYRIGHT GAMEPLAY",
+        "url": "https://www.youtube.com/watch?v=KvS0MLj5IIE",
+        "attribution": "GTA 5 - Jump Stunts EP.27 — RipstaStylez, https://www.youtube.com/watch?v=KvS0MLj5IIE, Creative Commons Attribution. Muted, cropped, resized and overlaid. Original soundtrack is not included."
       }
     ],
     "voiceNames": {
-      "jhaplu": "Jhaplu",
-      "paplu": "Paplu"
+      "taplu": "Taplu",
+      "jack": "Jack",
+      "john": "John"
     },
-    "downloadUrl": "/examples/session-skit-cognito/video.mp4"
+    "videoUrl": "/examples/git-detached-head/video.mp4",
+    "downloadUrl": "/examples/git-detached-head/video.mp4",
+    "posterUrl": "/examples/git-detached-head/poster.png",
+    "audioUrl": null
   },
   {
-    "jobId": "ee58eb33-9bcd-453d-a6d0-e42f32526dac",
+    "jobId": "b71b8fa9-9473-4cd5-811b-ab5d983368f5",
     "state": "ready",
     "stage": "ready",
     "progress": 100,
-    "prompt": "Accept real Cognito pool IDs",
-    "title": "Accept real Cognito pool IDs",
-    "createdAt": "2026-11-02T09:13:27.380Z",
-    "updatedAt": "2026-11-02T09:13:58.410Z",
-    "videoUrl": "/examples/session-prreview-cognito/video.mp4",
-    "posterUrl": "/examples/session-prreview-cognito/poster.png",
-    "audioUrl": null,
+    "prompt": "Stop the useEffect request loop",
+    "title": "Stop the useEffect request loop",
+    "createdAt": "2026-11-03T06:41:01.066Z",
+    "updatedAt": "2026-11-03T06:41:18.098Z",
     "error": null,
-    "durationSeconds": 56.792381,
+    "durationSeconds": 50.501837,
     "cast": "auto",
-    "language": "hinglish",
+    "language": "en",
     "voiceBackend": "elevenlabs",
     "format": "prreview",
     "script": {
-      "title": "Accept real Cognito pool IDs",
+      "title": "Stop the useEffect request loop",
       "pr": {
-        "title": "Accept real Cognito pool IDs (mixed case)",
-        "repo": "sea-deep/brainrotten",
+        "title": "Fix order polling loop in useOrders",
+        "repo": "riya/store-dashboard",
         "author": {
-          "name": "sea-deep",
+          "name": "riya",
           "icon": "user"
         },
         "reviewers": [
@@ -706,72 +1140,58 @@
           },
           {
             "speaker": "john",
-            "name": "security-bot",
-            "icon": "shield"
+            "name": "perf-bot",
+            "icon": "bot"
           }
         ],
         "files": [
           {
-            "path": "apps/companion/src/mcp/account.ts",
+            "path": "src/hooks/useOrders.ts",
             "language": "ts",
             "lines": [
               {
                 "kind": "ctx",
-                "code": "if(!/^https:\\/\\/cognito-idp\\."
+                "code": "export function useOrders(filters) {"
               },
               {
                 "kind": "ctx",
-                "code": "  [a-z0-9-]+\\.amazonaws\\.com\\/"
+                "code": "  const [orders, setOrders] = useState([]);"
               },
               {
                 "kind": "del",
-                "code": "  [a-z0-9_-]+$/"
+                "code": "  const query = { ...filters, page: 1 };"
               },
               {
                 "kind": "add",
-                "code": "  [a-z]{2}(?:-[a-z]+)+-\\d_[A-Za-z0-9]+$/"
+                "code": "  const query = useMemo("
+              },
+              {
+                "kind": "add",
+                "code": "    () => ({ ...filters, page: 1 }),"
+              },
+              {
+                "kind": "add",
+                "code": "    [filters.status, filters.from]);"
               },
               {
                 "kind": "ctx",
-                "code": "  .test(profile.issuer))throw new Error();"
-              }
-            ]
-          },
-          {
-            "path": "apps/companion/src/mcp/account.test.ts",
-            "language": "ts",
-            "lines": [
-              {
-                "kind": "add",
-                "code": "await write('https://cognito-idp.ap-south-1"
+                "code": "  useEffect(() => {"
               },
               {
-                "kind": "add",
-                "code": "  .amazonaws.com/ap-south-1_QIYaO2Hex');"
+                "kind": "ctx",
+                "code": "    fetchOrders(query).then(setOrders);"
               },
               {
-                "kind": "add",
-                "code": "expect(readAccountProfile(directory).issuer)"
+                "kind": "ctx",
+                "code": "  }, [query]);"
               },
               {
-                "kind": "add",
-                "code": "  .toContain('QIYaO2Hex');"
+                "kind": "ctx",
+                "code": "  return orders;"
               },
               {
-                "kind": "add",
-                "code": "await write('https://evil.example.com/"
-              },
-              {
-                "kind": "add",
-                "code": "  ap-south-1_QIYaO2Hex');"
-              },
-              {
-                "kind": "add",
-                "code": "expect(()=>readAccountProfile(directory))"
-              },
-              {
-                "kind": "add",
-                "code": "  .toThrow('Sign in first');"
+                "kind": "ctx",
+                "code": "}"
               }
             ]
           }
@@ -781,271 +1201,574 @@
       "dialogue": [
         {
           "speaker": "jhatka",
-          "text": "Is ek line ne production login tod diya. Pool ID wala hissa sirf chhote letters maanta tha.",
+          "text": "This line was the bug. A new query object is built on every render, so the effect sees a changed dependency every single time.",
           "pr": {
             "file": 0,
             "lines": [
               2,
               2
             ],
-            "display": "is line ne prod login tod diya 💀 sirf lowercase??",
+            "display": "new object every render = effect every render 💀",
             "tone": "roast"
           }
         },
         {
           "speaker": "jhatka",
-          "text": "Asli pool ID hai ap south one underscore Q I Y a O two Hex. Capital letters ki wajah se asli Cognito bhi reject ho raha tha.",
+          "text": "And the effect calls setOrders, which renders again, which builds a new object again. That loop hammered the orders API.",
           "pr": {
             "file": 0,
             "lines": [
-              3,
-              3
+              6,
+              8
             ],
-            "display": "real pool ID: ap-south-1_QIYaO2Hex. capitals = rejected 😭",
+            "display": "setOrders → rerender → new object → effect again 🔁",
             "tone": "question"
           }
         },
         {
           "speaker": "john",
-          "text": "Naya pattern capital letters allow karta hai. Mera sawaal: kya ab koi nakli domain bhi pass ho jaayega?",
+          "text": "The fix wraps the object in useMemo. Quick check: when does it actually build a new object now?",
           "pr": {
             "file": 0,
             "lines": [
               3,
-              3
+              5
             ],
-            "display": "capitals allowed now. does a fake domain pass too? 🤔",
+            "display": "useMemo now. when does it rebuild? 🤔",
             "tone": "question"
           },
           "pause": {
-            "prompt": "The pool ID part now allows capitals. Does an evil domain with the same pool ID pass?",
+            "prompt": "useMemo(() => ({ ...filters, page: 1 }), [filters.status, filters.from]). When does it build a new object?",
             "choices": [
-              "No, the host must still be Cognito's",
-              "Yes, any URL ending in a pool ID passes",
-              "Only if it uses https"
+              "Only when status or from change",
+              "On every render",
+              "Only on the first render"
             ],
             "answer": 0
           }
         },
         {
           "speaker": "john",
-          "text": "Nahi. Host abhi bhi cognito idp, region, amazonaws dot com hi hona chahiye. Capital letters sirf pool ID ke andar allowed hain.",
+          "text": "Only when status or from change. Those are plain strings, compared by value, so the effect runs once per real filter change.",
           "pr": {
             "file": 0,
             "lines": [
-              0,
-              1
+              3,
+              5
             ],
-            "display": "host still pinned to cognito-idp.*.amazonaws.com ✅",
+            "display": "deps are strings → compared by value ✅ one fetch per real change",
             "tone": "praise"
           }
         },
         {
           "speaker": "jhatka",
-          "text": "Aur test usi asli pool ID se likha hai jo production mein fail hua tha. Pehle sirf lowercase fake IDs the.",
+          "text": "One follow-up: if someone adds a new filter field later, it must join this dependency list too, or the orders go stale.",
           "pr": {
-            "file": 1,
+            "file": 0,
             "lines": [
-              0,
-              3
+              5,
+              5
             ],
-            "display": "test uses the REAL pool ID that broke prod 👏",
-            "tone": "praise"
-          }
-        },
-        {
-          "speaker": "john",
-          "text": "Nakli domain wala case bhi test mein hai, aur woh fail hota hai. Security check dheela nahi hua.",
-          "pr": {
-            "file": 1,
-            "lines": [
-              4,
-              7
-            ],
-            "display": "evil.example.com still throws 🛡️",
-            "tone": "praise"
+            "display": "nit: new filter fields must join these deps or data goes stale 👀",
+            "tone": "nit"
           }
         },
         {
           "speaker": "jhatka",
-          "text": "Approve. Lesson: validation ke tests mein asli production values daalo, warna regex sirf tumhare fake data ko pass karega.",
+          "text": "Approving. Lesson: effect dependencies should be values, not objects you rebuild on every render.",
           "pr": {
-            "display": "LGTM 🚀 test with real prod values, not just fake ones",
+            "display": "LGTM 🚀 deps = values, not fresh objects",
             "tone": "praise"
           }
         }
       ],
-      "takeaway": "Tests built from real production values catch what synthetic data hides, without loosening the security check.",
+      "takeaway": "Effect dependencies should be values, not objects rebuilt on every render.",
       "questions": [
         {
-          "prompt": "Why does the fix stay safe?",
+          "prompt": "Why did the old hook keep calling the API?",
           "choices": [
-            "The host is still pinned to Cognito; only the pool ID allows capitals",
-            "It removes the issuer check",
-            "It trusts any https URL"
+            "A new query object each render changed the effect's dependency every time",
+            "fetchOrders retries forever",
+            "useState resets on every render"
           ],
           "answer": 0,
-          "explanation": "Only the pool ID part was widened; an evil domain still fails, and a test proves it.",
+          "explanation": "The object was recreated every render, so React saw a new dependency and re-ran the effect, which set state and rendered again.",
           "turnIndices": [
-            2,
-            3
+            0,
+            1
           ]
         }
       ]
     },
     "learning": {
       "schemaVersion": "BrainrottenLearningPackV1",
-      "jobId": "ee58eb33-9bcd-453d-a6d0-e42f32526dac",
+      "jobId": "b71b8fa9-9473-4cd5-811b-ab5d983368f5",
       "format": "prreview",
-      "title": "Accept real Cognito pool IDs",
-      "language": "hinglish",
-      "durationSeconds": 56.792381,
-      "takeaway": "Tests built from real production values catch what synthetic data hides, without loosening the security check.",
+      "title": "Stop the useEffect request loop",
+      "language": "en",
+      "durationSeconds": 50.501837,
+      "takeaway": "Effect dependencies should be values, not objects rebuilt on every render.",
       "chapters": [
         {
           "id": "turn-0",
-          "title": "Is ek line ne production login tod diya.",
+          "title": "This line was the bug. A new query",
           "startMs": 0,
-          "endMs": 5142
+          "endMs": 7357
         },
         {
           "id": "turn-1",
-          "title": "Asli pool ID hai ap south one underscore",
-          "startMs": 5142,
-          "endMs": 13785
+          "title": "And the effect calls setOrders, which renders again,",
+          "startMs": 7357,
+          "endMs": 14143
         },
         {
           "id": "turn-2",
-          "title": "Naya pattern capital letters allow karta hai. Mera",
-          "startMs": 13785,
-          "endMs": 19357
+          "title": "The fix wraps the object in useMemo. Quick",
+          "startMs": 14143,
+          "endMs": 19714
         },
         {
           "id": "turn-3",
-          "title": "Nahi. Host abhi bhi cognito idp, region, amazonaws",
-          "startMs": 29357,
-          "endMs": 37785
+          "title": "Only when status or from change. Those are",
+          "startMs": 29714,
+          "endMs": 37786
         },
         {
           "id": "turn-4",
-          "title": "Aur test usi asli pool ID se likha",
-          "startMs": 37785,
-          "endMs": 43999
+          "title": "One follow-up: if someone adds a new filter",
+          "startMs": 37786,
+          "endMs": 44214
         },
         {
           "id": "turn-5",
-          "title": "Nakli domain wala case bhi test mein hai,",
-          "startMs": 43999,
-          "endMs": 49357
-        },
-        {
-          "id": "turn-6",
-          "title": "Approve. Lesson: validation ke tests mein asli production",
-          "startMs": 49357,
-          "endMs": 56786
+          "title": "Approving. Lesson: effect dependencies should be values, not",
+          "startMs": 44214,
+          "endMs": 50502
         }
       ],
       "questions": [
         {
           "id": "q1",
-          "prompt": "Why does the fix stay safe?",
+          "prompt": "Why did the old hook keep calling the API?",
           "choices": [
-            "The host is still pinned to Cognito; only the pool ID allows capitals",
-            "It removes the issuer check",
-            "It trusts any https URL"
+            "A new query object each render changed the effect's dependency every time",
+            "fetchOrders retries forever",
+            "useState resets on every render"
           ],
           "answer": 0,
-          "explanation": "Only the pool ID part was widened; an evil domain still fails, and a test proves it.",
+          "explanation": "The object was recreated every render, so React saw a new dependency and re-ran the effect, which set state and rendered again.",
           "turnIndices": [
-            2,
-            3
+            0,
+            1
           ],
-          "startMs": 13785,
-          "endMs": 37785
+          "startMs": 0,
+          "endMs": 14143
         },
         {
           "id": "pause-2",
-          "prompt": "The pool ID part now allows capitals. Does an evil domain with the same pool ID pass?",
+          "prompt": "useMemo(() => ({ ...filters, page: 1 }), [filters.status, filters.from]). When does it build a new object?",
           "choices": [
-            "No, the host must still be Cognito's",
-            "Yes, any URL ending in a pool ID passes",
-            "Only if it uses https"
+            "Only when status or from change",
+            "On every render",
+            "Only on the first render"
           ],
           "answer": 0,
-          "explanation": "host still pinned to cognito-idp.*.amazonaws.com ✅",
+          "explanation": "deps are strings → compared by value ✅ one fetch per real change",
           "turnIndices": [
             2,
             3
           ],
-          "startMs": 13785,
-          "endMs": 37785
+          "startMs": 14143,
+          "endMs": 37786
         }
       ],
       "flashcards": [
         {
           "id": "q1",
-          "front": "Why does the fix stay safe?",
-          "back": "The host is still pinned to Cognito; only the pool ID allows capitals — Only the pool ID part was widened; an evil domain still fails, and a test proves it.",
-          "startMs": 13785,
-          "endMs": 37785
+          "front": "Why did the old hook keep calling the API?",
+          "back": "A new query object each render changed the effect's dependency every time — The object was recreated every render, so React saw a new dependency and re-ran the effect, which set state and rendered again.",
+          "startMs": 0,
+          "endMs": 14143
         },
         {
           "id": "pause-2",
-          "front": "The pool ID part now allows capitals. Does an evil domain with the same pool ID pass?",
-          "back": "No, the host must still be Cognito's — host still pinned to cognito-idp.*.amazonaws.com ✅",
-          "startMs": 13785,
-          "endMs": 37785
+          "front": "useMemo(() => ({ ...filters, page: 1 }), [filters.status, filters.from]). When does it build a new object?",
+          "back": "Only when status or from change — deps are strings → compared by value ✅ one fetch per real change",
+          "startMs": 14143,
+          "endMs": 37786
         }
       ],
       "transcript": [
         {
           "turnIndex": 0,
           "speaker": "jhatka",
-          "text": "Is ek line ne production login tod diya. Pool ID wala hissa sirf chhote letters maanta tha.",
+          "text": "This line was the bug. A new query object is built on every render, so the effect sees a changed dependency every single time.",
           "startMs": 0,
-          "endMs": 5142
+          "endMs": 7357
         },
         {
           "turnIndex": 1,
           "speaker": "jhatka",
-          "text": "Asli pool ID hai ap south one underscore Q I Y a O two Hex. Capital letters ki wajah se asli Cognito bhi reject ho raha tha.",
-          "startMs": 5142,
-          "endMs": 13785
+          "text": "And the effect calls setOrders, which renders again, which builds a new object again. That loop hammered the orders API.",
+          "startMs": 7357,
+          "endMs": 14143
         },
         {
           "turnIndex": 2,
           "speaker": "john",
-          "text": "Naya pattern capital letters allow karta hai. Mera sawaal: kya ab koi nakli domain bhi pass ho jaayega?",
-          "startMs": 13785,
-          "endMs": 19357
+          "text": "The fix wraps the object in useMemo. Quick check: when does it actually build a new object now?",
+          "startMs": 14143,
+          "endMs": 19714
         },
         {
           "turnIndex": 3,
           "speaker": "john",
-          "text": "Nahi. Host abhi bhi cognito idp, region, amazonaws dot com hi hona chahiye. Capital letters sirf pool ID ke andar allowed hain.",
-          "startMs": 29357,
-          "endMs": 37785
+          "text": "Only when status or from change. Those are plain strings, compared by value, so the effect runs once per real filter change.",
+          "startMs": 29714,
+          "endMs": 37786
         },
         {
           "turnIndex": 4,
           "speaker": "jhatka",
-          "text": "Aur test usi asli pool ID se likha hai jo production mein fail hua tha. Pehle sirf lowercase fake IDs the.",
-          "startMs": 37785,
-          "endMs": 43999
+          "text": "One follow-up: if someone adds a new filter field later, it must join this dependency list too, or the orders go stale.",
+          "startMs": 37786,
+          "endMs": 44214
         },
         {
           "turnIndex": 5,
-          "speaker": "john",
-          "text": "Nakli domain wala case bhi test mein hai, aur woh fail hota hai. Security check dheela nahi hua.",
-          "startMs": 43999,
-          "endMs": 49357
+          "speaker": "jhatka",
+          "text": "Approving. Lesson: effect dependencies should be values, not objects you rebuild on every render.",
+          "startMs": 44214,
+          "endMs": 50502
+        }
+      ]
+    },
+    "backgroundName": "GTA Stunts",
+    "sourceCredits": [
+      {
+        "title": "GTA 5 - Jump Stunts EP.27 Free To Use NO COPYRIGHT GAMEPLAY",
+        "url": "https://www.youtube.com/watch?v=KvS0MLj5IIE",
+        "attribution": "GTA 5 - Jump Stunts EP.27 — RipstaStylez, https://www.youtube.com/watch?v=KvS0MLj5IIE, Creative Commons Attribution. Muted, cropped, resized and overlaid. Original soundtrack is not included."
+      }
+    ],
+    "voiceNames": {
+      "jhatka": "Dr Jhatka",
+      "john": "John"
+    },
+    "videoUrl": "/examples/react-useeffect-loop/video.mp4",
+    "downloadUrl": "/examples/react-useeffect-loop/video.mp4",
+    "posterUrl": "/examples/react-useeffect-loop/poster.png",
+    "audioUrl": null
+  },
+  {
+    "jobId": "3aac2bde-ebb5-40b2-98d6-7a1d68294f91",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Blog itna slow kyun hai?",
+    "title": "Blog itna slow kyun hai?",
+    "createdAt": "2026-11-03T06:41:21.147Z",
+    "updatedAt": "2026-11-03T06:41:40.462Z",
+    "error": null,
+    "durationSeconds": 45.35966,
+    "cast": "auto",
+    "language": "hinglish",
+    "voiceBackend": "elevenlabs",
+    "format": "sketch",
+    "narrator": "badri",
+    "script": {
+      "title": "Blog itna slow kyun hai?",
+      "narrator": "badri",
+      "sketch": {
+        "nodes": [
+          {
+            "id": "page",
+            "label": "Blog page",
+            "kind": "actor",
+            "icon": "monitor"
+          },
+          {
+            "id": "view",
+            "label": "Django view",
+            "kind": "service",
+            "icon": "django"
+          },
+          {
+            "id": "orm",
+            "label": "ORM",
+            "kind": "service",
+            "icon": "layers"
+          },
+          {
+            "id": "db",
+            "label": "PostgreSQL",
+            "kind": "store",
+            "icon": "postgresql"
+          }
+        ],
+        "edges": [
+          {
+            "from": "page",
+            "to": "view",
+            "label": "GET /posts"
+          },
+          {
+            "from": "view",
+            "to": "orm",
+            "label": "posts + authors"
+          },
+          {
+            "from": "orm",
+            "to": "db",
+            "label": "SQL queries"
+          }
+        ]
+      },
+      "dialogue": [
+        {
+          "speaker": "badri",
+          "text": "Blog ka home page bahut slow load ho raha tha. Chalo dekhte hain request kahan kahan jaati hai.",
+          "sketch": {
+            "show": [
+              "page",
+              "view",
+              "page>view"
+            ]
+          }
         },
         {
-          "turnIndex": 6,
-          "speaker": "jhatka",
-          "text": "Approve. Lesson: validation ke tests mein asli production values daalo, warna regex sirf tumhare fake data ko pass karega.",
-          "startMs": 49357,
-          "endMs": 56786
+          "speaker": "badri",
+          "text": "Django view saare posts laata hai, aur har post ke saath uske author ka naam dikhata hai.",
+          "sketch": {
+            "show": [
+              "orm",
+              "view>orm"
+            ],
+            "focus": [
+              "view>orm"
+            ]
+          }
+        },
+        {
+          "speaker": "badri",
+          "text": "ORM yeh sab PostgreSQL se SQL queries chala ke laata hai.",
+          "sketch": {
+            "show": [
+              "db",
+              "orm>db"
+            ],
+            "focus": [
+              "orm>db"
+            ]
+          }
+        },
+        {
+          "speaker": "badri",
+          "text": "Ab socho. Sau posts hain, aur template har post ke liye post dot author padhta hai. Kitni queries chalengi?",
+          "sketch": {
+            "focus": [
+              "orm>db"
+            ]
+          },
+          "pause": {
+            "prompt": "100 posts, and the template reads post.author for each one. How many SQL queries run?",
+            "choices": [
+              "101: one for posts, one per author",
+              "Just 1",
+              "2"
+            ],
+            "answer": 0
+          }
+        },
+        {
+          "speaker": "badri",
+          "text": "Ek sau ek. Ek query posts ke liye, phir har author ke liye alag. Isse N plus one problem kehte hain.",
+          "sketch": {
+            "focus": [
+              "orm>db",
+              "db"
+            ],
+            "mark": "problem",
+            "note": {
+              "text": "1 + 100 queries!",
+              "near": "db"
+            }
+          }
+        },
+        {
+          "speaker": "badri",
+          "text": "Fix hai select related author. ORM ek hi JOIN query mein posts aur authors dono le aata hai.",
+          "sketch": {
+            "focus": [
+              "orm",
+              "orm>db"
+            ],
+            "mark": "fix",
+            "note": {
+              "text": "select_related: 1 query",
+              "near": "orm"
+            }
+          }
+        }
+      ],
+      "takeaway": "Load related rows in the same query (select_related) instead of one query per row.",
+      "questions": [
+        {
+          "prompt": "Why did the blog page run 101 queries?",
+          "choices": [
+            "Each post's author was loaded with its own query",
+            "PostgreSQL splits big queries",
+            "Django caches nothing"
+          ],
+          "answer": 0,
+          "explanation": "Reading post.author lazily runs one query per post; select_related joins them into one.",
+          "turnIndices": [
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    "learning": {
+      "schemaVersion": "BrainrottenLearningPackV1",
+      "jobId": "3aac2bde-ebb5-40b2-98d6-7a1d68294f91",
+      "format": "sketch",
+      "title": "Blog itna slow kyun hai?",
+      "language": "hinglish",
+      "durationSeconds": 45.35966,
+      "takeaway": "Load related rows in the same query (select_related) instead of one query per row.",
+      "chapters": [
+        {
+          "id": "turn-0",
+          "title": "Blog ka home page bahut slow load ho",
+          "startMs": 0,
+          "endMs": 5250
+        },
+        {
+          "id": "turn-1",
+          "title": "Django view saare posts laata hai, aur har",
+          "startMs": 5250,
+          "endMs": 10571
+        },
+        {
+          "id": "turn-2",
+          "title": "ORM yeh sab PostgreSQL se SQL queries chala",
+          "startMs": 10571,
+          "endMs": 15500
+        },
+        {
+          "id": "turn-3",
+          "title": "Ab socho. Sau posts hain, aur template har",
+          "startMs": 15500,
+          "endMs": 22000
+        },
+        {
+          "id": "turn-4",
+          "title": "Ek sau ek. Ek query posts ke liye,",
+          "startMs": 32000,
+          "endMs": 38786
+        },
+        {
+          "id": "turn-5",
+          "title": "Fix hai select related author. ORM ek hi",
+          "startMs": 38786,
+          "endMs": 45360
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Why did the blog page run 101 queries?",
+          "choices": [
+            "Each post's author was loaded with its own query",
+            "PostgreSQL splits big queries",
+            "Django caches nothing"
+          ],
+          "answer": 0,
+          "explanation": "Reading post.author lazily runs one query per post; select_related joins them into one.",
+          "turnIndices": [
+            3,
+            4
+          ],
+          "startMs": 15500,
+          "endMs": 38786
+        },
+        {
+          "id": "pause-3",
+          "prompt": "100 posts, and the template reads post.author for each one. How many SQL queries run?",
+          "choices": [
+            "101: one for posts, one per author",
+            "Just 1",
+            "2"
+          ],
+          "answer": 0,
+          "explanation": "Ek sau ek. Ek query posts ke liye, phir har author ke liye alag. Isse N plus one problem kehte hain.",
+          "turnIndices": [
+            3,
+            4
+          ],
+          "startMs": 15500,
+          "endMs": 38786
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "q1",
+          "front": "Why did the blog page run 101 queries?",
+          "back": "Each post's author was loaded with its own query — Reading post.author lazily runs one query per post; select_related joins them into one.",
+          "startMs": 15500,
+          "endMs": 38786
+        },
+        {
+          "id": "pause-3",
+          "front": "100 posts, and the template reads post.author for each one. How many SQL queries run?",
+          "back": "101: one for posts, one per author — Ek sau ek. Ek query posts ke liye, phir har author ke liye alag. Isse N plus one problem kehte hain.",
+          "startMs": 15500,
+          "endMs": 38786
+        }
+      ],
+      "transcript": [
+        {
+          "turnIndex": 0,
+          "speaker": "badri",
+          "text": "Blog ka home page bahut slow load ho raha tha. Chalo dekhte hain request kahan kahan jaati hai.",
+          "startMs": 0,
+          "endMs": 5250
+        },
+        {
+          "turnIndex": 1,
+          "speaker": "badri",
+          "text": "Django view saare posts laata hai, aur har post ke saath uske author ka naam dikhata hai.",
+          "startMs": 5250,
+          "endMs": 10571
+        },
+        {
+          "turnIndex": 2,
+          "speaker": "badri",
+          "text": "ORM yeh sab PostgreSQL se SQL queries chala ke laata hai.",
+          "startMs": 10571,
+          "endMs": 15500
+        },
+        {
+          "turnIndex": 3,
+          "speaker": "badri",
+          "text": "Ab socho. Sau posts hain, aur template har post ke liye post dot author padhta hai. Kitni queries chalengi?",
+          "startMs": 15500,
+          "endMs": 22000
+        },
+        {
+          "turnIndex": 4,
+          "speaker": "badri",
+          "text": "Ek sau ek. Ek query posts ke liye, phir har author ke liye alag. Isse N plus one problem kehte hain.",
+          "startMs": 32000,
+          "endMs": 38786
+        },
+        {
+          "turnIndex": 5,
+          "speaker": "badri",
+          "text": "Fix hai select related author. ORM ek hi JOIN query mein posts aur authors dono le aata hai.",
+          "startMs": 38786,
+          "endMs": 45360
         }
       ]
     },
@@ -1058,267 +1781,284 @@
       }
     ],
     "voiceNames": {
-      "jhatka": "Dr Jhatka",
-      "john": "John"
+      "badri": "Badri"
     },
-    "downloadUrl": "/examples/session-prreview-cognito/video.mp4"
+    "videoUrl": "/examples/django-n-plus-one/video.mp4",
+    "downloadUrl": "/examples/django-n-plus-one/video.mp4",
+    "posterUrl": "/examples/django-n-plus-one/poster.png",
+    "audioUrl": null
   },
   {
-    "jobId": "31f4fd69-5e1f-456b-b4c5-cc72609f46b0",
+    "jobId": "75ac7f48-2be6-41f2-93c9-194176b7fa3c",
     "state": "ready",
     "stage": "ready",
     "progress": 100,
-    "prompt": "Naya AWS account, website kahan host karein?",
-    "title": "Naya AWS account, website kahan host karein?",
-    "createdAt": "2026-11-02T09:14:02.545Z",
-    "updatedAt": "2026-11-02T09:14:32.439Z",
-    "videoUrl": "/examples/session-tierlist-hosting/video.mp4",
-    "posterUrl": "/examples/session-tierlist-hosting/poster.png",
-    "audioUrl": null,
+    "prompt": "Who blocked my request?",
+    "title": "Who blocked my request?",
+    "createdAt": "2026-11-03T06:41:41.280Z",
+    "updatedAt": "2026-11-03T06:41:57.192Z",
     "error": null,
-    "durationSeconds": 58.7978,
+    "durationSeconds": 42.289138,
     "cast": "auto",
-    "language": "hinglish",
+    "language": "en",
     "voiceBackend": "elevenlabs",
-    "format": "tierlist",
-    "narrator": "badri",
+    "format": "groupchat",
     "script": {
-      "title": "Naya AWS account, website kahan host karein?",
-      "narrator": "badri",
-      "tierlist": {
-        "criterion": "live today, with Google sign-in, on a new account",
-        "items": [
+      "title": "Who blocked my request?",
+      "chat": {
+        "title": "shop-frontend 🛒",
+        "members": [
           {
-            "id": "cloudfront",
-            "label": "S3 + CloudFront",
-            "icon": "cloud"
+            "speaker": "taplu",
+            "name": "React app",
+            "icon": "react",
+            "you": true
           },
           {
-            "id": "s3web",
-            "label": "S3 static website",
+            "speaker": "jack",
+            "name": "Browser",
             "icon": "globe"
           },
           {
-            "id": "amplify",
-            "label": "Amplify Hosting",
-            "icon": "rocket"
+            "speaker": "john",
+            "name": "Flask API",
+            "icon": "flask"
           }
         ]
       },
       "dialogue": [
         {
-          "speaker": "badri",
-          "text": "Website ko ek naye AWS account pe host karna tha. Criterion ek hi hai: aaj hi live ho, Google login ke saath."
-        },
-        {
-          "speaker": "badri",
-          "text": "Plan tha S3 plus CloudFront. Par naye account pe CloudFront ne bola, account must be verified. Aaj ke liye seedha F tier.",
-          "tier": {
-            "place": {
-              "item": "cloudfront",
-              "tier": "F"
-            }
+          "speaker": "taplu",
+          "text": "I called the API with a JSON body and got blocked by CORS. The server is literally running!",
+          "chat": {
+            "display": "called the API, CORS blocked me 😤 server is literally up"
           }
         },
         {
-          "speaker": "badri",
-          "text": "Ab S3 static website. Ek minute mein ban jaata hai. Par ek dikkat hai. Socho, kaunsi?",
-          "tier": {
-            "focus": "s3web"
+          "speaker": "jack",
+          "text": "Different origin, so before your POST I sent a preflight OPTIONS request asking if that's allowed.",
+          "chat": {
+            "display": "different origin → I sent a preflight OPTIONS first ✈️"
+          }
+        },
+        {
+          "speaker": "john",
+          "text": "I got an OPTIONS request I don't handle, so I answered without any Access-Control headers.",
+          "chat": {
+            "display": "got OPTIONS, replied with no CORS headers 🤷"
+          }
+        },
+        {
+          "speaker": "taplu",
+          "text": "So who actually blocked it? The server or the browser?",
+          "chat": {
+            "display": "so who blocked it?? server or browser?"
           },
           "pause": {
-            "prompt": "S3 website hosting goes live instantly. What breaks for Google sign-in?",
+            "prompt": "The preflight response had no Access-Control-Allow-Origin header. Who blocks the request?",
             "choices": [
-              "It is HTTP only, and the sign-in redirect needs HTTPS",
-              "S3 cannot serve JavaScript",
-              "It needs a paid plan"
+              "The browser",
+              "The Flask server",
+              "React"
             ],
             "answer": 0
           }
         },
         {
-          "speaker": "badri",
-          "text": "S3 website sirf HTTP deta hai, aur Cognito ka login redirect HTTPS maangta hai. Site khulegi, login nahi hoga. D tier.",
-          "tier": {
-            "place": {
-              "item": "s3web",
-              "tier": "D"
-            }
+          "speaker": "jack",
+          "text": "Me. The server never refused anything. I block the response because it didn't say your origin is allowed.",
+          "chat": {
+            "display": "me 🙋 the server never refused, I block when your origin isn't allowed",
+            "reaction": "😳"
           }
         },
         {
-          "speaker": "badri",
-          "text": "Amplify Hosting. Build ka zip upload kiya, HTTPS wala URL mila, aur Google login chal gaya, isi naye account pe. S tier.",
-          "tier": {
-            "place": {
-              "item": "amplify",
-              "tier": "S"
-            }
+          "speaker": "john",
+          "text": "The fix is on my side: allow your origin. Two lines.",
+          "chat": {
+            "display": "fix is on my side, 2 lines ✅",
+            "code": "from flask_cors import CORS\nCORS(app, origins=[FRONTEND])"
           }
         },
         {
-          "speaker": "badri",
-          "text": "Takeaway: plan mein ek fallback rakho. Naye account ki limits deploy ke din hi pata chalti hain."
+          "speaker": "taplu",
+          "text": "And no wildcard star in production. Got it.",
+          "chat": {
+            "display": "no * in prod. noted 📝"
+          }
         }
       ],
-      "takeaway": "Keep a fallback in the plan: a brand-new AWS account's limits show up on deploy day.",
+      "takeaway": "CORS is enforced by the browser; the server fixes it by sending Access-Control-Allow-Origin for the origins it allows.",
       "questions": [
         {
-          "prompt": "Why did the S3 static website fail the criterion?",
+          "prompt": "Who enforces CORS?",
           "choices": [
-            "It only serves HTTP, and the sign-in redirect needs HTTPS",
-            "It could not serve the files",
-            "CloudFront blocked it"
+            "The browser",
+            "The API server",
+            "The React app"
           ],
           "answer": 0,
-          "explanation": "Cognito requires an HTTPS callback outside localhost, so login would not work.",
+          "explanation": "The server only sends headers; the browser decides whether the page may read the response.",
           "turnIndices": [
-            2,
-            3
+            3,
+            4
           ]
         }
       ]
     },
     "learning": {
       "schemaVersion": "BrainrottenLearningPackV1",
-      "jobId": "31f4fd69-5e1f-456b-b4c5-cc72609f46b0",
-      "format": "tierlist",
-      "title": "Naya AWS account, website kahan host karein?",
-      "language": "hinglish",
-      "durationSeconds": 58.7978,
-      "takeaway": "Keep a fallback in the plan: a brand-new AWS account's limits show up on deploy day.",
+      "jobId": "75ac7f48-2be6-41f2-93c9-194176b7fa3c",
+      "format": "groupchat",
+      "title": "Who blocked my request?",
+      "language": "en",
+      "durationSeconds": 42.289138,
+      "takeaway": "CORS is enforced by the browser; the server fixes it by sending Access-Control-Allow-Origin for the origins it allows.",
       "chapters": [
         {
           "id": "turn-0",
-          "title": "Website ko ek naye AWS account pe host",
+          "title": "I called the API with a JSON body",
           "startMs": 0,
-          "endMs": 7143
+          "endMs": 5929
         },
         {
           "id": "turn-1",
-          "title": "Plan tha S3 plus CloudFront. Par naye account",
-          "startMs": 7143,
-          "endMs": 15786
+          "title": "Different origin, so before your POST I sent",
+          "startMs": 5929,
+          "endMs": 11357
         },
         {
           "id": "turn-2",
-          "title": "Ab S3 static website. Ek minute mein ban",
-          "startMs": 15786,
-          "endMs": 23286
+          "title": "I got an OPTIONS request I don't handle,",
+          "startMs": 11357,
+          "endMs": 16571
         },
         {
           "id": "turn-3",
-          "title": "S3 website sirf HTTP deta hai, aur Cognito",
-          "startMs": 33286,
-          "endMs": 42929
+          "title": "So who actually blocked it? The server or",
+          "startMs": 16571,
+          "endMs": 19929
         },
         {
           "id": "turn-4",
-          "title": "Amplify Hosting. Build ka zip upload kiya, HTTPS",
-          "startMs": 42929,
-          "endMs": 52214
+          "title": "Me. The server never refused anything. I block",
+          "startMs": 29929,
+          "endMs": 35786
         },
         {
           "id": "turn-5",
-          "title": "Takeaway: plan mein ek fallback rakho. Naye account",
-          "startMs": 52214,
-          "endMs": 58786
+          "title": "The fix is on my side: allow your",
+          "startMs": 35786,
+          "endMs": 39571
+        },
+        {
+          "id": "turn-6",
+          "title": "And no wildcard star in production. Got it.",
+          "startMs": 39571,
+          "endMs": 42289
         }
       ],
       "questions": [
         {
           "id": "q1",
-          "prompt": "Why did the S3 static website fail the criterion?",
+          "prompt": "Who enforces CORS?",
           "choices": [
-            "It only serves HTTP, and the sign-in redirect needs HTTPS",
-            "It could not serve the files",
-            "CloudFront blocked it"
+            "The browser",
+            "The API server",
+            "The React app"
           ],
           "answer": 0,
-          "explanation": "Cognito requires an HTTPS callback outside localhost, so login would not work.",
+          "explanation": "The server only sends headers; the browser decides whether the page may read the response.",
           "turnIndices": [
-            2,
-            3
+            3,
+            4
           ],
-          "startMs": 15786,
-          "endMs": 42929
+          "startMs": 16571,
+          "endMs": 35786
         },
         {
-          "id": "pause-2",
-          "prompt": "S3 website hosting goes live instantly. What breaks for Google sign-in?",
+          "id": "pause-3",
+          "prompt": "The preflight response had no Access-Control-Allow-Origin header. Who blocks the request?",
           "choices": [
-            "It is HTTP only, and the sign-in redirect needs HTTPS",
-            "S3 cannot serve JavaScript",
-            "It needs a paid plan"
+            "The browser",
+            "The Flask server",
+            "React"
           ],
           "answer": 0,
-          "explanation": "S3 website sirf HTTP deta hai, aur Cognito ka login redirect HTTPS maangta hai. Site khulegi, login nahi hoga. D tier.",
+          "explanation": "me 🙋 the server never refused, I block when your origin isn't allowed",
           "turnIndices": [
-            2,
-            3
+            3,
+            4
           ],
-          "startMs": 15786,
-          "endMs": 42929
+          "startMs": 16571,
+          "endMs": 35786
         }
       ],
       "flashcards": [
         {
           "id": "q1",
-          "front": "Why did the S3 static website fail the criterion?",
-          "back": "It only serves HTTP, and the sign-in redirect needs HTTPS — Cognito requires an HTTPS callback outside localhost, so login would not work.",
-          "startMs": 15786,
-          "endMs": 42929
+          "front": "Who enforces CORS?",
+          "back": "The browser — The server only sends headers; the browser decides whether the page may read the response.",
+          "startMs": 16571,
+          "endMs": 35786
         },
         {
-          "id": "pause-2",
-          "front": "S3 website hosting goes live instantly. What breaks for Google sign-in?",
-          "back": "It is HTTP only, and the sign-in redirect needs HTTPS — S3 website sirf HTTP deta hai, aur Cognito ka login redirect HTTPS maangta hai. Site khulegi, login nahi hoga. D tier.",
-          "startMs": 15786,
-          "endMs": 42929
+          "id": "pause-3",
+          "front": "The preflight response had no Access-Control-Allow-Origin header. Who blocks the request?",
+          "back": "The browser — me 🙋 the server never refused, I block when your origin isn't allowed",
+          "startMs": 16571,
+          "endMs": 35786
         }
       ],
       "transcript": [
         {
           "turnIndex": 0,
-          "speaker": "badri",
-          "text": "Website ko ek naye AWS account pe host karna tha. Criterion ek hi hai: aaj hi live ho, Google login ke saath.",
+          "speaker": "taplu",
+          "text": "I called the API with a JSON body and got blocked by CORS. The server is literally running!",
           "startMs": 0,
-          "endMs": 7143
+          "endMs": 5929
         },
         {
           "turnIndex": 1,
-          "speaker": "badri",
-          "text": "Plan tha S3 plus CloudFront. Par naye account pe CloudFront ne bola, account must be verified. Aaj ke liye seedha F tier.",
-          "startMs": 7143,
-          "endMs": 15786
+          "speaker": "jack",
+          "text": "Different origin, so before your POST I sent a preflight OPTIONS request asking if that's allowed.",
+          "startMs": 5929,
+          "endMs": 11357
         },
         {
           "turnIndex": 2,
-          "speaker": "badri",
-          "text": "Ab S3 static website. Ek minute mein ban jaata hai. Par ek dikkat hai. Socho, kaunsi?",
-          "startMs": 15786,
-          "endMs": 23286
+          "speaker": "john",
+          "text": "I got an OPTIONS request I don't handle, so I answered without any Access-Control headers.",
+          "startMs": 11357,
+          "endMs": 16571
         },
         {
           "turnIndex": 3,
-          "speaker": "badri",
-          "text": "S3 website sirf HTTP deta hai, aur Cognito ka login redirect HTTPS maangta hai. Site khulegi, login nahi hoga. D tier.",
-          "startMs": 33286,
-          "endMs": 42929
+          "speaker": "taplu",
+          "text": "So who actually blocked it? The server or the browser?",
+          "startMs": 16571,
+          "endMs": 19929
         },
         {
           "turnIndex": 4,
-          "speaker": "badri",
-          "text": "Amplify Hosting. Build ka zip upload kiya, HTTPS wala URL mila, aur Google login chal gaya, isi naye account pe. S tier.",
-          "startMs": 42929,
-          "endMs": 52214
+          "speaker": "jack",
+          "text": "Me. The server never refused anything. I block the response because it didn't say your origin is allowed.",
+          "startMs": 29929,
+          "endMs": 35786
         },
         {
           "turnIndex": 5,
-          "speaker": "badri",
-          "text": "Takeaway: plan mein ek fallback rakho. Naye account ki limits deploy ke din hi pata chalti hain.",
-          "startMs": 52214,
-          "endMs": 58786
+          "speaker": "john",
+          "text": "The fix is on my side: allow your origin. Two lines.",
+          "startMs": 35786,
+          "endMs": 39571
+        },
+        {
+          "turnIndex": 6,
+          "speaker": "taplu",
+          "text": "And no wildcard star in production. Got it.",
+          "startMs": 39571,
+          "endMs": 42289
         }
       ]
     },
@@ -1331,137 +2071,430 @@
       }
     ],
     "voiceNames": {
-      "badri": "Badri"
+      "taplu": "Taplu",
+      "jack": "Jack",
+      "john": "John"
     },
-    "downloadUrl": "/examples/session-tierlist-hosting/video.mp4"
+    "videoUrl": "/examples/flask-cors-preflight/video.mp4",
+    "downloadUrl": "/examples/flask-cors-preflight/video.mp4",
+    "posterUrl": "/examples/flask-cors-preflight/poster.png",
+    "audioUrl": null
   },
   {
-    "jobId": "6cf5d4d4-d075-45f5-b8df-e053349dc099",
+    "jobId": "26ab0d42-7dce-4f74-bbd7-6dc258443b52",
     "state": "ready",
     "stage": "ready",
     "progress": 100,
-    "prompt": "Pehli request pe 18 second kyun?",
-    "title": "Pehli request pe 18 second kyun?",
-    "createdAt": "2026-11-02T09:27:18.092Z",
-    "updatedAt": "2026-11-02T09:27:59.511Z",
-    "videoUrl": "/examples/session-groupchat-coldstart/video.mp4",
-    "posterUrl": "/examples/session-groupchat-coldstart/poster.png",
-    "audioUrl": null,
+    "prompt": "setState called after dispose?",
+    "title": "setState called after dispose?",
+    "createdAt": "2026-11-03T06:41:57.728Z",
+    "updatedAt": "2026-11-03T06:42:21.653Z",
     "error": null,
-    "durationSeconds": 51.146168,
+    "durationSeconds": 44.435374,
     "cast": "auto",
     "language": "hinglish",
     "voiceBackend": "elevenlabs",
-    "format": "groupchat",
+    "participants": {
+      "learner": "jhaplu",
+      "expert": "paplu"
+    },
+    "format": "skit",
     "script": {
-      "title": "Pehli request pe 18 second kyun?",
-      "chat": {
-        "title": "brainrotten-prod ☁️",
-        "members": [
-          {
-            "speaker": "taplu",
-            "name": "Studio",
-            "icon": "monitor",
-            "you": true
-          },
-          {
-            "speaker": "jack",
-            "name": "API Lambda",
-            "icon": "server"
-          },
-          {
-            "speaker": "john",
-            "name": "Worker Lambda",
-            "icon": "cpu"
-          },
-          {
-            "speaker": "budhdev",
-            "name": "EventBridge",
-            "icon": "alarm-clock"
-          }
-        ]
+      "title": "setState called after dispose?",
+      "participants": {
+        "learner": "jhaplu",
+        "expert": "paplu"
       },
       "dialogue": [
         {
-          "speaker": "taplu",
-          "text": "API bhai, pehli request pe atharah second laga diye. User ko laga site hi band hai.",
-          "chat": {
-            "display": "API bhai 18 second?? user ko laga site down hai 😭"
+          "speaker": "jhaplu",
+          "text": "Mamu, weather screen se jaldi back dabaya toh app ne lal error phenka: setState called after dispose. Ye kya bawaal hai?"
+        },
+        {
+          "speaker": "paplu",
+          "text": "Re baba, tumhara API call abhi chal raha tha. Jawab aaya tab tak screen band ho chuki thi, phir bhi setState chal gaya.",
+          "broll": {
+            "kind": "code",
+            "code": "final data = await api.fetch(city);\nsetState(() => weather = data);",
+            "language": "dart"
           }
         },
         {
-          "speaker": "jack",
-          "text": "Main so raha tha. Der tak koi request nahi aayi, toh AWS ne mera container band kar diya.",
-          "chat": {
-            "display": "so raha tha 😴 koi request nahi thi toh container band"
+          "speaker": "jhaplu",
+          "text": "Toh screen band hone ke baad setState rokne ka koi tareeka hai kya?"
+        },
+        {
+          "speaker": "paplu",
+          "text": "Haan, await ke baad mounted check karo. Screen chali gayi ho toh chupchaap ruk jao.",
+          "broll": {
+            "kind": "code",
+            "code": "final data = await api.fetch(city);\nif (!mounted) return;\nsetState(() => weather = data);",
+            "language": "dart"
           }
         },
         {
-          "speaker": "john",
-          "text": "Mera bhi wahi haal hai. Meri image badi hai, FFmpeg aur fonts ke saath. Har baar zero se start hona padta hai.",
-          "chat": {
-            "display": "same 💀 meri image mein ffmpeg + fonts, cold start heavy",
-            "reaction": "💀"
-          }
-        },
-        {
-          "speaker": "taplu",
-          "text": "Toh har pehle user ko ye intezaar karna padega? Tum dono ko jagaye rakhne ka koi tareeka hai?",
-          "chat": {
-            "display": "toh har pehla user wait karega?? jagaye rakhne ka koi jugaad?"
-          },
+          "speaker": "jhaplu",
+          "text": "Aur agar main FutureBuilder use karun, toh kya yeh check phir bhi likhna padega?",
           "pause": {
-            "prompt": "How do you keep a rarely used Lambda from starting cold?",
+            "prompt": "If the screen uses FutureBuilder instead of calling setState yourself, do you still need the mounted check?",
             "choices": [
-              "Ping it on a schedule so it stays warm",
-              "Rename the function",
-              "Move it to another region"
+              "No, FutureBuilder stops rebuilding after dispose",
+              "Yes, always",
+              "Only on iOS"
             ],
             "answer": 0
           }
         },
         {
-          "speaker": "budhdev",
-          "text": "Main hoon na. Har paanch minute mein dono ko ek chhota warmup message bhejta hoon.",
-          "chat": {
-            "display": "main hoon na ⏰ har 5 min warmup ping bhejta hu"
-          }
+          "speaker": "paplu",
+          "text": "Nahi. FutureBuilder khud dekh leta hai, widget hatne ke baad rebuild nahi karta. Bas future ko build ke andar mat banana."
+        }
+      ],
+      "takeaway": "After an await, check mounted before calling setState; FutureBuilder handles this for you.",
+      "questions": [
+        {
+          "prompt": "Why did the app throw 'setState called after dispose'?",
+          "choices": [
+            "The fetch finished after the screen was closed",
+            "The API returned an error",
+            "setState was called twice"
+          ],
+          "answer": 0,
+          "explanation": "The await resumed after the State was disposed, and setState ran on a widget that no longer existed.",
+          "turnIndices": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "learning": {
+      "schemaVersion": "BrainrottenLearningPackV1",
+      "jobId": "26ab0d42-7dce-4f74-bbd7-6dc258443b52",
+      "format": "skit",
+      "title": "setState called after dispose?",
+      "language": "hinglish",
+      "durationSeconds": 44.435374,
+      "takeaway": "After an await, check mounted before calling setState; FutureBuilder handles this for you.",
+      "chapters": [
+        {
+          "id": "turn-0",
+          "title": "Mamu, weather screen se jaldi back dabaya toh",
+          "startMs": 0,
+          "endMs": 7500
         },
         {
-          "speaker": "jack",
-          "text": "Aur warmup aaya toh main bas warm bol ke lautunga. Na database, na koi user ka kaam.",
-          "chat": {
-            "display": "warmup aaya toh bas 'warm' bol ke return ✅",
-            "code": "if (event.warmup)\n  return {statusCode: 200,\n    body: 'warm'};"
+          "id": "turn-1",
+          "title": "Re baba, tumhara API call abhi chal raha",
+          "startMs": 7500,
+          "endMs": 14857
+        },
+        {
+          "id": "turn-2",
+          "title": "Toh screen band hone ke baad setState rokne",
+          "startMs": 14857,
+          "endMs": 18357
+        },
+        {
+          "id": "turn-3",
+          "title": "Haan, await ke baad mounted check karo. Screen",
+          "startMs": 18357,
+          "endMs": 23500
+        },
+        {
+          "id": "turn-4",
+          "title": "Aur agar main FutureBuilder use karun, toh kya",
+          "startMs": 23500,
+          "endMs": 27143
+        },
+        {
+          "id": "turn-5",
+          "title": "Nahi. FutureBuilder khud dekh leta hai, widget hatne",
+          "startMs": 37143,
+          "endMs": 44429
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Why did the app throw 'setState called after dispose'?",
+          "choices": [
+            "The fetch finished after the screen was closed",
+            "The API returned an error",
+            "setState was called twice"
+          ],
+          "answer": 0,
+          "explanation": "The await resumed after the State was disposed, and setState ran on a widget that no longer existed.",
+          "turnIndices": [
+            0,
+            1
+          ],
+          "startMs": 0,
+          "endMs": 14857
+        },
+        {
+          "id": "pause-4",
+          "prompt": "If the screen uses FutureBuilder instead of calling setState yourself, do you still need the mounted check?",
+          "choices": [
+            "No, FutureBuilder stops rebuilding after dispose",
+            "Yes, always",
+            "Only on iOS"
+          ],
+          "answer": 0,
+          "explanation": "Nahi. FutureBuilder khud dekh leta hai, widget hatne ke baad rebuild nahi karta. Bas future ko build ke andar mat banana.",
+          "turnIndices": [
+            4,
+            5
+          ],
+          "startMs": 23500,
+          "endMs": 44429
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "q1",
+          "front": "Why did the app throw 'setState called after dispose'?",
+          "back": "The fetch finished after the screen was closed — The await resumed after the State was disposed, and setState ran on a widget that no longer existed.",
+          "startMs": 0,
+          "endMs": 14857
+        },
+        {
+          "id": "pause-4",
+          "front": "If the screen uses FutureBuilder instead of calling setState yourself, do you still need the mounted check?",
+          "back": "No, FutureBuilder stops rebuilding after dispose — Nahi. FutureBuilder khud dekh leta hai, widget hatne ke baad rebuild nahi karta. Bas future ko build ke andar mat banana.",
+          "startMs": 23500,
+          "endMs": 44429
+        }
+      ],
+      "transcript": [
+        {
+          "turnIndex": 0,
+          "speaker": "jhaplu",
+          "text": "Mamu, weather screen se jaldi back dabaya toh app ne lal error phenka: setState called after dispose. Ye kya bawaal hai?",
+          "startMs": 0,
+          "endMs": 7500
+        },
+        {
+          "turnIndex": 1,
+          "speaker": "paplu",
+          "text": "Re baba, tumhara API call abhi chal raha tha. Jawab aaya tab tak screen band ho chuki thi, phir bhi setState chal gaya.",
+          "startMs": 7500,
+          "endMs": 14857
+        },
+        {
+          "turnIndex": 2,
+          "speaker": "jhaplu",
+          "text": "Toh screen band hone ke baad setState rokne ka koi tareeka hai kya?",
+          "startMs": 14857,
+          "endMs": 18357
+        },
+        {
+          "turnIndex": 3,
+          "speaker": "paplu",
+          "text": "Haan, await ke baad mounted check karo. Screen chali gayi ho toh chupchaap ruk jao.",
+          "startMs": 18357,
+          "endMs": 23500
+        },
+        {
+          "turnIndex": 4,
+          "speaker": "jhaplu",
+          "text": "Aur agar main FutureBuilder use karun, toh kya yeh check phir bhi likhna padega?",
+          "startMs": 23500,
+          "endMs": 27143
+        },
+        {
+          "turnIndex": 5,
+          "speaker": "paplu",
+          "text": "Nahi. FutureBuilder khud dekh leta hai, widget hatne ke baad rebuild nahi karta. Bas future ko build ke andar mat banana.",
+          "startMs": 37143,
+          "endMs": 44429
+        }
+      ]
+    },
+    "backgroundName": "Subway Surfers",
+    "sourceCredits": [
+      {
+        "title": "Subway Surfers (2026) - Gameplay [4K 16x9] No Copyright",
+        "url": "https://www.youtube.com/watch?v=i0M4ARe9v0Y",
+        "attribution": "Subway Surfers gameplay — Subway Surfers, https://www.youtube.com/watch?v=i0M4ARe9v0Y. Excerpted, muted, cropped, resized and overlaid."
+      }
+    ],
+    "voiceNames": {
+      "jhaplu": "Jhaplu",
+      "paplu": "Paplu"
+    },
+    "videoUrl": "/examples/flutter-setstate-dispose/video.mp4",
+    "downloadUrl": "/examples/flutter-setstate-dispose/video.mp4",
+    "posterUrl": "/examples/flutter-setstate-dispose/poster.png",
+    "audioUrl": null
+  },
+  {
+    "jobId": "4b4e041b-b9e1-4836-a297-f00d06d57b37",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Why memory kept climbing",
+    "title": "Why memory kept climbing",
+    "createdAt": "2026-11-03T06:42:22.864Z",
+    "updatedAt": "2026-11-03T06:42:41.551Z",
+    "error": null,
+    "durationSeconds": 44.506145,
+    "cast": "auto",
+    "language": "en",
+    "voiceBackend": "elevenlabs",
+    "format": "sketch",
+    "narrator": "john",
+    "script": {
+      "title": "Why memory kept climbing",
+      "narrator": "john",
+      "sketch": {
+        "nodes": [
+          {
+            "id": "handler",
+            "label": "HTTP handler",
+            "kind": "service",
+            "icon": "server"
+          },
+          {
+            "id": "fetch",
+            "label": "fetch goroutine",
+            "kind": "service",
+            "icon": "cpu"
+          },
+          {
+            "id": "ch",
+            "label": "result channel",
+            "kind": "queue",
+            "icon": "inbox"
+          },
+          {
+            "id": "timeout",
+            "label": "2s timeout",
+            "kind": "external",
+            "icon": "timer"
+          }
+        ],
+        "edges": [
+          {
+            "from": "handler",
+            "to": "fetch",
+            "label": "go fetch()"
+          },
+          {
+            "from": "fetch",
+            "to": "ch",
+            "label": "send"
+          },
+          {
+            "from": "ch",
+            "to": "handler",
+            "label": "receive"
+          },
+          {
+            "from": "timeout",
+            "to": "handler",
+            "label": "wins race"
+          }
+        ]
+      },
+      "dialogue": [
+        {
+          "speaker": "john",
+          "text": "Our Go price service used more memory every hour, until it got restarted. Here's the request path.",
+          "sketch": {
+            "show": [
+              "handler"
+            ]
           }
         },
         {
           "speaker": "john",
-          "text": "Main bhi. Message mein queue ke records nahi hain, toh kuch process nahi karta, bas jaag jaata hoon.",
-          "chat": {
-            "display": "records nahi toh kuch process nahi, bas jaag jaata hu 👀"
+          "text": "The handler starts a goroutine to fetch a price, then waits on a channel for the result.",
+          "sketch": {
+            "show": [
+              "fetch",
+              "ch",
+              "handler>fetch",
+              "fetch>ch",
+              "ch>handler"
+            ],
+            "focus": [
+              "handler>fetch"
+            ]
           }
         },
         {
-          "speaker": "taplu",
-          "text": "Deal. Paanch minute ki ping, thoda sa kharcha, aur containers zyada der tak garam rahenge.",
-          "chat": {
-            "display": "deal 🤝 5 min ping, containers garam rahenge",
-            "reaction": "🔥"
+          "speaker": "john",
+          "text": "It also has a two second timeout, so one slow API can't hang the whole request.",
+          "sketch": {
+            "show": [
+              "timeout",
+              "timeout>handler"
+            ],
+            "focus": [
+              "timeout"
+            ]
+          }
+        },
+        {
+          "speaker": "john",
+          "text": "Now the API takes five seconds. The handler times out and returns. What happens to that goroutine?",
+          "sketch": {
+            "focus": [
+              "fetch"
+            ]
+          },
+          "pause": {
+            "prompt": "The handler has returned. The goroutine later sends on an unbuffered channel that nobody reads. What happens?",
+            "choices": [
+              "It blocks forever and leaks",
+              "It exits automatically",
+              "It panics"
+            ],
+            "answer": 0
+          }
+        },
+        {
+          "speaker": "john",
+          "text": "It blocks forever. Nobody receives on that unbuffered channel anymore, so every slow request leaves one stuck goroutine behind.",
+          "sketch": {
+            "focus": [
+              "fetch",
+              "fetch>ch"
+            ],
+            "mark": "problem",
+            "note": {
+              "text": "stuck forever",
+              "near": "fetch"
+            }
+          }
+        },
+        {
+          "speaker": "john",
+          "text": "The fix: give the channel a buffer of one, so the send never blocks, and pass a context so the fetch stops early.",
+          "sketch": {
+            "focus": [
+              "ch"
+            ],
+            "mark": "fix",
+            "note": {
+              "text": "make(chan T, 1) + ctx",
+              "near": "ch"
+            }
           }
         }
       ],
-      "takeaway": "A rarely used Lambda starts cold; a cheap scheduled warmup ping keeps it ready, and handlers return early on it.",
+      "takeaway": "A goroutine sending on an unbuffered channel nobody reads blocks forever; buffer the channel and pass a context.",
       "questions": [
         {
-          "prompt": "What does the warmup ping do?",
+          "prompt": "Why did each slow request leak a goroutine?",
           "choices": [
-            "Keeps the Lambda containers running so requests skip the cold start",
-            "Makes the video render faster",
-            "Clears the queue"
+            "Its send on an unbuffered channel blocked forever after the handler left",
+            "Goroutines never exit in Go",
+            "The timeout killed the handler"
           ],
           "answer": 0,
-          "explanation": "A scheduled ping every five minutes keeps containers alive; handlers return early so it costs almost nothing.",
+          "explanation": "An unbuffered send waits for a receiver; once the handler returned, no receiver remained.",
           "turnIndices": [
             3,
             4
@@ -1471,170 +2504,1027 @@
     },
     "learning": {
       "schemaVersion": "BrainrottenLearningPackV1",
-      "jobId": "6cf5d4d4-d075-45f5-b8df-e053349dc099",
-      "format": "groupchat",
-      "title": "Pehli request pe 18 second kyun?",
-      "language": "hinglish",
-      "durationSeconds": 51.146168,
-      "takeaway": "A rarely used Lambda starts cold; a cheap scheduled warmup ping keeps it ready, and handlers return early on it.",
+      "jobId": "4b4e041b-b9e1-4836-a297-f00d06d57b37",
+      "format": "sketch",
+      "title": "Why memory kept climbing",
+      "language": "en",
+      "durationSeconds": 44.506145,
+      "takeaway": "A goroutine sending on an unbuffered channel nobody reads blocks forever; buffer the channel and pass a context.",
       "chapters": [
         {
           "id": "turn-0",
-          "title": "API bhai, pehli request pe atharah second laga",
+          "title": "Our Go price service used more memory every",
           "startMs": 0,
-          "endMs": 4571
+          "endMs": 5679
         },
         {
           "id": "turn-1",
-          "title": "Main so raha tha. Der tak koi request",
-          "startMs": 4571,
-          "endMs": 9642
+          "title": "The handler starts a goroutine to fetch a",
+          "startMs": 5679,
+          "endMs": 10000
         },
         {
           "id": "turn-2",
-          "title": "Mera bhi wahi haal hai. Meri image badi",
-          "startMs": 9642,
-          "endMs": 15642
+          "title": "It also has a two second timeout, so",
+          "startMs": 10000,
+          "endMs": 14786
         },
         {
           "id": "turn-3",
-          "title": "Toh har pehle user ko ye intezaar karna",
-          "startMs": 15642,
-          "endMs": 20642
+          "title": "Now the API takes five seconds. The handler",
+          "startMs": 14786,
+          "endMs": 20321
         },
         {
           "id": "turn-4",
-          "title": "Main hoon na. Har paanch minute mein dono",
-          "startMs": 30642,
-          "endMs": 35356
+          "title": "It blocks forever. Nobody receives on that unbuffered",
+          "startMs": 30321,
+          "endMs": 37964
         },
         {
           "id": "turn-5",
-          "title": "Aur warmup aaya toh main bas warm bol",
-          "startMs": 35356,
-          "endMs": 41071
-        },
-        {
-          "id": "turn-6",
-          "title": "Main bhi. Message mein queue ke records nahi",
-          "startMs": 41071,
-          "endMs": 46213
-        },
-        {
-          "id": "turn-7",
-          "title": "Deal. Paanch minute ki ping, thoda sa kharcha,",
-          "startMs": 46213,
-          "endMs": 51143
+          "title": "The fix: give the channel a buffer of",
+          "startMs": 37964,
+          "endMs": 44506
         }
       ],
       "questions": [
         {
           "id": "q1",
-          "prompt": "What does the warmup ping do?",
+          "prompt": "Why did each slow request leak a goroutine?",
           "choices": [
-            "Keeps the Lambda containers running so requests skip the cold start",
-            "Makes the video render faster",
-            "Clears the queue"
+            "Its send on an unbuffered channel blocked forever after the handler left",
+            "Goroutines never exit in Go",
+            "The timeout killed the handler"
           ],
           "answer": 0,
-          "explanation": "A scheduled ping every five minutes keeps containers alive; handlers return early so it costs almost nothing.",
+          "explanation": "An unbuffered send waits for a receiver; once the handler returned, no receiver remained.",
           "turnIndices": [
             3,
             4
           ],
-          "startMs": 15642,
-          "endMs": 35356
+          "startMs": 14786,
+          "endMs": 37964
         },
         {
           "id": "pause-3",
-          "prompt": "How do you keep a rarely used Lambda from starting cold?",
+          "prompt": "The handler has returned. The goroutine later sends on an unbuffered channel that nobody reads. What happens?",
           "choices": [
-            "Ping it on a schedule so it stays warm",
-            "Rename the function",
-            "Move it to another region"
+            "It blocks forever and leaks",
+            "It exits automatically",
+            "It panics"
           ],
           "answer": 0,
-          "explanation": "main hoon na ⏰ har 5 min warmup ping bhejta hu",
+          "explanation": "It blocks forever. Nobody receives on that unbuffered channel anymore, so every slow request leaves one stuck goroutine behind.",
           "turnIndices": [
             3,
             4
           ],
-          "startMs": 15642,
-          "endMs": 35356
+          "startMs": 14786,
+          "endMs": 37964
         }
       ],
       "flashcards": [
         {
           "id": "q1",
-          "front": "What does the warmup ping do?",
-          "back": "Keeps the Lambda containers running so requests skip the cold start — A scheduled ping every five minutes keeps containers alive; handlers return early so it costs almost nothing.",
-          "startMs": 15642,
-          "endMs": 35356
+          "front": "Why did each slow request leak a goroutine?",
+          "back": "Its send on an unbuffered channel blocked forever after the handler left — An unbuffered send waits for a receiver; once the handler returned, no receiver remained.",
+          "startMs": 14786,
+          "endMs": 37964
         },
         {
           "id": "pause-3",
-          "front": "How do you keep a rarely used Lambda from starting cold?",
-          "back": "Ping it on a schedule so it stays warm — main hoon na ⏰ har 5 min warmup ping bhejta hu",
-          "startMs": 15642,
-          "endMs": 35356
+          "front": "The handler has returned. The goroutine later sends on an unbuffered channel that nobody reads. What happens?",
+          "back": "It blocks forever and leaks — It blocks forever. Nobody receives on that unbuffered channel anymore, so every slow request leaves one stuck goroutine behind.",
+          "startMs": 14786,
+          "endMs": 37964
         }
       ],
       "transcript": [
         {
           "turnIndex": 0,
-          "speaker": "taplu",
-          "text": "API bhai, pehli request pe atharah second laga diye. User ko laga site hi band hai.",
+          "speaker": "john",
+          "text": "Our Go price service used more memory every hour, until it got restarted. Here's the request path.",
           "startMs": 0,
-          "endMs": 4571
+          "endMs": 5679
         },
         {
           "turnIndex": 1,
-          "speaker": "jack",
-          "text": "Main so raha tha. Der tak koi request nahi aayi, toh AWS ne mera container band kar diya.",
-          "startMs": 4571,
-          "endMs": 9642
+          "speaker": "john",
+          "text": "The handler starts a goroutine to fetch a price, then waits on a channel for the result.",
+          "startMs": 5679,
+          "endMs": 10000
         },
         {
           "turnIndex": 2,
           "speaker": "john",
-          "text": "Mera bhi wahi haal hai. Meri image badi hai, FFmpeg aur fonts ke saath. Har baar zero se start hona padta hai.",
-          "startMs": 9642,
-          "endMs": 15642
+          "text": "It also has a two second timeout, so one slow API can't hang the whole request.",
+          "startMs": 10000,
+          "endMs": 14786
         },
         {
           "turnIndex": 3,
-          "speaker": "taplu",
-          "text": "Toh har pehle user ko ye intezaar karna padega? Tum dono ko jagaye rakhne ka koi tareeka hai?",
-          "startMs": 15642,
-          "endMs": 20642
+          "speaker": "john",
+          "text": "Now the API takes five seconds. The handler times out and returns. What happens to that goroutine?",
+          "startMs": 14786,
+          "endMs": 20321
+        },
+        {
+          "turnIndex": 4,
+          "speaker": "john",
+          "text": "It blocks forever. Nobody receives on that unbuffered channel anymore, so every slow request leaves one stuck goroutine behind.",
+          "startMs": 30321,
+          "endMs": 37964
+        },
+        {
+          "turnIndex": 5,
+          "speaker": "john",
+          "text": "The fix: give the channel a buffer of one, so the send never blocks, and pass a context so the fetch stops early.",
+          "startMs": 37964,
+          "endMs": 44506
+        }
+      ]
+    },
+    "backgroundName": "GTA Stunts",
+    "sourceCredits": [
+      {
+        "title": "GTA 5 - Jump Stunts EP.27 Free To Use NO COPYRIGHT GAMEPLAY",
+        "url": "https://www.youtube.com/watch?v=KvS0MLj5IIE",
+        "attribution": "GTA 5 - Jump Stunts EP.27 — RipstaStylez, https://www.youtube.com/watch?v=KvS0MLj5IIE, Creative Commons Attribution. Muted, cropped, resized and overlaid. Original soundtrack is not included."
+      }
+    ],
+    "voiceNames": {
+      "john": "John"
+    },
+    "videoUrl": "/examples/go-goroutine-leak/video.mp4",
+    "downloadUrl": "/examples/go-goroutine-leak/video.mp4",
+    "posterUrl": "/examples/go-goroutine-leak/poster.png",
+    "audioUrl": null
+  },
+  {
+    "jobId": "7683d77a-023b-4a0b-9216-374f193b2d39",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "OOMKilled ke fixes, ranked",
+    "title": "OOMKilled ke fixes, ranked",
+    "createdAt": "2026-11-03T06:42:43.022Z",
+    "updatedAt": "2026-11-03T06:43:04.531Z",
+    "error": null,
+    "durationSeconds": 58.716259,
+    "cast": "auto",
+    "language": "hinglish",
+    "voiceBackend": "elevenlabs",
+    "format": "tierlist",
+    "narrator": "budhdev",
+    "script": {
+      "title": "OOMKilled ke fixes, ranked",
+      "narrator": "budhdev",
+      "tierlist": {
+        "criterion": "stops OOMKills without wasting memory",
+        "items": [
+          {
+            "id": "fix-leak",
+            "label": "Fix the leak"
+          },
+          {
+            "id": "heap-limit",
+            "label": "max-old-space-size"
+          },
+          {
+            "id": "raise-limit",
+            "label": "Raise memory limit"
+          },
+          {
+            "id": "nightly",
+            "label": "Restart pods nightly"
+          },
+          {
+            "id": "no-limit",
+            "label": "Remove the limit"
+          }
+        ]
+      },
+      "dialogue": [
+        {
+          "speaker": "budhdev",
+          "text": "Hamari Node API Kubernetes par baar baar OOMKilled ho rahi thi. Criterion ek hi: crash band ho, aur memory bhi barbaad na ho."
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Limit hi hata do? Pod node ki saari memory kha sakta hai aur baaki pods ko bhi gira dega. Seedha F.",
+          "tier": {
+            "place": {
+              "item": "no-limit",
+              "tier": "F"
+            }
+          }
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Har raat pods restart karo. Crash thoda kam dikhega, par leak wahin ka wahin. D tier.",
+          "tier": {
+            "place": {
+              "item": "nightly",
+              "tier": "D"
+            }
+          }
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Memory limit badha do. Abhi ke liye theek, par leak hai toh bas thodi der se crash hoga. C tier.",
+          "tier": {
+            "place": {
+              "item": "raise-limit",
+              "tier": "C"
+            }
+          }
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Ab Node ka max old space size, container ki limit se thoda kam. Yeh kitna kaam ka hai?",
+          "tier": {
+            "focus": "heap-limit"
+          },
+          "pause": {
+            "prompt": "Node's --max-old-space-size is set a bit below the container's memory limit. What does that change?",
+            "choices": [
+              "Node collects garbage harder before the kernel kills the pod",
+              "Nothing at all",
+              "It doubles the available memory"
+            ],
+            "answer": 0
+          }
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Node limit ke paas pahunchne se pehle hi zor se garbage collection karta hai, kernel ke maarne se pehle. A tier.",
+          "tier": {
+            "place": {
+              "item": "heap-limit",
+              "tier": "A"
+            }
+          }
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Aur leak dhoondh ke code theek karna, jaise kabhi na saaf hone wala cache. Asli ilaaj yahi hai. S tier.",
+          "tier": {
+            "place": {
+              "item": "fix-leak",
+              "tier": "S"
+            }
+          }
+        }
+      ],
+      "takeaway": "Find the leak; until then, keep Node's heap limit below the container limit so it collects garbage before the kernel kills it.",
+      "questions": [
+        {
+          "prompt": "Why is removing the memory limit F tier?",
+          "choices": [
+            "One leaking pod can eat the node's memory and take other pods down",
+            "Kubernetes forbids it",
+            "It makes the pod slower"
+          ],
+          "answer": 0,
+          "explanation": "Without a limit the leak grows until the whole node runs out of memory.",
+          "turnIndices": [
+            1
+          ]
+        }
+      ]
+    },
+    "learning": {
+      "schemaVersion": "BrainrottenLearningPackV1",
+      "jobId": "7683d77a-023b-4a0b-9216-374f193b2d39",
+      "format": "tierlist",
+      "title": "OOMKilled ke fixes, ranked",
+      "language": "hinglish",
+      "durationSeconds": 58.716259,
+      "takeaway": "Find the leak; until then, keep Node's heap limit below the container limit so it collects garbage before the kernel kills it.",
+      "chapters": [
+        {
+          "id": "turn-0",
+          "title": "Hamari Node API Kubernetes par baar baar OOMKilled",
+          "startMs": 0,
+          "endMs": 8536
+        },
+        {
+          "id": "turn-1",
+          "title": "Limit hi hata do? Pod node ki saari",
+          "startMs": 8536,
+          "endMs": 15286
+        },
+        {
+          "id": "turn-2",
+          "title": "Har raat pods restart karo. Crash thoda kam",
+          "startMs": 15286,
+          "endMs": 21536
+        },
+        {
+          "id": "turn-3",
+          "title": "Memory limit badha do. Abhi ke liye theek,",
+          "startMs": 21536,
+          "endMs": 28321
+        },
+        {
+          "id": "turn-4",
+          "title": "Ab Node ka max old space size, container",
+          "startMs": 28321,
+          "endMs": 34643
+        },
+        {
+          "id": "turn-5",
+          "title": "Node limit ke paas pahunchne se pehle hi",
+          "startMs": 44643,
+          "endMs": 51571
+        },
+        {
+          "id": "turn-6",
+          "title": "Aur leak dhoondh ke code theek karna, jaise",
+          "startMs": 51571,
+          "endMs": 58716
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Why is removing the memory limit F tier?",
+          "choices": [
+            "One leaking pod can eat the node's memory and take other pods down",
+            "Kubernetes forbids it",
+            "It makes the pod slower"
+          ],
+          "answer": 0,
+          "explanation": "Without a limit the leak grows until the whole node runs out of memory.",
+          "turnIndices": [
+            1
+          ],
+          "startMs": 8536,
+          "endMs": 15286
+        },
+        {
+          "id": "pause-4",
+          "prompt": "Node's --max-old-space-size is set a bit below the container's memory limit. What does that change?",
+          "choices": [
+            "Node collects garbage harder before the kernel kills the pod",
+            "Nothing at all",
+            "It doubles the available memory"
+          ],
+          "answer": 0,
+          "explanation": "Node limit ke paas pahunchne se pehle hi zor se garbage collection karta hai, kernel ke maarne se pehle. A tier.",
+          "turnIndices": [
+            4,
+            5
+          ],
+          "startMs": 28321,
+          "endMs": 51571
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "q1",
+          "front": "Why is removing the memory limit F tier?",
+          "back": "One leaking pod can eat the node's memory and take other pods down — Without a limit the leak grows until the whole node runs out of memory.",
+          "startMs": 8536,
+          "endMs": 15286
+        },
+        {
+          "id": "pause-4",
+          "front": "Node's --max-old-space-size is set a bit below the container's memory limit. What does that change?",
+          "back": "Node collects garbage harder before the kernel kills the pod — Node limit ke paas pahunchne se pehle hi zor se garbage collection karta hai, kernel ke maarne se pehle. A tier.",
+          "startMs": 28321,
+          "endMs": 51571
+        }
+      ],
+      "transcript": [
+        {
+          "turnIndex": 0,
+          "speaker": "budhdev",
+          "text": "Hamari Node API Kubernetes par baar baar OOMKilled ho rahi thi. Criterion ek hi: crash band ho, aur memory bhi barbaad na ho.",
+          "startMs": 0,
+          "endMs": 8536
+        },
+        {
+          "turnIndex": 1,
+          "speaker": "budhdev",
+          "text": "Limit hi hata do? Pod node ki saari memory kha sakta hai aur baaki pods ko bhi gira dega. Seedha F.",
+          "startMs": 8536,
+          "endMs": 15286
+        },
+        {
+          "turnIndex": 2,
+          "speaker": "budhdev",
+          "text": "Har raat pods restart karo. Crash thoda kam dikhega, par leak wahin ka wahin. D tier.",
+          "startMs": 15286,
+          "endMs": 21536
+        },
+        {
+          "turnIndex": 3,
+          "speaker": "budhdev",
+          "text": "Memory limit badha do. Abhi ke liye theek, par leak hai toh bas thodi der se crash hoga. C tier.",
+          "startMs": 21536,
+          "endMs": 28321
         },
         {
           "turnIndex": 4,
           "speaker": "budhdev",
-          "text": "Main hoon na. Har paanch minute mein dono ko ek chhota warmup message bhejta hoon.",
-          "startMs": 30642,
-          "endMs": 35356
+          "text": "Ab Node ka max old space size, container ki limit se thoda kam. Yeh kitna kaam ka hai?",
+          "startMs": 28321,
+          "endMs": 34643
+        },
+        {
+          "turnIndex": 5,
+          "speaker": "budhdev",
+          "text": "Node limit ke paas pahunchne se pehle hi zor se garbage collection karta hai, kernel ke maarne se pehle. A tier.",
+          "startMs": 44643,
+          "endMs": 51571
+        },
+        {
+          "turnIndex": 6,
+          "speaker": "budhdev",
+          "text": "Aur leak dhoondh ke code theek karna, jaise kabhi na saaf hone wala cache. Asli ilaaj yahi hai. S tier.",
+          "startMs": 51571,
+          "endMs": 58716
+        }
+      ]
+    },
+    "backgroundName": "Subway Surfers",
+    "sourceCredits": [
+      {
+        "title": "Subway Surfers (2026) - Gameplay [4K 16x9] No Copyright",
+        "url": "https://www.youtube.com/watch?v=i0M4ARe9v0Y",
+        "attribution": "Subway Surfers gameplay — Subway Surfers, https://www.youtube.com/watch?v=i0M4ARe9v0Y. Excerpted, muted, cropped, resized and overlaid."
+      }
+    ],
+    "voiceNames": {
+      "budhdev": "Budhdev"
+    },
+    "videoUrl": "/examples/k8s-oomkilled/video.mp4",
+    "downloadUrl": "/examples/k8s-oomkilled/video.mp4",
+    "posterUrl": "/examples/k8s-oomkilled/poster.png",
+    "audioUrl": null
+  },
+  {
+    "jobId": "bb58804b-54af-4c17-8226-4d3794ae5993",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Why won't Rust let me push here?",
+    "title": "Why won't Rust let me push here?",
+    "createdAt": "2026-11-03T06:43:09.511Z",
+    "updatedAt": "2026-11-03T06:43:28.890Z",
+    "error": null,
+    "durationSeconds": 45.007392,
+    "cast": "auto",
+    "language": "en",
+    "voiceBackend": "elevenlabs",
+    "participants": {
+      "learner": "john",
+      "expert": "jack"
+    },
+    "format": "skit",
+    "script": {
+      "title": "Why won't Rust let me push here?",
+      "participants": {
+        "learner": "john",
+        "expert": "jack"
+      },
+      "dialogue": [
+        {
+          "speaker": "john",
+          "text": "Rust won't compile my log parser. I push to a vector while looping over it, and it says cannot borrow as mutable. Why so strict?"
+        },
+        {
+          "speaker": "jack",
+          "text": "Because pushing can move the vector to new memory, while your loop still holds a reference into the old memory. Rust stops it at compile time.",
+          "broll": {
+            "kind": "code",
+            "code": "for line in &lines {\n    if line.contains(\"ERROR\") {\n        lines.push(line.clone());\n    }\n}",
+            "language": "rust"
+          }
+        },
+        {
+          "speaker": "john",
+          "text": "So in C, this would just crash at runtime instead?"
+        },
+        {
+          "speaker": "jack",
+          "text": "Or quietly read freed memory, which is worse. Rust turns that bug into a compiler error."
+        },
+        {
+          "speaker": "john",
+          "text": "Fine, but I still need the error lines. What's the clean way to collect them?",
+          "pause": {
+            "prompt": "You need the ERROR lines without changing the vector you're iterating over. What's the idiomatic fix?",
+            "choices": [
+              "Collect them into a new vector with filter",
+              "Use unsafe",
+              "Clone the vector on every iteration"
+            ],
+            "answer": 0
+          }
+        },
+        {
+          "speaker": "jack",
+          "text": "Build a new vector instead of growing the one you're reading. One iterator chain, and no fight with the borrow checker.",
+          "broll": {
+            "kind": "code",
+            "code": "let errors: Vec<_> = lines\n    .iter()\n    .filter(|l| l.contains(\"ERROR\"))\n    .cloned()\n    .collect();",
+            "language": "rust"
+          }
+        }
+      ],
+      "takeaway": "Don't grow a vector while iterating over it; build a new one with an iterator chain instead.",
+      "questions": [
+        {
+          "prompt": "Why does Rust reject pushing while iterating?",
+          "choices": [
+            "A push can reallocate the vector while the loop still references it",
+            "Vectors are immutable",
+            "Loops are always read-only"
+          ],
+          "answer": 0,
+          "explanation": "Reallocation would leave the loop's reference pointing at freed memory.",
+          "turnIndices": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "learning": {
+      "schemaVersion": "BrainrottenLearningPackV1",
+      "jobId": "bb58804b-54af-4c17-8226-4d3794ae5993",
+      "format": "skit",
+      "title": "Why won't Rust let me push here?",
+      "language": "en",
+      "durationSeconds": 45.007392,
+      "takeaway": "Don't grow a vector while iterating over it; build a new one with an iterator chain instead.",
+      "chapters": [
+        {
+          "id": "turn-0",
+          "title": "Rust won't compile my log parser. I push",
+          "startMs": 0,
+          "endMs": 7857
+        },
+        {
+          "id": "turn-1",
+          "title": "Because pushing can move the vector to new",
+          "startMs": 7857,
+          "endMs": 15929
+        },
+        {
+          "id": "turn-2",
+          "title": "So in C, this would just crash at",
+          "startMs": 15929,
+          "endMs": 19214
+        },
+        {
+          "id": "turn-3",
+          "title": "Or quietly read freed memory, which is worse.",
+          "startMs": 19214,
+          "endMs": 25143
+        },
+        {
+          "id": "turn-4",
+          "title": "Fine, but I still need the error lines.",
+          "startMs": 25143,
+          "endMs": 29000
+        },
+        {
+          "id": "turn-5",
+          "title": "Build a new vector instead of growing the",
+          "startMs": 39000,
+          "endMs": 45007
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Why does Rust reject pushing while iterating?",
+          "choices": [
+            "A push can reallocate the vector while the loop still references it",
+            "Vectors are immutable",
+            "Loops are always read-only"
+          ],
+          "answer": 0,
+          "explanation": "Reallocation would leave the loop's reference pointing at freed memory.",
+          "turnIndices": [
+            0,
+            1
+          ],
+          "startMs": 0,
+          "endMs": 15929
+        },
+        {
+          "id": "pause-4",
+          "prompt": "You need the ERROR lines without changing the vector you're iterating over. What's the idiomatic fix?",
+          "choices": [
+            "Collect them into a new vector with filter",
+            "Use unsafe",
+            "Clone the vector on every iteration"
+          ],
+          "answer": 0,
+          "explanation": "Build a new vector instead of growing the one you're reading. One iterator chain, and no fight with the borrow checker.",
+          "turnIndices": [
+            4,
+            5
+          ],
+          "startMs": 25143,
+          "endMs": 45007
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "q1",
+          "front": "Why does Rust reject pushing while iterating?",
+          "back": "A push can reallocate the vector while the loop still references it — Reallocation would leave the loop's reference pointing at freed memory.",
+          "startMs": 0,
+          "endMs": 15929
+        },
+        {
+          "id": "pause-4",
+          "front": "You need the ERROR lines without changing the vector you're iterating over. What's the idiomatic fix?",
+          "back": "Collect them into a new vector with filter — Build a new vector instead of growing the one you're reading. One iterator chain, and no fight with the borrow checker.",
+          "startMs": 25143,
+          "endMs": 45007
+        }
+      ],
+      "transcript": [
+        {
+          "turnIndex": 0,
+          "speaker": "john",
+          "text": "Rust won't compile my log parser. I push to a vector while looping over it, and it says cannot borrow as mutable. Why so strict?",
+          "startMs": 0,
+          "endMs": 7857
+        },
+        {
+          "turnIndex": 1,
+          "speaker": "jack",
+          "text": "Because pushing can move the vector to new memory, while your loop still holds a reference into the old memory. Rust stops it at compile time.",
+          "startMs": 7857,
+          "endMs": 15929
+        },
+        {
+          "turnIndex": 2,
+          "speaker": "john",
+          "text": "So in C, this would just crash at runtime instead?",
+          "startMs": 15929,
+          "endMs": 19214
+        },
+        {
+          "turnIndex": 3,
+          "speaker": "jack",
+          "text": "Or quietly read freed memory, which is worse. Rust turns that bug into a compiler error.",
+          "startMs": 19214,
+          "endMs": 25143
+        },
+        {
+          "turnIndex": 4,
+          "speaker": "john",
+          "text": "Fine, but I still need the error lines. What's the clean way to collect them?",
+          "startMs": 25143,
+          "endMs": 29000
         },
         {
           "turnIndex": 5,
           "speaker": "jack",
-          "text": "Aur warmup aaya toh main bas warm bol ke lautunga. Na database, na koi user ka kaam.",
-          "startMs": 35356,
-          "endMs": 41071
+          "text": "Build a new vector instead of growing the one you're reading. One iterator chain, and no fight with the borrow checker.",
+          "startMs": 39000,
+          "endMs": 45007
+        }
+      ]
+    },
+    "backgroundName": "GTA Stunts",
+    "sourceCredits": [
+      {
+        "title": "GTA 5 - Jump Stunts EP.27 Free To Use NO COPYRIGHT GAMEPLAY",
+        "url": "https://www.youtube.com/watch?v=KvS0MLj5IIE",
+        "attribution": "GTA 5 - Jump Stunts EP.27 — RipstaStylez, https://www.youtube.com/watch?v=KvS0MLj5IIE, Creative Commons Attribution. Muted, cropped, resized and overlaid. Original soundtrack is not included."
+      }
+    ],
+    "voiceNames": {
+      "john": "John",
+      "jack": "Jack"
+    },
+    "videoUrl": "/examples/rust-borrow-checker/video.mp4",
+    "downloadUrl": "/examples/rust-borrow-checker/video.mp4",
+    "posterUrl": "/examples/rust-borrow-checker/poster.png",
+    "audioUrl": null
+  },
+  {
+    "jobId": "d0d9b746-beb5-4b2f-9912-a3e875bb32ef",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Rate limiter ka race fix",
+    "title": "Rate limiter ka race fix",
+    "createdAt": "2026-11-03T06:43:30.216Z",
+    "updatedAt": "2026-11-03T06:43:49.345Z",
+    "error": null,
+    "durationSeconds": 47.216576,
+    "cast": "auto",
+    "language": "hinglish",
+    "voiceBackend": "elevenlabs",
+    "format": "prreview",
+    "script": {
+      "title": "Rate limiter ka race fix",
+      "pr": {
+        "title": "Make the rate limiter atomic",
+        "repo": "arjun/payments-api",
+        "author": {
+          "name": "arjun",
+          "icon": "user"
+        },
+        "reviewers": [
+          {
+            "speaker": "jhatka",
+            "name": "senior-dev",
+            "icon": "user"
+          },
+          {
+            "speaker": "paplu",
+            "name": "sre",
+            "icon": "shield"
+          }
+        ],
+        "files": [
+          {
+            "path": "src/middleware/rateLimit.ts",
+            "language": "ts",
+            "lines": [
+              {
+                "kind": "ctx",
+                "code": "const key = `rl:${userId}`;"
+              },
+              {
+                "kind": "del",
+                "code": "const count = Number(await redis.get(key));"
+              },
+              {
+                "kind": "del",
+                "code": "await redis.set(key, count + 1, 'EX', 60);"
+              },
+              {
+                "kind": "add",
+                "code": "const count = await redis.incr(key);"
+              },
+              {
+                "kind": "add",
+                "code": "if (count === 1) await redis.expire(key, 60);"
+              },
+              {
+                "kind": "ctx",
+                "code": "if (count > 100) return res.status(429).end();"
+              }
+            ]
+          }
+        ],
+        "verdict": "approve"
+      },
+      "dialogue": [
+        {
+          "speaker": "jhatka",
+          "text": "Purane code mein get aur set alag alag the. Do requests ek saath aayi, toh dono ne same count padha.",
+          "pr": {
+            "file": 0,
+            "lines": [
+              1,
+              2
+            ],
+            "display": "get + set alag alag 💀 race condition",
+            "tone": "roast"
+          }
         },
         {
-          "turnIndex": 6,
-          "speaker": "john",
-          "text": "Main bhi. Message mein queue ke records nahi hain, toh kuch process nahi karta, bas jaag jaata hoon.",
-          "startMs": 41071,
-          "endMs": 46213
+          "speaker": "jhatka",
+          "text": "Matlab burst mein sau ki limit ke bawajood usse zyada requests nikal sakti thi.",
+          "pr": {
+            "file": 0,
+            "lines": [
+              5,
+              5
+            ],
+            "display": "100 ki limit, par burst mein zyada nikal gayi 😬",
+            "tone": "question"
+          }
         },
         {
-          "turnIndex": 7,
-          "speaker": "taplu",
-          "text": "Deal. Paanch minute ki ping, thoda sa kharcha, aur containers zyada der tak garam rahenge.",
-          "startMs": 46213,
-          "endMs": 51143
+          "speaker": "paplu",
+          "text": "Ab incr use ho raha hai. Socho, do requests ek saath incr karein, toh kya hoga?",
+          "pr": {
+            "file": 0,
+            "lines": [
+              3,
+              3
+            ],
+            "display": "ab INCR. do requests ek saath? 🤔",
+            "tone": "question"
+          },
+          "pause": {
+            "prompt": "Two requests call INCR on the same key at the same moment. What do they get back?",
+            "choices": [
+              "1 and 2: Redis runs INCR atomically",
+              "Both get 1",
+              "An error"
+            ],
+            "answer": 0
+          }
+        },
+        {
+          "speaker": "paplu",
+          "text": "Ek ko ek milega, doosre ko do. Redis incr atomic hai, beech mein koi ghus nahi sakta.",
+          "pr": {
+            "file": 0,
+            "lines": [
+              3,
+              3
+            ],
+            "display": "INCR atomic hai ✅ 1 aur 2, koi race nahi",
+            "tone": "praise"
+          }
+        },
+        {
+          "speaker": "jhatka",
+          "text": "Ek baat: agar incr ke baad aur expire se pehle server crash ho gaya, toh key kabhi expire nahi hogi. Isse ek Lua script mein daal do.",
+          "pr": {
+            "file": 0,
+            "lines": [
+              4,
+              4
+            ],
+            "display": "nit: INCR ke baad crash → key bina TTL ke 👀 Lua script mein daalo",
+            "tone": "nit"
+          }
+        },
+        {
+          "speaker": "jhatka",
+          "text": "Approve, follow up ke saath. Counter ke kaam mein hamesha atomic operation use karo.",
+          "pr": {
+            "display": "LGTM 🚀 counters = atomic ops",
+            "tone": "praise"
+          }
+        }
+      ],
+      "takeaway": "For counters under concurrency, use an atomic operation like INCR instead of a separate read and write.",
+      "questions": [
+        {
+          "prompt": "Why could the old limiter let more than 100 requests through?",
+          "choices": [
+            "Two requests could read the same count before either wrote",
+            "Redis drops writes",
+            "The TTL was too long"
+          ],
+          "answer": 0,
+          "explanation": "A separate GET and SET is not atomic, so concurrent requests overwrite each other's count.",
+          "turnIndices": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "learning": {
+      "schemaVersion": "BrainrottenLearningPackV1",
+      "jobId": "d0d9b746-beb5-4b2f-9912-a3e875bb32ef",
+      "format": "prreview",
+      "title": "Rate limiter ka race fix",
+      "language": "hinglish",
+      "durationSeconds": 47.216576,
+      "takeaway": "For counters under concurrency, use an atomic operation like INCR instead of a separate read and write.",
+      "chapters": [
+        {
+          "id": "turn-0",
+          "title": "Purane code mein get aur set alag alag",
+          "startMs": 0,
+          "endMs": 6429
+        },
+        {
+          "id": "turn-1",
+          "title": "Matlab burst mein sau ki limit ke bawajood",
+          "startMs": 6429,
+          "endMs": 11500
+        },
+        {
+          "id": "turn-2",
+          "title": "Ab incr use ho raha hai. Socho, do",
+          "startMs": 11500,
+          "endMs": 17214
+        },
+        {
+          "id": "turn-3",
+          "title": "Ek ko ek milega, doosre ko do. Redis",
+          "startMs": 27214,
+          "endMs": 33643
+        },
+        {
+          "id": "turn-4",
+          "title": "Ek baat: agar incr ke baad aur expire",
+          "startMs": 33643,
+          "endMs": 42596
+        },
+        {
+          "id": "turn-5",
+          "title": "Approve, follow up ke saath. Counter ke kaam",
+          "startMs": 42596,
+          "endMs": 47217
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Why could the old limiter let more than 100 requests through?",
+          "choices": [
+            "Two requests could read the same count before either wrote",
+            "Redis drops writes",
+            "The TTL was too long"
+          ],
+          "answer": 0,
+          "explanation": "A separate GET and SET is not atomic, so concurrent requests overwrite each other's count.",
+          "turnIndices": [
+            0,
+            1
+          ],
+          "startMs": 0,
+          "endMs": 11500
+        },
+        {
+          "id": "pause-2",
+          "prompt": "Two requests call INCR on the same key at the same moment. What do they get back?",
+          "choices": [
+            "1 and 2: Redis runs INCR atomically",
+            "Both get 1",
+            "An error"
+          ],
+          "answer": 0,
+          "explanation": "INCR atomic hai ✅ 1 aur 2, koi race nahi",
+          "turnIndices": [
+            2,
+            3
+          ],
+          "startMs": 11500,
+          "endMs": 33643
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "q1",
+          "front": "Why could the old limiter let more than 100 requests through?",
+          "back": "Two requests could read the same count before either wrote — A separate GET and SET is not atomic, so concurrent requests overwrite each other's count.",
+          "startMs": 0,
+          "endMs": 11500
+        },
+        {
+          "id": "pause-2",
+          "front": "Two requests call INCR on the same key at the same moment. What do they get back?",
+          "back": "1 and 2: Redis runs INCR atomically — INCR atomic hai ✅ 1 aur 2, koi race nahi",
+          "startMs": 11500,
+          "endMs": 33643
+        }
+      ],
+      "transcript": [
+        {
+          "turnIndex": 0,
+          "speaker": "jhatka",
+          "text": "Purane code mein get aur set alag alag the. Do requests ek saath aayi, toh dono ne same count padha.",
+          "startMs": 0,
+          "endMs": 6429
+        },
+        {
+          "turnIndex": 1,
+          "speaker": "jhatka",
+          "text": "Matlab burst mein sau ki limit ke bawajood usse zyada requests nikal sakti thi.",
+          "startMs": 6429,
+          "endMs": 11500
+        },
+        {
+          "turnIndex": 2,
+          "speaker": "paplu",
+          "text": "Ab incr use ho raha hai. Socho, do requests ek saath incr karein, toh kya hoga?",
+          "startMs": 11500,
+          "endMs": 17214
+        },
+        {
+          "turnIndex": 3,
+          "speaker": "paplu",
+          "text": "Ek ko ek milega, doosre ko do. Redis incr atomic hai, beech mein koi ghus nahi sakta.",
+          "startMs": 27214,
+          "endMs": 33643
+        },
+        {
+          "turnIndex": 4,
+          "speaker": "jhatka",
+          "text": "Ek baat: agar incr ke baad aur expire se pehle server crash ho gaya, toh key kabhi expire nahi hogi. Isse ek Lua script mein daal do.",
+          "startMs": 33643,
+          "endMs": 42596
+        },
+        {
+          "turnIndex": 5,
+          "speaker": "jhatka",
+          "text": "Approve, follow up ke saath. Counter ke kaam mein hamesha atomic operation use karo.",
+          "startMs": 42596,
+          "endMs": 47217
         }
       ]
     },
@@ -1647,614 +3537,12 @@
       }
     ],
     "voiceNames": {
-      "taplu": "Taplu",
-      "jack": "Jack",
-      "john": "John",
-      "budhdev": "Budhdev"
-    },
-    "downloadUrl": "/examples/session-groupchat-coldstart/video.mp4"
-  },
-  {
-    "jobId": "a998b76b-a0fa-4a66-aba3-48f991025ab5",
-    "state": "ready",
-    "stage": "ready",
-    "progress": 100,
-    "prompt": "Natural conversational Hinglish ML shortcut-learning skit. Source: https://arxiv.org/abs/2004.07780 . A hypothetical cow classifier can exploit background-label correlation. Same-distribution random tests may miss that; evaluate held-out environments and inspect controlled background changes. No invented measured accuracy claim.",
-    "title": "Gaay pehchaani, ya ghaas?",
-    "createdAt": "2026-10-28T14:20:27.175Z",
-    "updatedAt": "2026-10-28T14:38:19.195Z",
-    "videoUrl": "/examples/hinglish-ml-shortcut-eleven/video.mp4",
-    "downloadUrl": "/examples/hinglish-ml-shortcut-eleven/video.mp4",
-    "posterUrl": "/examples/hinglish-ml-shortcut-eleven/poster.png",
-    "audioUrl": null,
-    "error": null,
-    "script": {
-      "title": "Gaay pehchaani, ya ghaas?",
-      "participants": {
-        "learner": "badri",
-        "expert": "budhdev"
-      },
-      "dialogue": [
-        {
-          "speaker": "badri",
-          "text": "Partner, apna AI cows pehchaan raha tha. Snow mein cow ki photo di, toh fail! Aur training photos daal doon?",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "cow on green grass",
-              "url": "https://i.pinimg.com/736x/03/d6/3a/03d63aa183f4f50d565966b1c9af7ef8.jpg",
-              "caption": "",
-              "sourceUrl": "https://www.pinterest.com/pin/hd-group-of-cows-grazing-on-green-grass-field--299841287707724095/",
-              "title": "hd group of cows grazing on green grass field 299841287707724095 — pinterest.com"
-            }
-          ]
-        },
-        {
-          "speaker": "budhdev",
-          "text": "Haan dost, par wahi green grass wali daaloge, toh shortcut aur strong hoga. Shayad model cow se zyada background dekh raha hai. Same cow ka background badalkar test kar.",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "cow in snow",
-              "url": "https://media.gettyimages.com/id/1194247561/photo/portrait-of-a-scottish-highland-cow-in-the-snow.jpg?s=612x612&w=gi&k=20&c=e0V8ezMxPlVhEbZGg0l6J-rXr8YdQ06UD1itkiEVdBY=",
-              "caption": "",
-              "sourceUrl": "https://www.gettyimages.in/photos/snow-cow",
-              "title": "snow cow — gettyimages.in"
-            },
-            {
-              "kind": "image",
-              "query": "cow transparent background",
-              "url": "https://png.pngtree.com/png-clipart/20250309/original/pngtree-holstein-cow-png-image_20610191.png",
-              "caption": "",
-              "sourceUrl": "https://pngtree.com/so/cow",
-              "title": "cow transparent background — pngtree.com"
-            }
-          ]
-        },
-        {
-          "speaker": "badri",
-          "text": "Arre, background badla toh prediction bhi badal gaya! Par train aur test photos toh alag rakhi thi?",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "machine learning train test split diagram",
-              "url": "https://machinelearningplus.com/wp-content/uploads/2022/12/train_test_split-procedure.jpg",
-              "caption": "",
-              "sourceUrl": "https://machinelearningplus.com/machine-learning/train-test-split/",
-              "title": "train test split — machinelearningplus.com"
-            }
-          ]
-        },
-        {
-          "speaker": "budhdev",
-          "text": "Photos alag thi, par dono sets mein cows aur green grass ka wahi connection tha. Kuch poore farms training se bahar rakh. Unseen locations par test kar, tab is shortcut ka andaaza lagega.",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "different cattle farms",
-              "url": "https://royalfarms.co.in/wp-content/uploads/2026/03/cattle-farming.webp",
-              "caption": "",
-              "sourceUrl": "https://royalfarms.co.in/future-of-cattle-farming-in-india/",
-              "title": "future of cattle farming in india — royalfarms.co.in"
-            },
-            {
-              "kind": "image",
-              "query": "machine learning out of distribution diagram",
-              "url": "https://media.springernature.com/lw1200/springer-static/image/art%3A10.1038%2Fs41598-024-79934-7/MediaObjects/41598_2024_79934_Fig2_HTML.png",
-              "caption": "",
-              "sourceUrl": "https://www.nature.com/articles/s41598-024-79934-7",
-              "title": "s41598 024 79934 7 — nature.com"
-            },
-            {
-              "kind": "code",
-              "code": "train_farms = {\"north\", \"west\"}\ntest_farms = {\"snowy_hill\"}\nassert train_farms.isdisjoint(test_farms)",
-              "language": "python"
-            }
-          ]
-        },
-        {
-          "speaker": "badri",
-          "text": "Toh unseen farm pe achha score aaya, ab model ko har jagah launch kar doon?",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "cow at night",
-              "url": "https://www.shutterstock.com/shutterstock/videos/3918170499/thumb/12.jpg?ip=x480",
-              "caption": "",
-              "sourceUrl": "https://www.shutterstock.com/video/clip-3918170499-cows-rest-pasture-night",
-              "title": "clip 3918170499 cows rest pasture night — shutterstock.com"
-            }
-          ]
-        },
-        {
-          "speaker": "budhdev",
-          "text": "Itni jaldi trophy mat baant. Lighting, breeds aur backgrounds bhi badal kar test kar. Training data diversify kar aur har group ka result alag dekh. Ek test pass hona poori duniya ki guarantee nahi.",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "different cow breeds",
-              "url": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=773319872115510",
-              "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:mettoAP-HUHr9M",
-              "caption": "",
-              "sourceUrl": "https://www.facebook.com/gardeningloversunited/posts/cows-come-in-many-breeds-each-with-its-own-unique-characteristics-and-contributi/773319888782175/",
-              "title": "cows come in many breeds each with its own unique characteristics and contributi — facebook.com"
-            },
-            {
-              "kind": "image",
-              "query": "machine learning confusion matrix",
-              "url": "https://media.geeksforgeeks.org/wp-content/uploads/20240708132251/confusion-Matrix.PNG",
-              "caption": "",
-              "sourceUrl": "https://www.geeksforgeeks.org/machine-learning/confusion-matrix-machine-learning/",
-              "title": "confusion matrix machine learning — geeksforgeeks.org"
-            }
-          ]
-        }
-      ]
-    },
-    "durationSeconds": 52.83898,
-    "cast": "auto",
-    "language": "hinglish",
-    "participants": {
-      "learner": "badri",
-      "expert": "budhdev"
-    },
-    "voiceBackend": "elevenlabs",
-    "voiceNames": {
-      "badri": "Badri",
-      "budhdev": "Budhdev"
-    },
-    "backgroundName": "Subway Surfers",
-    "sourceCredits": [
-      {
-        "title": "Subway Surfers (2026) - Gameplay [4K 16x9] No Copyright",
-        "url": "https://www.youtube.com/watch?v=i0M4ARe9v0Y",
-        "attribution": "Subway Surfers gameplay — Subway Surfers, https://www.youtube.com/watch?v=i0M4ARe9v0Y. Excerpted, muted, cropped, resized and overlaid."
-      },
-      {
-        "title": "hd group of cows grazing on green grass field 299841287707724095 — pinterest.com",
-        "url": "https://www.pinterest.com/pin/hd-group-of-cows-grazing-on-green-grass-field--299841287707724095/",
-        "attribution": "hd group of cows grazing on green grass field 299841287707724095 — pinterest.com"
-      },
-      {
-        "title": "snow cow — gettyimages.in",
-        "url": "https://www.gettyimages.in/photos/snow-cow",
-        "attribution": "snow cow — gettyimages.in"
-      },
-      {
-        "title": "cow transparent background — pngtree.com",
-        "url": "https://pngtree.com/so/cow",
-        "attribution": "cow transparent background — pngtree.com"
-      },
-      {
-        "title": "train test split — machinelearningplus.com",
-        "url": "https://machinelearningplus.com/machine-learning/train-test-split/",
-        "attribution": "train test split — machinelearningplus.com"
-      },
-      {
-        "title": "future of cattle farming in india — royalfarms.co.in",
-        "url": "https://royalfarms.co.in/future-of-cattle-farming-in-india/",
-        "attribution": "future of cattle farming in india — royalfarms.co.in"
-      },
-      {
-        "title": "s41598 024 79934 7 — nature.com",
-        "url": "https://www.nature.com/articles/s41598-024-79934-7",
-        "attribution": "s41598 024 79934 7 — nature.com"
-      },
-      {
-        "title": "clip 3918170499 cows rest pasture night — shutterstock.com",
-        "url": "https://www.shutterstock.com/video/clip-3918170499-cows-rest-pasture-night",
-        "attribution": "clip 3918170499 cows rest pasture night — shutterstock.com"
-      },
-      {
-        "title": "cows come in many breeds each with its own unique characteristics and contributi — facebook.com",
-        "url": "https://www.facebook.com/gardeningloversunited/posts/cows-come-in-many-breeds-each-with-its-own-unique-characteristics-and-contributi/773319888782175/",
-        "attribution": "cows come in many breeds each with its own unique characteristics and contributi — facebook.com"
-      },
-      {
-        "title": "confusion matrix machine learning — geeksforgeeks.org",
-        "url": "https://www.geeksforgeeks.org/machine-learning/confusion-matrix-machine-learning/",
-        "attribution": "confusion matrix machine learning — geeksforgeeks.org"
-      }
-    ]
-  },
-  {
-    "jobId": "0207c905-933d-46c5-acc4-1bf993235a15",
-    "state": "ready",
-    "stage": "ready",
-    "progress": 100,
-    "prompt": "Natural conversational Hinglish database stale-read skit. Reference: https://www.postgresql.org/docs/17/high-availability.html . Hypothetical asynchronous primary/read-replica architecture; replica can lag. Read after own write from authoritative primary for the relevant operation, balancing load. Polling a lagging replica is not evidence a purchase failed.",
-    "title": "Paise kat gaye, khareed gayab!",
-    "createdAt": "2026-10-28T14:22:27.406Z",
-    "updatedAt": "2026-10-28T14:38:44.613Z",
-    "videoUrl": "/examples/hinglish-database-replica-eleven/video.mp4",
-    "downloadUrl": "/examples/hinglish-database-replica-eleven/video.mp4",
-    "posterUrl": "/examples/hinglish-database-replica-eleven/poster.png",
-    "audioUrl": null,
-    "error": null,
-    "script": {
-      "title": "Paise kat gaye, khareed gayab!",
-      "participants": {
-        "learner": "jhaplu",
-        "expert": "paplu"
-      },
-      "dialogue": [
-        {
-          "speaker": "jhaplu",
-          "text": "Mamu, samose ka payment ho gaya, par order history khaali! Apun buy wala button dobara daba de?",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "online shopping order confirmation",
-              "url": "https://www.drip.com/hs-fs/hubfs/Imported_Blog_Media/ASOS-Order-Confirmation-Email-1-542x1024-1.png?width=542&height=1024&name=ASOS-Order-Confirmation-Email-1-542x1024-1.png",
-              "caption": "",
-              "sourceUrl": "https://www.drip.com/blog/order-confirmation-emails",
-              "title": "order confirmation emails — drip.com"
-            }
-          ]
-        },
-        {
-          "speaker": "paplu",
-          "text": "Re baba, pehle payment aur order verify kar! Write primary database pe gaya, par history read replica se aa rahi hai. Replica ko update milne mein delay ho sakta hai. Empty history ka matlab failed order nahi.",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "database primary replica diagram",
-              "url": "https://assets.qlik.com/image/upload/w_1408/q_auto/qlik/glossary/data-replication/seo-hero-database-replication_abgbrk.jpg",
-              "caption": "",
-              "sourceUrl": "https://www.qlik.com/us/data-replication/database-replication",
-              "title": "database replication — qlik.com"
-            },
-            {
-              "kind": "image",
-              "query": "database replication lag diagram",
-              "url": "https://substackcdn.com/image/fetch/$s_!Bj1H!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3cec7ec6-383c-4bdf-bd55-8ec456b6ff08_1938x1116.png",
-              "caption": "",
-              "sourceUrl": "https://blog.bytebytego.com/p/a-guide-to-database-replication-key",
-              "title": "a guide to database replication key — blog.bytebytego.com"
-            }
-          ]
-        },
-        {
-          "speaker": "jhaplu",
-          "text": "Primary pe order mil gaya! Toh saari reads bhi primary pe bhej dein, tension khatam?",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "PostgreSQL database server",
-              "url": "https://learn.microsoft.com/en-us/azure/postgresql/media/overview/overview-flexible-server.png",
-              "caption": "",
-              "sourceUrl": "https://learn.microsoft.com/en-us/azure/postgresql/overview",
-              "title": "overview — learn.microsoft.com"
-            }
-          ]
-        },
-        {
-          "speaker": "paplu",
-          "text": "Phir saara load udhar jayega. Abhi purchase confirmation aur apne recent order ko primary se read kara. Jahan thoda stale data chale, wahan replica ka benefit le. Har read ko same consistency nahi chahiye.",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "read replica load balancing diagram",
-              "url": "https://d2908q01vomqb2.cloudfront.net/887309d048beef83ad3eabf2a79a64a389ab1c9f/2024/09/24/dbblog-3604-archdiagram.jpg",
-              "caption": "",
-              "sourceUrl": "https://aws.amazon.com/blogs/database/load-balancing-strategies-for-amazon-rds-for-sql-server-read-replicas-to-scale-read-workloads-and-reduce-latency/",
-              "title": "load balancing strategies for amazon rds for sql server read replicas to scale read workloads and reduce latency — aws.amazon.com"
-            },
-            {
-              "kind": "image",
-              "query": "order confirmation receipt",
-              "url": "https://cdn.dribbble.com/userupload/6502918/file/original-4ed03cb87ee2adb2804af53f3f2c51a8.jpg",
-              "caption": "",
-              "sourceUrl": "https://dribbble.com/shots/21283991-Order-Confirmation-Email-Receipt-Daily-UI-017",
-              "title": "21283991 Order Confirmation Email Receipt Daily UI 017 — dribbble.com"
-            },
-            {
-              "kind": "code",
-              "code": "await primary.save(order);\nconst saved = await primary.get(order.id);\nreturn saved;",
-              "language": "javascript"
-            }
-          ]
-        },
-        {
-          "speaker": "jhaplu",
-          "text": "Aur replica lag bahut badh gaya, toh refresh dabaate rehna padega?",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "database replication lag graph",
-              "url": "https://a.storyblok.com/f/187930/640x480/e3bc9d2d83/replication_lag_plot.png",
-              "caption": "",
-              "sourceUrl": "https://www.pgedge.com/blog/understanding-and-reducing-postgresql-replication-lag",
-              "title": "understanding and reducing postgresql replication lag — pgedge.com"
-            }
-          ]
-        },
-        {
-          "speaker": "paplu",
-          "text": "Refresh se replica catch up hone ki guarantee nahi. Lag monitor kar, replication ki problem check kar aur critical reads ke liye reliable route rakh. Order dobara banana alag problem paida karega: do bill, ek plate samose!",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "server monitoring dashboard",
-              "url": "https://miro.medium.com/v2/resize:fit:2000/1*pqwUp0uPpr4EcfD9iM0iCQ.png",
-              "caption": "",
-              "sourceUrl": "https://medium.com/swlh/intro-to-server-monitoring-b782fc82911e",
-              "title": "intro to server monitoring b782fc82911e — medium.com"
-            },
-            {
-              "kind": "image",
-              "query": "duplicate payment receipt",
-              "url": "https://trison.in/cdn/shop/files/B0DPG2MGBF_IN01_jpg.jpg?v=1733214517&width=1445",
-              "caption": "",
-              "sourceUrl": "https://trison.in/products/trison-cash-receipt-book-duplicate",
-              "title": "trison cash receipt book duplicate — trison.in"
-            }
-          ]
-        }
-      ]
-    },
-    "durationSeconds": 50.350408,
-    "cast": "auto",
-    "language": "hinglish",
-    "participants": {
-      "learner": "jhaplu",
-      "expert": "paplu"
-    },
-    "voiceBackend": "elevenlabs",
-    "voiceNames": {
-      "jhaplu": "Jhaplu",
+      "jhatka": "Dr Jhatka",
       "paplu": "Paplu"
     },
-    "backgroundName": "GTA Stunts",
-    "sourceCredits": [
-      {
-        "title": "GTA 5 - Jump Stunts EP.27 Free To Use NO COPYRIGHT GAMEPLAY",
-        "url": "https://www.youtube.com/watch?v=KvS0MLj5IIE",
-        "attribution": "GTA 5 - Jump Stunts EP.27 — RipstaStylez, https://www.youtube.com/watch?v=KvS0MLj5IIE, Creative Commons Attribution. Muted, cropped, resized and overlaid. Original soundtrack is not included."
-      },
-      {
-        "title": "order confirmation emails — drip.com",
-        "url": "https://www.drip.com/blog/order-confirmation-emails",
-        "attribution": "order confirmation emails — drip.com"
-      },
-      {
-        "title": "database replication — qlik.com",
-        "url": "https://www.qlik.com/us/data-replication/database-replication",
-        "attribution": "database replication — qlik.com"
-      },
-      {
-        "title": "a guide to database replication key — blog.bytebytego.com",
-        "url": "https://blog.bytebytego.com/p/a-guide-to-database-replication-key",
-        "attribution": "a guide to database replication key — blog.bytebytego.com"
-      },
-      {
-        "title": "overview — learn.microsoft.com",
-        "url": "https://learn.microsoft.com/en-us/azure/postgresql/overview",
-        "attribution": "overview — learn.microsoft.com"
-      },
-      {
-        "title": "load balancing strategies for amazon rds for sql server read replicas to scale read workloads and reduce latency — aws.amazon.com",
-        "url": "https://aws.amazon.com/blogs/database/load-balancing-strategies-for-amazon-rds-for-sql-server-read-replicas-to-scale-read-workloads-and-reduce-latency/",
-        "attribution": "load balancing strategies for amazon rds for sql server read replicas to scale read workloads and reduce latency — aws.amazon.com"
-      },
-      {
-        "title": "21283991 Order Confirmation Email Receipt Daily UI 017 — dribbble.com",
-        "url": "https://dribbble.com/shots/21283991-Order-Confirmation-Email-Receipt-Daily-UI-017",
-        "attribution": "21283991 Order Confirmation Email Receipt Daily UI 017 — dribbble.com"
-      },
-      {
-        "title": "understanding and reducing postgresql replication lag — pgedge.com",
-        "url": "https://www.pgedge.com/blog/understanding-and-reducing-postgresql-replication-lag",
-        "attribution": "understanding and reducing postgresql replication lag — pgedge.com"
-      },
-      {
-        "title": "intro to server monitoring b782fc82911e — medium.com",
-        "url": "https://medium.com/swlh/intro-to-server-monitoring-b782fc82911e",
-        "attribution": "intro to server monitoring b782fc82911e — medium.com"
-      },
-      {
-        "title": "trison cash receipt book duplicate — trison.in",
-        "url": "https://trison.in/products/trison-cash-receipt-book-duplicate",
-        "attribution": "trison cash receipt book duplicate — trison.in"
-      }
-    ]
-  },
-  {
-    "jobId": "73407710-7270-4635-845e-b320d7b4d4e8",
-    "state": "ready",
-    "stage": "ready",
-    "progress": 100,
-    "prompt": "Natural conversational Hinglish AI reliability skit. Source: https://arxiv.org/abs/2005.11401 . Retrieval-augmented generation supplies external evidence but doesn't guarantee correctness. Diagnose retrieval coverage, require attributable support, verify outputs and allow abstention. A confident generated claim or invented citation is not evidence.",
-    "title": "AI ne jawaab bhi banaya, saboot bhi!",
-    "createdAt": "2026-10-28T14:28:28.023Z",
-    "updatedAt": "2026-10-28T14:40:28.002Z",
-    "videoUrl": "/examples/hinglish-ai-evidence-eleven/video.mp4",
-    "downloadUrl": "/examples/hinglish-ai-evidence-eleven/video.mp4",
-    "posterUrl": "/examples/hinglish-ai-evidence-eleven/poster.png",
-    "audioUrl": null,
-    "error": null,
-    "script": {
-      "title": "AI ne jawaab bhi banaya, saboot bhi!",
-      "participants": {
-        "learner": "john",
-        "expert": "jhatka"
-      },
-      "dialogue": [
-        {
-          "speaker": "john",
-          "text": "Mere AI ne confident answer aur book ka reference de diya. John banega don! Par book mein woh fact mil hi nahi raha?",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "ChatGPT answer sources screenshot",
-              "url": "https://www.researchgate.net/publication/371651458/figure/fig2/AS:11431281169324303@1687296535237/A-screenshot-of-ChatGPTs-response-to-reading-the-datacsv-file-and-writing-an-R-code.ppm",
-              "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:7DBhXps9gOGXsM",
-              "caption": "",
-              "sourceUrl": "https://www.researchgate.net/figure/A-screenshot-of-ChatGPTs-response-to-reading-the-datacsv-file-and-writing-an-R-code_fig2_371651458",
-              "title": "A screenshot of ChatGPTs response to reading the datacsv file and writing an R code fig2 371651458 — researchgate.net"
-            }
-          ]
-        },
-        {
-          "speaker": "jhatka",
-          "text": "Oye mere yaar, confidence evidence nahi hota! Pehle check kar model ko relevant passage mila bhi tha? Ho sakta hai answer ke saath citation bhi bana diya ho.",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "open reference book library",
-              "url": "https://thumbs.dreamstime.com/b/open-book-library-23266127.jpg",
-              "caption": "",
-              "sourceUrl": "https://www.dreamstime.com/photos-images/library-open-book.html",
-              "title": "library open book — dreamstime.com"
-            },
-            {
-              "kind": "image",
-              "query": "book index page",
-              "url": "https://i.pinimg.com/736x/60/44/46/604446bb71b270f44196c799effec83b.jpg",
-              "caption": "",
-              "sourceUrl": "https://in.pinterest.com/pin/index-page-layout-designs--145100419228743941/",
-              "title": "index page layout designs 145100419228743941 — in.pinterest.com"
-            }
-          ]
-        },
-        {
-          "speaker": "john",
-          "text": "Relevant passage bheja hi nahi tha. Ab poori book prompt mein daal doon, hallucination band?",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "stack of books",
-              "url": "https://plus.unsplash.com/premium_photo-1669652639337-c513cc42ead6?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
-              "caption": "",
-              "sourceUrl": "https://unsplash.com/s/photos/stack-of-books",
-              "title": "stack of books — unsplash.com"
-            }
-          ]
-        },
-        {
-          "speaker": "jhatka",
-          "text": "Aisa hota toh meri har machine first try mein chalti! Relevant passage retrieve kar, phir answer ke claims ko us passage se verify kar. Retrieval fail hua ya answer generation, dono ko alag test kar.",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "retrieval augmented generation diagram",
-              "url": "https://cdn.educba.com/academy/wp-content/uploads/2024/12/Retrieval-Augmented-Generation-RAG.png",
-              "caption": "",
-              "sourceUrl": "https://www.educba.com/retrieval-augmented-generation/",
-              "title": "retrieval augmented generation — educba.com"
-            },
-            {
-              "kind": "image",
-              "query": "document search results",
-              "url": "https://cdn.logicaldoc.com/images/stories/search_results.gif",
-              "caption": "",
-              "sourceUrl": "https://www.logicaldoc.com/software-features/document-searching",
-              "title": "document searching — logicaldoc.com"
-            }
-          ]
-        },
-        {
-          "speaker": "john",
-          "text": "Aur retrieved passage mein bhi answer na ho toh? Jaldi bolo, time kam hai!",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "no search results found",
-              "url": "https://cdn.coveo.com/images/w_1000,h_563,c_scale/f_auto,q_auto:good/v1707312974/blogprod/NoSearchResults-XeroCentral_98338075be87/NoSearchResults-XeroCentral_98338075be87.jpg?_i=AA",
-              "caption": "",
-              "sourceUrl": "https://www.coveo.com/blog/avoid-no-search-results-found/",
-              "title": "avoid no search results found — coveo.com"
-            }
-          ]
-        },
-        {
-          "speaker": "jhatka",
-          "text": "Tab insufficient evidence bolna valid answer hai. Question clarify kar ya aur sources dhoondh. Citation ka naam dekhkar trust mat kar; claim support hota hai ya nahi, woh check kar. Kasam mere mareezon ki, RAG bhi truth ki magic stamp nahi!",
-          "brollSequence": [
-            {
-              "kind": "image",
-              "query": "fact checking source document",
-              "url": "https://s3.amazonaws.com/libapps/accounts/3013/images/Fact_Check_graphic2.jpg",
-              "caption": "",
-              "sourceUrl": "https://libguides.niagaracc.suny.edu/c.php?g=600825&p=8175808",
-              "title": "fact checking source document — libguides.niagaracc.suny.edu"
-            },
-            {
-              "kind": "image",
-              "query": "retrieval augmented generation evaluation diagram",
-              "url": "https://media.geeksforgeeks.org/wp-content/uploads/20251212162328624857/rag_system_evaluation_cycle.webp",
-              "caption": "",
-              "sourceUrl": "https://www.geeksforgeeks.org/nlp/evaluation-metrics-for-retrieval-augmented-generation-rag-systems/",
-              "title": "evaluation metrics for retrieval augmented generation rag systems — geeksforgeeks.org"
-            }
-          ]
-        }
-      ]
-    },
-    "durationSeconds": 54.101995,
-    "cast": "auto",
-    "language": "hinglish",
-    "participants": {
-      "learner": "john",
-      "expert": "jhatka"
-    },
-    "voiceBackend": "elevenlabs",
-    "voiceNames": {
-      "john": "John",
-      "jhatka": "Dr Jhatka"
-    },
-    "backgroundName": "Minecraft · Lava",
-    "sourceCredits": [
-      {
-        "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
-        "url": "https://www.youtube.com/watch?v=LofyMQts7hY",
-        "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=LofyMQts7hY. Muted, cropped, resized and overlaid."
-      },
-      {
-        "title": "A screenshot of ChatGPTs response to reading the datacsv file and writing an R code fig2 371651458 — researchgate.net",
-        "url": "https://www.researchgate.net/figure/A-screenshot-of-ChatGPTs-response-to-reading-the-datacsv-file-and-writing-an-R-code_fig2_371651458",
-        "attribution": "A screenshot of ChatGPTs response to reading the datacsv file and writing an R code fig2 371651458 — researchgate.net"
-      },
-      {
-        "title": "library open book — dreamstime.com",
-        "url": "https://www.dreamstime.com/photos-images/library-open-book.html",
-        "attribution": "library open book — dreamstime.com"
-      },
-      {
-        "title": "index page layout designs 145100419228743941 — in.pinterest.com",
-        "url": "https://in.pinterest.com/pin/index-page-layout-designs--145100419228743941/",
-        "attribution": "index page layout designs 145100419228743941 — in.pinterest.com"
-      },
-      {
-        "title": "stack of books — unsplash.com",
-        "url": "https://unsplash.com/s/photos/stack-of-books",
-        "attribution": "stack of books — unsplash.com"
-      },
-      {
-        "title": "retrieval augmented generation — educba.com",
-        "url": "https://www.educba.com/retrieval-augmented-generation/",
-        "attribution": "retrieval augmented generation — educba.com"
-      },
-      {
-        "title": "document searching — logicaldoc.com",
-        "url": "https://www.logicaldoc.com/software-features/document-searching",
-        "attribution": "document searching — logicaldoc.com"
-      },
-      {
-        "title": "avoid no search results found — coveo.com",
-        "url": "https://www.coveo.com/blog/avoid-no-search-results-found/",
-        "attribution": "avoid no search results found — coveo.com"
-      },
-      {
-        "title": "fact checking source document — libguides.niagaracc.suny.edu",
-        "url": "https://libguides.niagaracc.suny.edu/c.php?g=600825&p=8175808",
-        "attribution": "fact checking source document — libguides.niagaracc.suny.edu"
-      },
-      {
-        "title": "evaluation metrics for retrieval augmented generation rag systems — geeksforgeeks.org",
-        "url": "https://www.geeksforgeeks.org/nlp/evaluation-metrics-for-retrieval-augmented-generation-rag-systems/",
-        "attribution": "evaluation metrics for retrieval augmented generation rag systems — geeksforgeeks.org"
-      }
-    ]
+    "videoUrl": "/examples/redis-rate-limiter/video.mp4",
+    "downloadUrl": "/examples/redis-rate-limiter/video.mp4",
+    "posterUrl": "/examples/redis-rate-limiter/poster.png",
+    "audioUrl": null
   }
 ]

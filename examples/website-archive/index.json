@@ -1,0 +1,2260 @@
+[
+  {
+    "jobId": "c93d8794-a730-4e37-90f1-173133320722",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Lambda ko handler kyun nahi mila?",
+    "title": "Lambda ko handler kyun nahi mila?",
+    "createdAt": "2026-11-02T09:12:00.975Z",
+    "updatedAt": "2026-11-02T09:12:40.604Z",
+    "videoUrl": "/examples/session-sketch-lambda/video.mp4",
+    "posterUrl": "/examples/session-sketch-lambda/poster.png",
+    "audioUrl": null,
+    "error": null,
+    "durationSeconds": 65.938367,
+    "cast": "auto",
+    "language": "hinglish",
+    "voiceBackend": "elevenlabs",
+    "format": "sketch",
+    "narrator": "jack",
+    "script": {
+      "title": "Lambda ko handler kyun nahi mila?",
+      "narrator": "jack",
+      "sketch": {
+        "nodes": [
+          {
+            "id": "gw",
+            "label": "API Gateway",
+            "kind": "service",
+            "icon": "server"
+          },
+          {
+            "id": "lambda",
+            "label": "Lambda image",
+            "kind": "service",
+            "icon": "box"
+          },
+          {
+            "id": "ric",
+            "label": "Runtime client",
+            "kind": "service",
+            "icon": "cpu"
+          },
+          {
+            "id": "handler",
+            "label": "api.handler",
+            "kind": "external",
+            "icon": "file-code"
+          },
+          {
+            "id": "boot",
+            "label": "bootstrap.mjs",
+            "kind": "service",
+            "icon": "rocket"
+          }
+        ],
+        "edges": [
+          {
+            "from": "gw",
+            "to": "lambda",
+            "label": "request"
+          },
+          {
+            "from": "lambda",
+            "to": "ric",
+            "label": "starts"
+          },
+          {
+            "from": "ric",
+            "to": "handler",
+            "label": "loads"
+          },
+          {
+            "from": "boot",
+            "to": "ric",
+            "label": "sets _HANDLER"
+          }
+        ]
+      },
+      "dialogue": [
+        {
+          "speaker": "jack",
+          "text": "Hosted API live kiya, aur har request pe five hundred error aa raha tha. Shuru se dekhte hain.",
+          "sketch": {
+            "show": [
+              "gw",
+              "lambda",
+              "gw>lambda"
+            ]
+          }
+        },
+        {
+          "speaker": "jack",
+          "text": "API Gateway request Lambda ko deta hai. Lambda humari Docker image chalata hai, jismein AWS ka runtime client hai.",
+          "sketch": {
+            "show": [
+              "ric",
+              "lambda>ric"
+            ],
+            "focus": [
+              "lambda>ric"
+            ]
+          }
+        },
+        {
+          "speaker": "jack",
+          "text": "Runtime client ko batana padta hai kaunsa handler load kare. Humne image ke command mein argument diya: cloud dist api dot handler.",
+          "sketch": {
+            "show": [
+              "handler",
+              "ric>handler"
+            ],
+            "focus": [
+              "handler"
+            ]
+          }
+        },
+        {
+          "speaker": "jack",
+          "text": "Argument diya, phir bhi error aaya: cannot find module api. Socho, kyun?",
+          "sketch": {
+            "focus": [
+              "ric>handler"
+            ]
+          },
+          "pause": {
+            "prompt": "We passed the handler as an argument. Why can't the runtime find it?",
+            "choices": [
+              "Version 4 ignores the argument and reads env variables",
+              "The file was never built",
+              "API Gateway sent the wrong path"
+            ],
+            "answer": 0
+          }
+        },
+        {
+          "speaker": "jack",
+          "text": "Runtime client ka version chaar argument dekhta hi nahi. Woh sirf underscore HANDLER aur LAMBDA TASK ROOT environment variables padhta hai.",
+          "sketch": {
+            "focus": [
+              "ric",
+              "ric>handler"
+            ],
+            "mark": "problem",
+            "note": {
+              "text": "argument ignored!",
+              "near": "ric"
+            }
+          }
+        },
+        {
+          "speaker": "jack",
+          "text": "Fix ek chhota bootstrap file hai. Woh argument ko underscore HANDLER mein daalta hai, task root set karta hai, phir runtime client start karta hai.",
+          "sketch": {
+            "show": [
+              "boot",
+              "boot>ric"
+            ],
+            "focus": [
+              "boot",
+              "boot>ric"
+            ],
+            "mark": "fix",
+            "note": {
+              "text": "sets env first",
+              "near": "boot"
+            }
+          }
+        },
+        {
+          "speaker": "jack",
+          "text": "Locally wahi environment variables set karke test kiya. Sahi handler load hua, aur galat naam pe wahi purana error aaya.",
+          "sketch": {
+            "focus": [
+              "ric>handler",
+              "handler"
+            ],
+            "mark": "fix"
+          }
+        },
+        {
+          "speaker": "jack",
+          "text": "Deploy ke baad health check do sau deta hai. Lesson: runtime ka version badle, toh uska startup contract dobara padho.",
+          "sketch": {
+            "focus": [
+              "gw>lambda"
+            ],
+            "mark": "fix"
+          }
+        }
+      ],
+      "takeaway": "aws-lambda-ric 4 reads _HANDLER and LAMBDA_TASK_ROOT, not the command argument, so a tiny bootstrap sets them first.",
+      "questions": [
+        {
+          "prompt": "Why did the Lambda fail to find the handler?",
+          "choices": [
+            "aws-lambda-ric 4 only reads _HANDLER and LAMBDA_TASK_ROOT",
+            "The handler file was missing from the image",
+            "API Gateway called the wrong route"
+          ],
+          "answer": 0,
+          "explanation": "The command argument was ignored; the runtime needed environment variables, which the bootstrap now sets.",
+          "turnIndices": [
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    "learning": {
+      "schemaVersion": "BrainrottenLearningPackV1",
+      "jobId": "c93d8794-a730-4e37-90f1-173133320722",
+      "format": "sketch",
+      "title": "Lambda ko handler kyun nahi mila?",
+      "language": "hinglish",
+      "durationSeconds": 65.938367,
+      "takeaway": "aws-lambda-ric 4 reads _HANDLER and LAMBDA_TASK_ROOT, not the command argument, so a tiny bootstrap sets them first.",
+      "chapters": [
+        {
+          "id": "turn-0",
+          "title": "Hosted API live kiya, aur har request pe",
+          "startMs": 0,
+          "endMs": 5643
+        },
+        {
+          "id": "turn-1",
+          "title": "API Gateway request Lambda ko deta hai. Lambda",
+          "startMs": 5643,
+          "endMs": 12786
+        },
+        {
+          "id": "turn-2",
+          "title": "Runtime client ko batana padta hai kaunsa handler",
+          "startMs": 12786,
+          "endMs": 20679
+        },
+        {
+          "id": "turn-3",
+          "title": "Argument diya, phir bhi error aaya: cannot find",
+          "startMs": 20679,
+          "endMs": 25643
+        },
+        {
+          "id": "turn-4",
+          "title": "Runtime client ka version chaar argument dekhta hi",
+          "startMs": 35643,
+          "endMs": 44213
+        },
+        {
+          "id": "turn-5",
+          "title": "Fix ek chhota bootstrap file hai. Woh argument",
+          "startMs": 44213,
+          "endMs": 52357
+        },
+        {
+          "id": "turn-6",
+          "title": "Locally wahi environment variables set karke test kiya.",
+          "startMs": 52357,
+          "endMs": 58857
+        },
+        {
+          "id": "turn-7",
+          "title": "Deploy ke baad health check do sau deta",
+          "startMs": 58857,
+          "endMs": 65929
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Why did the Lambda fail to find the handler?",
+          "choices": [
+            "aws-lambda-ric 4 only reads _HANDLER and LAMBDA_TASK_ROOT",
+            "The handler file was missing from the image",
+            "API Gateway called the wrong route"
+          ],
+          "answer": 0,
+          "explanation": "The command argument was ignored; the runtime needed environment variables, which the bootstrap now sets.",
+          "turnIndices": [
+            3,
+            4
+          ],
+          "startMs": 20679,
+          "endMs": 44213
+        },
+        {
+          "id": "pause-3",
+          "prompt": "We passed the handler as an argument. Why can't the runtime find it?",
+          "choices": [
+            "Version 4 ignores the argument and reads env variables",
+            "The file was never built",
+            "API Gateway sent the wrong path"
+          ],
+          "answer": 0,
+          "explanation": "Runtime client ka version chaar argument dekhta hi nahi. Woh sirf underscore HANDLER aur LAMBDA TASK ROOT environment variables padhta hai.",
+          "turnIndices": [
+            3,
+            4
+          ],
+          "startMs": 20679,
+          "endMs": 44213
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "q1",
+          "front": "Why did the Lambda fail to find the handler?",
+          "back": "aws-lambda-ric 4 only reads _HANDLER and LAMBDA_TASK_ROOT — The command argument was ignored; the runtime needed environment variables, which the bootstrap now sets.",
+          "startMs": 20679,
+          "endMs": 44213
+        },
+        {
+          "id": "pause-3",
+          "front": "We passed the handler as an argument. Why can't the runtime find it?",
+          "back": "Version 4 ignores the argument and reads env variables — Runtime client ka version chaar argument dekhta hi nahi. Woh sirf underscore HANDLER aur LAMBDA TASK ROOT environment variables padhta hai.",
+          "startMs": 20679,
+          "endMs": 44213
+        }
+      ],
+      "transcript": [
+        {
+          "turnIndex": 0,
+          "speaker": "jack",
+          "text": "Hosted API live kiya, aur har request pe five hundred error aa raha tha. Shuru se dekhte hain.",
+          "startMs": 0,
+          "endMs": 5643
+        },
+        {
+          "turnIndex": 1,
+          "speaker": "jack",
+          "text": "API Gateway request Lambda ko deta hai. Lambda humari Docker image chalata hai, jismein AWS ka runtime client hai.",
+          "startMs": 5643,
+          "endMs": 12786
+        },
+        {
+          "turnIndex": 2,
+          "speaker": "jack",
+          "text": "Runtime client ko batana padta hai kaunsa handler load kare. Humne image ke command mein argument diya: cloud dist api dot handler.",
+          "startMs": 12786,
+          "endMs": 20679
+        },
+        {
+          "turnIndex": 3,
+          "speaker": "jack",
+          "text": "Argument diya, phir bhi error aaya: cannot find module api. Socho, kyun?",
+          "startMs": 20679,
+          "endMs": 25643
+        },
+        {
+          "turnIndex": 4,
+          "speaker": "jack",
+          "text": "Runtime client ka version chaar argument dekhta hi nahi. Woh sirf underscore HANDLER aur LAMBDA TASK ROOT environment variables padhta hai.",
+          "startMs": 35643,
+          "endMs": 44213
+        },
+        {
+          "turnIndex": 5,
+          "speaker": "jack",
+          "text": "Fix ek chhota bootstrap file hai. Woh argument ko underscore HANDLER mein daalta hai, task root set karta hai, phir runtime client start karta hai.",
+          "startMs": 44213,
+          "endMs": 52357
+        },
+        {
+          "turnIndex": 6,
+          "speaker": "jack",
+          "text": "Locally wahi environment variables set karke test kiya. Sahi handler load hua, aur galat naam pe wahi purana error aaya.",
+          "startMs": 52357,
+          "endMs": 58857
+        },
+        {
+          "turnIndex": 7,
+          "speaker": "jack",
+          "text": "Deploy ke baad health check do sau deta hai. Lesson: runtime ka version badle, toh uska startup contract dobara padho.",
+          "startMs": 58857,
+          "endMs": 65929
+        }
+      ]
+    },
+    "backgroundName": "Minecraft · End",
+    "sourceCredits": [
+      {
+        "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
+        "url": "https://www.youtube.com/watch?v=1nIGWHLMsFA",
+        "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=1nIGWHLMsFA. Muted, cropped, resized and overlaid."
+      }
+    ],
+    "voiceNames": {
+      "jack": "Jack"
+    },
+    "downloadUrl": "/examples/session-sketch-lambda/video.mp4"
+  },
+  {
+    "jobId": "f5f76aae-f31c-417c-9a3f-4ba68cd6cf8e",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Login ho gaya, phir bhi invalid?",
+    "title": "Login ho gaya, phir bhi invalid?",
+    "createdAt": "2026-11-02T09:26:27.887Z",
+    "updatedAt": "2026-11-02T09:27:13.279Z",
+    "videoUrl": "/examples/session-skit-cognito/video.mp4",
+    "posterUrl": "/examples/session-skit-cognito/poster.png",
+    "audioUrl": null,
+    "error": null,
+    "durationSeconds": 57.581746,
+    "cast": "auto",
+    "language": "hinglish",
+    "voiceBackend": "elevenlabs",
+    "participants": {
+      "learner": "jhaplu",
+      "expert": "paplu"
+    },
+    "format": "skit",
+    "script": {
+      "title": "Login ho gaya, phir bhi invalid?",
+      "participants": {
+        "learner": "jhaplu",
+        "expert": "paplu"
+      },
+      "dialogue": [
+        {
+          "speaker": "jhaplu",
+          "text": "Paplu, maine terminal se login kiya, Google pe sign in bhi ho gaya. Phir bhi likha aaya, invalid Cognito sign-in configuration!"
+        },
+        {
+          "speaker": "paplu",
+          "text": "Google login sahi tha, Jhaplu. Galti humare check mein thi. Hum token ka issuer ek regex se verify karte hain, taaki koi nakli server token na de sake.",
+          "broll": {
+            "kind": "code",
+            "code": "/amazonaws\\.com\\/[a-z0-9_-]+$/\n  .test(auth.issuer)",
+            "language": "ts"
+          }
+        },
+        {
+          "speaker": "jhaplu",
+          "text": "Par URL toh asli Cognito ka hi tha na? Regex ko usmein kya bura laga?"
+        },
+        {
+          "speaker": "paplu",
+          "text": "Pool ID dekho. ap south one, underscore, Q I Y a O two Hex. Usmein capital letters hain."
+        },
+        {
+          "speaker": "jhaplu",
+          "text": "Achha. Toh jab regex ne capital Q aur capital I dekhe, tab usne kya kiya?",
+          "pause": {
+            "prompt": "The regex only allows lowercase. What happens to the real pool ID ap-south-1_QIYaO2Hex?",
+            "choices": [
+              "It is rejected as invalid",
+              "It passes",
+              "It is lowercased first"
+            ],
+            "answer": 0
+          }
+        },
+        {
+          "speaker": "paplu",
+          "text": "Asli pool ko bhi reject kar diya. Humare tests mein sirf chhote letters wale fake IDs the, isliye ye kabhi pakda hi nahi gaya."
+        },
+        {
+          "speaker": "jhaplu",
+          "text": "Toh regex hi hata kyun nahi dete? Jhanjhat khatam ho jaayega na?"
+        },
+        {
+          "speaker": "paplu",
+          "text": "Nahi, check zaroori hai. Naya regex region ka format aur pool ID ke capital letters maanta hai. Test mein asli ID bhi hai, aur ek nakli domain bhi jo fail hona chahiye.",
+          "broll": {
+            "kind": "code",
+            "code": "/[a-z]{2}(?:-[a-z]+)+-\\d_[A-Za-z0-9]+$/",
+            "language": "ts"
+          }
+        }
+      ],
+      "takeaway": "Validate tokens against real production values: a lowercase-only pattern rejected the real Cognito pool ID.",
+      "questions": [
+        {
+          "prompt": "Why did the real sign-in fail?",
+          "choices": [
+            "The issuer check only allowed lowercase, but the pool ID has capitals",
+            "Google rejected the account",
+            "The token had expired"
+          ],
+          "answer": 0,
+          "explanation": "The pattern was written against lowercase test data, so the real mixed-case pool ID failed.",
+          "turnIndices": [
+            3,
+            5
+          ]
+        }
+      ]
+    },
+    "learning": {
+      "schemaVersion": "BrainrottenLearningPackV1",
+      "jobId": "f5f76aae-f31c-417c-9a3f-4ba68cd6cf8e",
+      "format": "skit",
+      "title": "Login ho gaya, phir bhi invalid?",
+      "language": "hinglish",
+      "durationSeconds": 57.581746,
+      "takeaway": "Validate tokens against real production values: a lowercase-only pattern rejected the real Cognito pool ID.",
+      "chapters": [
+        {
+          "id": "turn-0",
+          "title": "Paplu, maine terminal se login kiya, Google pe",
+          "startMs": 0,
+          "endMs": 5999
+        },
+        {
+          "id": "turn-1",
+          "title": "Google login sahi tha, Jhaplu. Galti humare check",
+          "startMs": 5999,
+          "endMs": 14356
+        },
+        {
+          "id": "turn-2",
+          "title": "Par URL toh asli Cognito ka hi tha",
+          "startMs": 14356,
+          "endMs": 17856
+        },
+        {
+          "id": "turn-3",
+          "title": "Pool ID dekho. ap south one, underscore, Q",
+          "startMs": 17856,
+          "endMs": 24500
+        },
+        {
+          "id": "turn-4",
+          "title": "Achha. Toh jab regex ne capital Q aur",
+          "startMs": 24500,
+          "endMs": 28785
+        },
+        {
+          "id": "turn-5",
+          "title": "Asli pool ko bhi reject kar diya. Humare",
+          "startMs": 38785,
+          "endMs": 45143
+        },
+        {
+          "id": "turn-6",
+          "title": "Toh regex hi hata kyun nahi dete? Jhanjhat",
+          "startMs": 45143,
+          "endMs": 48071
+        },
+        {
+          "id": "turn-7",
+          "title": "Nahi, check zaroori hai. Naya regex region ka",
+          "startMs": 48071,
+          "endMs": 57571
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Why did the real sign-in fail?",
+          "choices": [
+            "The issuer check only allowed lowercase, but the pool ID has capitals",
+            "Google rejected the account",
+            "The token had expired"
+          ],
+          "answer": 0,
+          "explanation": "The pattern was written against lowercase test data, so the real mixed-case pool ID failed.",
+          "turnIndices": [
+            3,
+            5
+          ],
+          "startMs": 17856,
+          "endMs": 45143
+        },
+        {
+          "id": "pause-4",
+          "prompt": "The regex only allows lowercase. What happens to the real pool ID ap-south-1_QIYaO2Hex?",
+          "choices": [
+            "It is rejected as invalid",
+            "It passes",
+            "It is lowercased first"
+          ],
+          "answer": 0,
+          "explanation": "Asli pool ko bhi reject kar diya. Humare tests mein sirf chhote letters wale fake IDs the, isliye ye kabhi pakda hi nahi gaya.",
+          "turnIndices": [
+            4,
+            5
+          ],
+          "startMs": 24500,
+          "endMs": 45143
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "q1",
+          "front": "Why did the real sign-in fail?",
+          "back": "The issuer check only allowed lowercase, but the pool ID has capitals — The pattern was written against lowercase test data, so the real mixed-case pool ID failed.",
+          "startMs": 17856,
+          "endMs": 45143
+        },
+        {
+          "id": "pause-4",
+          "front": "The regex only allows lowercase. What happens to the real pool ID ap-south-1_QIYaO2Hex?",
+          "back": "It is rejected as invalid — Asli pool ko bhi reject kar diya. Humare tests mein sirf chhote letters wale fake IDs the, isliye ye kabhi pakda hi nahi gaya.",
+          "startMs": 24500,
+          "endMs": 45143
+        }
+      ],
+      "transcript": [
+        {
+          "turnIndex": 0,
+          "speaker": "jhaplu",
+          "text": "Paplu, maine terminal se login kiya, Google pe sign in bhi ho gaya. Phir bhi likha aaya, invalid Cognito sign-in configuration!",
+          "startMs": 0,
+          "endMs": 5999
+        },
+        {
+          "turnIndex": 1,
+          "speaker": "paplu",
+          "text": "Google login sahi tha, Jhaplu. Galti humare check mein thi. Hum token ka issuer ek regex se verify karte hain, taaki koi nakli server token na de sake.",
+          "startMs": 5999,
+          "endMs": 14356
+        },
+        {
+          "turnIndex": 2,
+          "speaker": "jhaplu",
+          "text": "Par URL toh asli Cognito ka hi tha na? Regex ko usmein kya bura laga?",
+          "startMs": 14356,
+          "endMs": 17856
+        },
+        {
+          "turnIndex": 3,
+          "speaker": "paplu",
+          "text": "Pool ID dekho. ap south one, underscore, Q I Y a O two Hex. Usmein capital letters hain.",
+          "startMs": 17856,
+          "endMs": 24500
+        },
+        {
+          "turnIndex": 4,
+          "speaker": "jhaplu",
+          "text": "Achha. Toh jab regex ne capital Q aur capital I dekhe, tab usne kya kiya?",
+          "startMs": 24500,
+          "endMs": 28785
+        },
+        {
+          "turnIndex": 5,
+          "speaker": "paplu",
+          "text": "Asli pool ko bhi reject kar diya. Humare tests mein sirf chhote letters wale fake IDs the, isliye ye kabhi pakda hi nahi gaya.",
+          "startMs": 38785,
+          "endMs": 45143
+        },
+        {
+          "turnIndex": 6,
+          "speaker": "jhaplu",
+          "text": "Toh regex hi hata kyun nahi dete? Jhanjhat khatam ho jaayega na?",
+          "startMs": 45143,
+          "endMs": 48071
+        },
+        {
+          "turnIndex": 7,
+          "speaker": "paplu",
+          "text": "Nahi, check zaroori hai. Naya regex region ka format aur pool ID ke capital letters maanta hai. Test mein asli ID bhi hai, aur ek nakli domain bhi jo fail hona chahiye.",
+          "startMs": 48071,
+          "endMs": 57571
+        }
+      ]
+    },
+    "backgroundName": "Minecraft · End",
+    "sourceCredits": [
+      {
+        "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
+        "url": "https://www.youtube.com/watch?v=1nIGWHLMsFA",
+        "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=1nIGWHLMsFA. Muted, cropped, resized and overlaid."
+      }
+    ],
+    "voiceNames": {
+      "jhaplu": "Jhaplu",
+      "paplu": "Paplu"
+    },
+    "downloadUrl": "/examples/session-skit-cognito/video.mp4"
+  },
+  {
+    "jobId": "ee58eb33-9bcd-453d-a6d0-e42f32526dac",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Accept real Cognito pool IDs",
+    "title": "Accept real Cognito pool IDs",
+    "createdAt": "2026-11-02T09:13:27.380Z",
+    "updatedAt": "2026-11-02T09:13:58.410Z",
+    "videoUrl": "/examples/session-prreview-cognito/video.mp4",
+    "posterUrl": "/examples/session-prreview-cognito/poster.png",
+    "audioUrl": null,
+    "error": null,
+    "durationSeconds": 56.792381,
+    "cast": "auto",
+    "language": "hinglish",
+    "voiceBackend": "elevenlabs",
+    "format": "prreview",
+    "script": {
+      "title": "Accept real Cognito pool IDs",
+      "pr": {
+        "title": "Accept real Cognito pool IDs (mixed case)",
+        "repo": "sea-deep/brainrotten",
+        "author": {
+          "name": "sea-deep",
+          "icon": "user"
+        },
+        "reviewers": [
+          {
+            "speaker": "jhatka",
+            "name": "senior-dev",
+            "icon": "user"
+          },
+          {
+            "speaker": "john",
+            "name": "security-bot",
+            "icon": "shield"
+          }
+        ],
+        "files": [
+          {
+            "path": "apps/companion/src/mcp/account.ts",
+            "language": "ts",
+            "lines": [
+              {
+                "kind": "ctx",
+                "code": "if(!/^https:\\/\\/cognito-idp\\."
+              },
+              {
+                "kind": "ctx",
+                "code": "  [a-z0-9-]+\\.amazonaws\\.com\\/"
+              },
+              {
+                "kind": "del",
+                "code": "  [a-z0-9_-]+$/"
+              },
+              {
+                "kind": "add",
+                "code": "  [a-z]{2}(?:-[a-z]+)+-\\d_[A-Za-z0-9]+$/"
+              },
+              {
+                "kind": "ctx",
+                "code": "  .test(profile.issuer))throw new Error();"
+              }
+            ]
+          },
+          {
+            "path": "apps/companion/src/mcp/account.test.ts",
+            "language": "ts",
+            "lines": [
+              {
+                "kind": "add",
+                "code": "await write('https://cognito-idp.ap-south-1"
+              },
+              {
+                "kind": "add",
+                "code": "  .amazonaws.com/ap-south-1_QIYaO2Hex');"
+              },
+              {
+                "kind": "add",
+                "code": "expect(readAccountProfile(directory).issuer)"
+              },
+              {
+                "kind": "add",
+                "code": "  .toContain('QIYaO2Hex');"
+              },
+              {
+                "kind": "add",
+                "code": "await write('https://evil.example.com/"
+              },
+              {
+                "kind": "add",
+                "code": "  ap-south-1_QIYaO2Hex');"
+              },
+              {
+                "kind": "add",
+                "code": "expect(()=>readAccountProfile(directory))"
+              },
+              {
+                "kind": "add",
+                "code": "  .toThrow('Sign in first');"
+              }
+            ]
+          }
+        ],
+        "verdict": "approve"
+      },
+      "dialogue": [
+        {
+          "speaker": "jhatka",
+          "text": "Is ek line ne production login tod diya. Pool ID wala hissa sirf chhote letters maanta tha.",
+          "pr": {
+            "file": 0,
+            "lines": [
+              2,
+              2
+            ],
+            "display": "is line ne prod login tod diya 💀 sirf lowercase??",
+            "tone": "roast"
+          }
+        },
+        {
+          "speaker": "jhatka",
+          "text": "Asli pool ID hai ap south one underscore Q I Y a O two Hex. Capital letters ki wajah se asli Cognito bhi reject ho raha tha.",
+          "pr": {
+            "file": 0,
+            "lines": [
+              3,
+              3
+            ],
+            "display": "real pool ID: ap-south-1_QIYaO2Hex. capitals = rejected 😭",
+            "tone": "question"
+          }
+        },
+        {
+          "speaker": "john",
+          "text": "Naya pattern capital letters allow karta hai. Mera sawaal: kya ab koi nakli domain bhi pass ho jaayega?",
+          "pr": {
+            "file": 0,
+            "lines": [
+              3,
+              3
+            ],
+            "display": "capitals allowed now. does a fake domain pass too? 🤔",
+            "tone": "question"
+          },
+          "pause": {
+            "prompt": "The pool ID part now allows capitals. Does an evil domain with the same pool ID pass?",
+            "choices": [
+              "No, the host must still be Cognito's",
+              "Yes, any URL ending in a pool ID passes",
+              "Only if it uses https"
+            ],
+            "answer": 0
+          }
+        },
+        {
+          "speaker": "john",
+          "text": "Nahi. Host abhi bhi cognito idp, region, amazonaws dot com hi hona chahiye. Capital letters sirf pool ID ke andar allowed hain.",
+          "pr": {
+            "file": 0,
+            "lines": [
+              0,
+              1
+            ],
+            "display": "host still pinned to cognito-idp.*.amazonaws.com ✅",
+            "tone": "praise"
+          }
+        },
+        {
+          "speaker": "jhatka",
+          "text": "Aur test usi asli pool ID se likha hai jo production mein fail hua tha. Pehle sirf lowercase fake IDs the.",
+          "pr": {
+            "file": 1,
+            "lines": [
+              0,
+              3
+            ],
+            "display": "test uses the REAL pool ID that broke prod 👏",
+            "tone": "praise"
+          }
+        },
+        {
+          "speaker": "john",
+          "text": "Nakli domain wala case bhi test mein hai, aur woh fail hota hai. Security check dheela nahi hua.",
+          "pr": {
+            "file": 1,
+            "lines": [
+              4,
+              7
+            ],
+            "display": "evil.example.com still throws 🛡️",
+            "tone": "praise"
+          }
+        },
+        {
+          "speaker": "jhatka",
+          "text": "Approve. Lesson: validation ke tests mein asli production values daalo, warna regex sirf tumhare fake data ko pass karega.",
+          "pr": {
+            "display": "LGTM 🚀 test with real prod values, not just fake ones",
+            "tone": "praise"
+          }
+        }
+      ],
+      "takeaway": "Tests built from real production values catch what synthetic data hides, without loosening the security check.",
+      "questions": [
+        {
+          "prompt": "Why does the fix stay safe?",
+          "choices": [
+            "The host is still pinned to Cognito; only the pool ID allows capitals",
+            "It removes the issuer check",
+            "It trusts any https URL"
+          ],
+          "answer": 0,
+          "explanation": "Only the pool ID part was widened; an evil domain still fails, and a test proves it.",
+          "turnIndices": [
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    "learning": {
+      "schemaVersion": "BrainrottenLearningPackV1",
+      "jobId": "ee58eb33-9bcd-453d-a6d0-e42f32526dac",
+      "format": "prreview",
+      "title": "Accept real Cognito pool IDs",
+      "language": "hinglish",
+      "durationSeconds": 56.792381,
+      "takeaway": "Tests built from real production values catch what synthetic data hides, without loosening the security check.",
+      "chapters": [
+        {
+          "id": "turn-0",
+          "title": "Is ek line ne production login tod diya.",
+          "startMs": 0,
+          "endMs": 5142
+        },
+        {
+          "id": "turn-1",
+          "title": "Asli pool ID hai ap south one underscore",
+          "startMs": 5142,
+          "endMs": 13785
+        },
+        {
+          "id": "turn-2",
+          "title": "Naya pattern capital letters allow karta hai. Mera",
+          "startMs": 13785,
+          "endMs": 19357
+        },
+        {
+          "id": "turn-3",
+          "title": "Nahi. Host abhi bhi cognito idp, region, amazonaws",
+          "startMs": 29357,
+          "endMs": 37785
+        },
+        {
+          "id": "turn-4",
+          "title": "Aur test usi asli pool ID se likha",
+          "startMs": 37785,
+          "endMs": 43999
+        },
+        {
+          "id": "turn-5",
+          "title": "Nakli domain wala case bhi test mein hai,",
+          "startMs": 43999,
+          "endMs": 49357
+        },
+        {
+          "id": "turn-6",
+          "title": "Approve. Lesson: validation ke tests mein asli production",
+          "startMs": 49357,
+          "endMs": 56786
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Why does the fix stay safe?",
+          "choices": [
+            "The host is still pinned to Cognito; only the pool ID allows capitals",
+            "It removes the issuer check",
+            "It trusts any https URL"
+          ],
+          "answer": 0,
+          "explanation": "Only the pool ID part was widened; an evil domain still fails, and a test proves it.",
+          "turnIndices": [
+            2,
+            3
+          ],
+          "startMs": 13785,
+          "endMs": 37785
+        },
+        {
+          "id": "pause-2",
+          "prompt": "The pool ID part now allows capitals. Does an evil domain with the same pool ID pass?",
+          "choices": [
+            "No, the host must still be Cognito's",
+            "Yes, any URL ending in a pool ID passes",
+            "Only if it uses https"
+          ],
+          "answer": 0,
+          "explanation": "host still pinned to cognito-idp.*.amazonaws.com ✅",
+          "turnIndices": [
+            2,
+            3
+          ],
+          "startMs": 13785,
+          "endMs": 37785
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "q1",
+          "front": "Why does the fix stay safe?",
+          "back": "The host is still pinned to Cognito; only the pool ID allows capitals — Only the pool ID part was widened; an evil domain still fails, and a test proves it.",
+          "startMs": 13785,
+          "endMs": 37785
+        },
+        {
+          "id": "pause-2",
+          "front": "The pool ID part now allows capitals. Does an evil domain with the same pool ID pass?",
+          "back": "No, the host must still be Cognito's — host still pinned to cognito-idp.*.amazonaws.com ✅",
+          "startMs": 13785,
+          "endMs": 37785
+        }
+      ],
+      "transcript": [
+        {
+          "turnIndex": 0,
+          "speaker": "jhatka",
+          "text": "Is ek line ne production login tod diya. Pool ID wala hissa sirf chhote letters maanta tha.",
+          "startMs": 0,
+          "endMs": 5142
+        },
+        {
+          "turnIndex": 1,
+          "speaker": "jhatka",
+          "text": "Asli pool ID hai ap south one underscore Q I Y a O two Hex. Capital letters ki wajah se asli Cognito bhi reject ho raha tha.",
+          "startMs": 5142,
+          "endMs": 13785
+        },
+        {
+          "turnIndex": 2,
+          "speaker": "john",
+          "text": "Naya pattern capital letters allow karta hai. Mera sawaal: kya ab koi nakli domain bhi pass ho jaayega?",
+          "startMs": 13785,
+          "endMs": 19357
+        },
+        {
+          "turnIndex": 3,
+          "speaker": "john",
+          "text": "Nahi. Host abhi bhi cognito idp, region, amazonaws dot com hi hona chahiye. Capital letters sirf pool ID ke andar allowed hain.",
+          "startMs": 29357,
+          "endMs": 37785
+        },
+        {
+          "turnIndex": 4,
+          "speaker": "jhatka",
+          "text": "Aur test usi asli pool ID se likha hai jo production mein fail hua tha. Pehle sirf lowercase fake IDs the.",
+          "startMs": 37785,
+          "endMs": 43999
+        },
+        {
+          "turnIndex": 5,
+          "speaker": "john",
+          "text": "Nakli domain wala case bhi test mein hai, aur woh fail hota hai. Security check dheela nahi hua.",
+          "startMs": 43999,
+          "endMs": 49357
+        },
+        {
+          "turnIndex": 6,
+          "speaker": "jhatka",
+          "text": "Approve. Lesson: validation ke tests mein asli production values daalo, warna regex sirf tumhare fake data ko pass karega.",
+          "startMs": 49357,
+          "endMs": 56786
+        }
+      ]
+    },
+    "backgroundName": "Subway Surfers",
+    "sourceCredits": [
+      {
+        "title": "Subway Surfers (2026) - Gameplay [4K 16x9] No Copyright",
+        "url": "https://www.youtube.com/watch?v=i0M4ARe9v0Y",
+        "attribution": "Subway Surfers gameplay — Subway Surfers, https://www.youtube.com/watch?v=i0M4ARe9v0Y. Excerpted, muted, cropped, resized and overlaid."
+      }
+    ],
+    "voiceNames": {
+      "jhatka": "Dr Jhatka",
+      "john": "John"
+    },
+    "downloadUrl": "/examples/session-prreview-cognito/video.mp4"
+  },
+  {
+    "jobId": "31f4fd69-5e1f-456b-b4c5-cc72609f46b0",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Naya AWS account, website kahan host karein?",
+    "title": "Naya AWS account, website kahan host karein?",
+    "createdAt": "2026-11-02T09:14:02.545Z",
+    "updatedAt": "2026-11-02T09:14:32.439Z",
+    "videoUrl": "/examples/session-tierlist-hosting/video.mp4",
+    "posterUrl": "/examples/session-tierlist-hosting/poster.png",
+    "audioUrl": null,
+    "error": null,
+    "durationSeconds": 58.7978,
+    "cast": "auto",
+    "language": "hinglish",
+    "voiceBackend": "elevenlabs",
+    "format": "tierlist",
+    "narrator": "badri",
+    "script": {
+      "title": "Naya AWS account, website kahan host karein?",
+      "narrator": "badri",
+      "tierlist": {
+        "criterion": "live today, with Google sign-in, on a new account",
+        "items": [
+          {
+            "id": "cloudfront",
+            "label": "S3 + CloudFront",
+            "icon": "cloud"
+          },
+          {
+            "id": "s3web",
+            "label": "S3 static website",
+            "icon": "globe"
+          },
+          {
+            "id": "amplify",
+            "label": "Amplify Hosting",
+            "icon": "rocket"
+          }
+        ]
+      },
+      "dialogue": [
+        {
+          "speaker": "badri",
+          "text": "Website ko ek naye AWS account pe host karna tha. Criterion ek hi hai: aaj hi live ho, Google login ke saath."
+        },
+        {
+          "speaker": "badri",
+          "text": "Plan tha S3 plus CloudFront. Par naye account pe CloudFront ne bola, account must be verified. Aaj ke liye seedha F tier.",
+          "tier": {
+            "place": {
+              "item": "cloudfront",
+              "tier": "F"
+            }
+          }
+        },
+        {
+          "speaker": "badri",
+          "text": "Ab S3 static website. Ek minute mein ban jaata hai. Par ek dikkat hai. Socho, kaunsi?",
+          "tier": {
+            "focus": "s3web"
+          },
+          "pause": {
+            "prompt": "S3 website hosting goes live instantly. What breaks for Google sign-in?",
+            "choices": [
+              "It is HTTP only, and the sign-in redirect needs HTTPS",
+              "S3 cannot serve JavaScript",
+              "It needs a paid plan"
+            ],
+            "answer": 0
+          }
+        },
+        {
+          "speaker": "badri",
+          "text": "S3 website sirf HTTP deta hai, aur Cognito ka login redirect HTTPS maangta hai. Site khulegi, login nahi hoga. D tier.",
+          "tier": {
+            "place": {
+              "item": "s3web",
+              "tier": "D"
+            }
+          }
+        },
+        {
+          "speaker": "badri",
+          "text": "Amplify Hosting. Build ka zip upload kiya, HTTPS wala URL mila, aur Google login chal gaya, isi naye account pe. S tier.",
+          "tier": {
+            "place": {
+              "item": "amplify",
+              "tier": "S"
+            }
+          }
+        },
+        {
+          "speaker": "badri",
+          "text": "Takeaway: plan mein ek fallback rakho. Naye account ki limits deploy ke din hi pata chalti hain."
+        }
+      ],
+      "takeaway": "Keep a fallback in the plan: a brand-new AWS account's limits show up on deploy day.",
+      "questions": [
+        {
+          "prompt": "Why did the S3 static website fail the criterion?",
+          "choices": [
+            "It only serves HTTP, and the sign-in redirect needs HTTPS",
+            "It could not serve the files",
+            "CloudFront blocked it"
+          ],
+          "answer": 0,
+          "explanation": "Cognito requires an HTTPS callback outside localhost, so login would not work.",
+          "turnIndices": [
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    "learning": {
+      "schemaVersion": "BrainrottenLearningPackV1",
+      "jobId": "31f4fd69-5e1f-456b-b4c5-cc72609f46b0",
+      "format": "tierlist",
+      "title": "Naya AWS account, website kahan host karein?",
+      "language": "hinglish",
+      "durationSeconds": 58.7978,
+      "takeaway": "Keep a fallback in the plan: a brand-new AWS account's limits show up on deploy day.",
+      "chapters": [
+        {
+          "id": "turn-0",
+          "title": "Website ko ek naye AWS account pe host",
+          "startMs": 0,
+          "endMs": 7143
+        },
+        {
+          "id": "turn-1",
+          "title": "Plan tha S3 plus CloudFront. Par naye account",
+          "startMs": 7143,
+          "endMs": 15786
+        },
+        {
+          "id": "turn-2",
+          "title": "Ab S3 static website. Ek minute mein ban",
+          "startMs": 15786,
+          "endMs": 23286
+        },
+        {
+          "id": "turn-3",
+          "title": "S3 website sirf HTTP deta hai, aur Cognito",
+          "startMs": 33286,
+          "endMs": 42929
+        },
+        {
+          "id": "turn-4",
+          "title": "Amplify Hosting. Build ka zip upload kiya, HTTPS",
+          "startMs": 42929,
+          "endMs": 52214
+        },
+        {
+          "id": "turn-5",
+          "title": "Takeaway: plan mein ek fallback rakho. Naye account",
+          "startMs": 52214,
+          "endMs": 58786
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "Why did the S3 static website fail the criterion?",
+          "choices": [
+            "It only serves HTTP, and the sign-in redirect needs HTTPS",
+            "It could not serve the files",
+            "CloudFront blocked it"
+          ],
+          "answer": 0,
+          "explanation": "Cognito requires an HTTPS callback outside localhost, so login would not work.",
+          "turnIndices": [
+            2,
+            3
+          ],
+          "startMs": 15786,
+          "endMs": 42929
+        },
+        {
+          "id": "pause-2",
+          "prompt": "S3 website hosting goes live instantly. What breaks for Google sign-in?",
+          "choices": [
+            "It is HTTP only, and the sign-in redirect needs HTTPS",
+            "S3 cannot serve JavaScript",
+            "It needs a paid plan"
+          ],
+          "answer": 0,
+          "explanation": "S3 website sirf HTTP deta hai, aur Cognito ka login redirect HTTPS maangta hai. Site khulegi, login nahi hoga. D tier.",
+          "turnIndices": [
+            2,
+            3
+          ],
+          "startMs": 15786,
+          "endMs": 42929
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "q1",
+          "front": "Why did the S3 static website fail the criterion?",
+          "back": "It only serves HTTP, and the sign-in redirect needs HTTPS — Cognito requires an HTTPS callback outside localhost, so login would not work.",
+          "startMs": 15786,
+          "endMs": 42929
+        },
+        {
+          "id": "pause-2",
+          "front": "S3 website hosting goes live instantly. What breaks for Google sign-in?",
+          "back": "It is HTTP only, and the sign-in redirect needs HTTPS — S3 website sirf HTTP deta hai, aur Cognito ka login redirect HTTPS maangta hai. Site khulegi, login nahi hoga. D tier.",
+          "startMs": 15786,
+          "endMs": 42929
+        }
+      ],
+      "transcript": [
+        {
+          "turnIndex": 0,
+          "speaker": "badri",
+          "text": "Website ko ek naye AWS account pe host karna tha. Criterion ek hi hai: aaj hi live ho, Google login ke saath.",
+          "startMs": 0,
+          "endMs": 7143
+        },
+        {
+          "turnIndex": 1,
+          "speaker": "badri",
+          "text": "Plan tha S3 plus CloudFront. Par naye account pe CloudFront ne bola, account must be verified. Aaj ke liye seedha F tier.",
+          "startMs": 7143,
+          "endMs": 15786
+        },
+        {
+          "turnIndex": 2,
+          "speaker": "badri",
+          "text": "Ab S3 static website. Ek minute mein ban jaata hai. Par ek dikkat hai. Socho, kaunsi?",
+          "startMs": 15786,
+          "endMs": 23286
+        },
+        {
+          "turnIndex": 3,
+          "speaker": "badri",
+          "text": "S3 website sirf HTTP deta hai, aur Cognito ka login redirect HTTPS maangta hai. Site khulegi, login nahi hoga. D tier.",
+          "startMs": 33286,
+          "endMs": 42929
+        },
+        {
+          "turnIndex": 4,
+          "speaker": "badri",
+          "text": "Amplify Hosting. Build ka zip upload kiya, HTTPS wala URL mila, aur Google login chal gaya, isi naye account pe. S tier.",
+          "startMs": 42929,
+          "endMs": 52214
+        },
+        {
+          "turnIndex": 5,
+          "speaker": "badri",
+          "text": "Takeaway: plan mein ek fallback rakho. Naye account ki limits deploy ke din hi pata chalti hain.",
+          "startMs": 52214,
+          "endMs": 58786
+        }
+      ]
+    },
+    "backgroundName": "Minecraft · End",
+    "sourceCredits": [
+      {
+        "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
+        "url": "https://www.youtube.com/watch?v=1nIGWHLMsFA",
+        "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=1nIGWHLMsFA. Muted, cropped, resized and overlaid."
+      }
+    ],
+    "voiceNames": {
+      "badri": "Badri"
+    },
+    "downloadUrl": "/examples/session-tierlist-hosting/video.mp4"
+  },
+  {
+    "jobId": "6cf5d4d4-d075-45f5-b8df-e053349dc099",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Pehli request pe 18 second kyun?",
+    "title": "Pehli request pe 18 second kyun?",
+    "createdAt": "2026-11-02T09:27:18.092Z",
+    "updatedAt": "2026-11-02T09:27:59.511Z",
+    "videoUrl": "/examples/session-groupchat-coldstart/video.mp4",
+    "posterUrl": "/examples/session-groupchat-coldstart/poster.png",
+    "audioUrl": null,
+    "error": null,
+    "durationSeconds": 51.146168,
+    "cast": "auto",
+    "language": "hinglish",
+    "voiceBackend": "elevenlabs",
+    "format": "groupchat",
+    "script": {
+      "title": "Pehli request pe 18 second kyun?",
+      "chat": {
+        "title": "brainrotten-prod ☁️",
+        "members": [
+          {
+            "speaker": "taplu",
+            "name": "Studio",
+            "icon": "monitor",
+            "you": true
+          },
+          {
+            "speaker": "jack",
+            "name": "API Lambda",
+            "icon": "server"
+          },
+          {
+            "speaker": "john",
+            "name": "Worker Lambda",
+            "icon": "cpu"
+          },
+          {
+            "speaker": "budhdev",
+            "name": "EventBridge",
+            "icon": "alarm-clock"
+          }
+        ]
+      },
+      "dialogue": [
+        {
+          "speaker": "taplu",
+          "text": "API bhai, pehli request pe atharah second laga diye. User ko laga site hi band hai.",
+          "chat": {
+            "display": "API bhai 18 second?? user ko laga site down hai 😭"
+          }
+        },
+        {
+          "speaker": "jack",
+          "text": "Main so raha tha. Der tak koi request nahi aayi, toh AWS ne mera container band kar diya.",
+          "chat": {
+            "display": "so raha tha 😴 koi request nahi thi toh container band"
+          }
+        },
+        {
+          "speaker": "john",
+          "text": "Mera bhi wahi haal hai. Meri image badi hai, FFmpeg aur fonts ke saath. Har baar zero se start hona padta hai.",
+          "chat": {
+            "display": "same 💀 meri image mein ffmpeg + fonts, cold start heavy",
+            "reaction": "💀"
+          }
+        },
+        {
+          "speaker": "taplu",
+          "text": "Toh har pehle user ko ye intezaar karna padega? Tum dono ko jagaye rakhne ka koi tareeka hai?",
+          "chat": {
+            "display": "toh har pehla user wait karega?? jagaye rakhne ka koi jugaad?"
+          },
+          "pause": {
+            "prompt": "How do you keep a rarely used Lambda from starting cold?",
+            "choices": [
+              "Ping it on a schedule so it stays warm",
+              "Rename the function",
+              "Move it to another region"
+            ],
+            "answer": 0
+          }
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Main hoon na. Har paanch minute mein dono ko ek chhota warmup message bhejta hoon.",
+          "chat": {
+            "display": "main hoon na ⏰ har 5 min warmup ping bhejta hu"
+          }
+        },
+        {
+          "speaker": "jack",
+          "text": "Aur warmup aaya toh main bas warm bol ke lautunga. Na database, na koi user ka kaam.",
+          "chat": {
+            "display": "warmup aaya toh bas 'warm' bol ke return ✅",
+            "code": "if (event.warmup)\n  return {statusCode: 200,\n    body: 'warm'};"
+          }
+        },
+        {
+          "speaker": "john",
+          "text": "Main bhi. Message mein queue ke records nahi hain, toh kuch process nahi karta, bas jaag jaata hoon.",
+          "chat": {
+            "display": "records nahi toh kuch process nahi, bas jaag jaata hu 👀"
+          }
+        },
+        {
+          "speaker": "taplu",
+          "text": "Deal. Paanch minute ki ping, thoda sa kharcha, aur containers zyada der tak garam rahenge.",
+          "chat": {
+            "display": "deal 🤝 5 min ping, containers garam rahenge",
+            "reaction": "🔥"
+          }
+        }
+      ],
+      "takeaway": "A rarely used Lambda starts cold; a cheap scheduled warmup ping keeps it ready, and handlers return early on it.",
+      "questions": [
+        {
+          "prompt": "What does the warmup ping do?",
+          "choices": [
+            "Keeps the Lambda containers running so requests skip the cold start",
+            "Makes the video render faster",
+            "Clears the queue"
+          ],
+          "answer": 0,
+          "explanation": "A scheduled ping every five minutes keeps containers alive; handlers return early so it costs almost nothing.",
+          "turnIndices": [
+            3,
+            4
+          ]
+        }
+      ]
+    },
+    "learning": {
+      "schemaVersion": "BrainrottenLearningPackV1",
+      "jobId": "6cf5d4d4-d075-45f5-b8df-e053349dc099",
+      "format": "groupchat",
+      "title": "Pehli request pe 18 second kyun?",
+      "language": "hinglish",
+      "durationSeconds": 51.146168,
+      "takeaway": "A rarely used Lambda starts cold; a cheap scheduled warmup ping keeps it ready, and handlers return early on it.",
+      "chapters": [
+        {
+          "id": "turn-0",
+          "title": "API bhai, pehli request pe atharah second laga",
+          "startMs": 0,
+          "endMs": 4571
+        },
+        {
+          "id": "turn-1",
+          "title": "Main so raha tha. Der tak koi request",
+          "startMs": 4571,
+          "endMs": 9642
+        },
+        {
+          "id": "turn-2",
+          "title": "Mera bhi wahi haal hai. Meri image badi",
+          "startMs": 9642,
+          "endMs": 15642
+        },
+        {
+          "id": "turn-3",
+          "title": "Toh har pehle user ko ye intezaar karna",
+          "startMs": 15642,
+          "endMs": 20642
+        },
+        {
+          "id": "turn-4",
+          "title": "Main hoon na. Har paanch minute mein dono",
+          "startMs": 30642,
+          "endMs": 35356
+        },
+        {
+          "id": "turn-5",
+          "title": "Aur warmup aaya toh main bas warm bol",
+          "startMs": 35356,
+          "endMs": 41071
+        },
+        {
+          "id": "turn-6",
+          "title": "Main bhi. Message mein queue ke records nahi",
+          "startMs": 41071,
+          "endMs": 46213
+        },
+        {
+          "id": "turn-7",
+          "title": "Deal. Paanch minute ki ping, thoda sa kharcha,",
+          "startMs": 46213,
+          "endMs": 51143
+        }
+      ],
+      "questions": [
+        {
+          "id": "q1",
+          "prompt": "What does the warmup ping do?",
+          "choices": [
+            "Keeps the Lambda containers running so requests skip the cold start",
+            "Makes the video render faster",
+            "Clears the queue"
+          ],
+          "answer": 0,
+          "explanation": "A scheduled ping every five minutes keeps containers alive; handlers return early so it costs almost nothing.",
+          "turnIndices": [
+            3,
+            4
+          ],
+          "startMs": 15642,
+          "endMs": 35356
+        },
+        {
+          "id": "pause-3",
+          "prompt": "How do you keep a rarely used Lambda from starting cold?",
+          "choices": [
+            "Ping it on a schedule so it stays warm",
+            "Rename the function",
+            "Move it to another region"
+          ],
+          "answer": 0,
+          "explanation": "main hoon na ⏰ har 5 min warmup ping bhejta hu",
+          "turnIndices": [
+            3,
+            4
+          ],
+          "startMs": 15642,
+          "endMs": 35356
+        }
+      ],
+      "flashcards": [
+        {
+          "id": "q1",
+          "front": "What does the warmup ping do?",
+          "back": "Keeps the Lambda containers running so requests skip the cold start — A scheduled ping every five minutes keeps containers alive; handlers return early so it costs almost nothing.",
+          "startMs": 15642,
+          "endMs": 35356
+        },
+        {
+          "id": "pause-3",
+          "front": "How do you keep a rarely used Lambda from starting cold?",
+          "back": "Ping it on a schedule so it stays warm — main hoon na ⏰ har 5 min warmup ping bhejta hu",
+          "startMs": 15642,
+          "endMs": 35356
+        }
+      ],
+      "transcript": [
+        {
+          "turnIndex": 0,
+          "speaker": "taplu",
+          "text": "API bhai, pehli request pe atharah second laga diye. User ko laga site hi band hai.",
+          "startMs": 0,
+          "endMs": 4571
+        },
+        {
+          "turnIndex": 1,
+          "speaker": "jack",
+          "text": "Main so raha tha. Der tak koi request nahi aayi, toh AWS ne mera container band kar diya.",
+          "startMs": 4571,
+          "endMs": 9642
+        },
+        {
+          "turnIndex": 2,
+          "speaker": "john",
+          "text": "Mera bhi wahi haal hai. Meri image badi hai, FFmpeg aur fonts ke saath. Har baar zero se start hona padta hai.",
+          "startMs": 9642,
+          "endMs": 15642
+        },
+        {
+          "turnIndex": 3,
+          "speaker": "taplu",
+          "text": "Toh har pehle user ko ye intezaar karna padega? Tum dono ko jagaye rakhne ka koi tareeka hai?",
+          "startMs": 15642,
+          "endMs": 20642
+        },
+        {
+          "turnIndex": 4,
+          "speaker": "budhdev",
+          "text": "Main hoon na. Har paanch minute mein dono ko ek chhota warmup message bhejta hoon.",
+          "startMs": 30642,
+          "endMs": 35356
+        },
+        {
+          "turnIndex": 5,
+          "speaker": "jack",
+          "text": "Aur warmup aaya toh main bas warm bol ke lautunga. Na database, na koi user ka kaam.",
+          "startMs": 35356,
+          "endMs": 41071
+        },
+        {
+          "turnIndex": 6,
+          "speaker": "john",
+          "text": "Main bhi. Message mein queue ke records nahi hain, toh kuch process nahi karta, bas jaag jaata hoon.",
+          "startMs": 41071,
+          "endMs": 46213
+        },
+        {
+          "turnIndex": 7,
+          "speaker": "taplu",
+          "text": "Deal. Paanch minute ki ping, thoda sa kharcha, aur containers zyada der tak garam rahenge.",
+          "startMs": 46213,
+          "endMs": 51143
+        }
+      ]
+    },
+    "backgroundName": "Minecraft · Lava",
+    "sourceCredits": [
+      {
+        "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
+        "url": "https://www.youtube.com/watch?v=LofyMQts7hY",
+        "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=LofyMQts7hY. Muted, cropped, resized and overlaid."
+      }
+    ],
+    "voiceNames": {
+      "taplu": "Taplu",
+      "jack": "Jack",
+      "john": "John",
+      "budhdev": "Budhdev"
+    },
+    "downloadUrl": "/examples/session-groupchat-coldstart/video.mp4"
+  },
+  {
+    "jobId": "a998b76b-a0fa-4a66-aba3-48f991025ab5",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Natural conversational Hinglish ML shortcut-learning skit. Source: https://arxiv.org/abs/2004.07780 . A hypothetical cow classifier can exploit background-label correlation. Same-distribution random tests may miss that; evaluate held-out environments and inspect controlled background changes. No invented measured accuracy claim.",
+    "title": "Gaay pehchaani, ya ghaas?",
+    "createdAt": "2026-10-28T14:20:27.175Z",
+    "updatedAt": "2026-10-28T14:38:19.195Z",
+    "videoUrl": "/examples/hinglish-ml-shortcut-eleven/video.mp4",
+    "downloadUrl": "/examples/hinglish-ml-shortcut-eleven/video.mp4",
+    "posterUrl": "/examples/hinglish-ml-shortcut-eleven/poster.png",
+    "audioUrl": null,
+    "error": null,
+    "script": {
+      "title": "Gaay pehchaani, ya ghaas?",
+      "participants": {
+        "learner": "badri",
+        "expert": "budhdev"
+      },
+      "dialogue": [
+        {
+          "speaker": "badri",
+          "text": "Partner, apna AI cows pehchaan raha tha. Snow mein cow ki photo di, toh fail! Aur training photos daal doon?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "cow on green grass",
+              "url": "https://i.pinimg.com/736x/03/d6/3a/03d63aa183f4f50d565966b1c9af7ef8.jpg",
+              "caption": "",
+              "sourceUrl": "https://www.pinterest.com/pin/hd-group-of-cows-grazing-on-green-grass-field--299841287707724095/",
+              "title": "hd group of cows grazing on green grass field 299841287707724095 — pinterest.com"
+            }
+          ]
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Haan dost, par wahi green grass wali daaloge, toh shortcut aur strong hoga. Shayad model cow se zyada background dekh raha hai. Same cow ka background badalkar test kar.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "cow in snow",
+              "url": "https://media.gettyimages.com/id/1194247561/photo/portrait-of-a-scottish-highland-cow-in-the-snow.jpg?s=612x612&w=gi&k=20&c=e0V8ezMxPlVhEbZGg0l6J-rXr8YdQ06UD1itkiEVdBY=",
+              "caption": "",
+              "sourceUrl": "https://www.gettyimages.in/photos/snow-cow",
+              "title": "snow cow — gettyimages.in"
+            },
+            {
+              "kind": "image",
+              "query": "cow transparent background",
+              "url": "https://png.pngtree.com/png-clipart/20250309/original/pngtree-holstein-cow-png-image_20610191.png",
+              "caption": "",
+              "sourceUrl": "https://pngtree.com/so/cow",
+              "title": "cow transparent background — pngtree.com"
+            }
+          ]
+        },
+        {
+          "speaker": "badri",
+          "text": "Arre, background badla toh prediction bhi badal gaya! Par train aur test photos toh alag rakhi thi?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "machine learning train test split diagram",
+              "url": "https://machinelearningplus.com/wp-content/uploads/2022/12/train_test_split-procedure.jpg",
+              "caption": "",
+              "sourceUrl": "https://machinelearningplus.com/machine-learning/train-test-split/",
+              "title": "train test split — machinelearningplus.com"
+            }
+          ]
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Photos alag thi, par dono sets mein cows aur green grass ka wahi connection tha. Kuch poore farms training se bahar rakh. Unseen locations par test kar, tab is shortcut ka andaaza lagega.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "different cattle farms",
+              "url": "https://royalfarms.co.in/wp-content/uploads/2026/03/cattle-farming.webp",
+              "caption": "",
+              "sourceUrl": "https://royalfarms.co.in/future-of-cattle-farming-in-india/",
+              "title": "future of cattle farming in india — royalfarms.co.in"
+            },
+            {
+              "kind": "image",
+              "query": "machine learning out of distribution diagram",
+              "url": "https://media.springernature.com/lw1200/springer-static/image/art%3A10.1038%2Fs41598-024-79934-7/MediaObjects/41598_2024_79934_Fig2_HTML.png",
+              "caption": "",
+              "sourceUrl": "https://www.nature.com/articles/s41598-024-79934-7",
+              "title": "s41598 024 79934 7 — nature.com"
+            },
+            {
+              "kind": "code",
+              "code": "train_farms = {\"north\", \"west\"}\ntest_farms = {\"snowy_hill\"}\nassert train_farms.isdisjoint(test_farms)",
+              "language": "python"
+            }
+          ]
+        },
+        {
+          "speaker": "badri",
+          "text": "Toh unseen farm pe achha score aaya, ab model ko har jagah launch kar doon?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "cow at night",
+              "url": "https://www.shutterstock.com/shutterstock/videos/3918170499/thumb/12.jpg?ip=x480",
+              "caption": "",
+              "sourceUrl": "https://www.shutterstock.com/video/clip-3918170499-cows-rest-pasture-night",
+              "title": "clip 3918170499 cows rest pasture night — shutterstock.com"
+            }
+          ]
+        },
+        {
+          "speaker": "budhdev",
+          "text": "Itni jaldi trophy mat baant. Lighting, breeds aur backgrounds bhi badal kar test kar. Training data diversify kar aur har group ka result alag dekh. Ek test pass hona poori duniya ki guarantee nahi.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "different cow breeds",
+              "url": "https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=773319872115510",
+              "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:mettoAP-HUHr9M",
+              "caption": "",
+              "sourceUrl": "https://www.facebook.com/gardeningloversunited/posts/cows-come-in-many-breeds-each-with-its-own-unique-characteristics-and-contributi/773319888782175/",
+              "title": "cows come in many breeds each with its own unique characteristics and contributi — facebook.com"
+            },
+            {
+              "kind": "image",
+              "query": "machine learning confusion matrix",
+              "url": "https://media.geeksforgeeks.org/wp-content/uploads/20240708132251/confusion-Matrix.PNG",
+              "caption": "",
+              "sourceUrl": "https://www.geeksforgeeks.org/machine-learning/confusion-matrix-machine-learning/",
+              "title": "confusion matrix machine learning — geeksforgeeks.org"
+            }
+          ]
+        }
+      ]
+    },
+    "durationSeconds": 52.83898,
+    "cast": "auto",
+    "language": "hinglish",
+    "participants": {
+      "learner": "badri",
+      "expert": "budhdev"
+    },
+    "voiceBackend": "elevenlabs",
+    "voiceNames": {
+      "badri": "Badri",
+      "budhdev": "Budhdev"
+    },
+    "backgroundName": "Subway Surfers",
+    "sourceCredits": [
+      {
+        "title": "Subway Surfers (2026) - Gameplay [4K 16x9] No Copyright",
+        "url": "https://www.youtube.com/watch?v=i0M4ARe9v0Y",
+        "attribution": "Subway Surfers gameplay — Subway Surfers, https://www.youtube.com/watch?v=i0M4ARe9v0Y. Excerpted, muted, cropped, resized and overlaid."
+      },
+      {
+        "title": "hd group of cows grazing on green grass field 299841287707724095 — pinterest.com",
+        "url": "https://www.pinterest.com/pin/hd-group-of-cows-grazing-on-green-grass-field--299841287707724095/",
+        "attribution": "hd group of cows grazing on green grass field 299841287707724095 — pinterest.com"
+      },
+      {
+        "title": "snow cow — gettyimages.in",
+        "url": "https://www.gettyimages.in/photos/snow-cow",
+        "attribution": "snow cow — gettyimages.in"
+      },
+      {
+        "title": "cow transparent background — pngtree.com",
+        "url": "https://pngtree.com/so/cow",
+        "attribution": "cow transparent background — pngtree.com"
+      },
+      {
+        "title": "train test split — machinelearningplus.com",
+        "url": "https://machinelearningplus.com/machine-learning/train-test-split/",
+        "attribution": "train test split — machinelearningplus.com"
+      },
+      {
+        "title": "future of cattle farming in india — royalfarms.co.in",
+        "url": "https://royalfarms.co.in/future-of-cattle-farming-in-india/",
+        "attribution": "future of cattle farming in india — royalfarms.co.in"
+      },
+      {
+        "title": "s41598 024 79934 7 — nature.com",
+        "url": "https://www.nature.com/articles/s41598-024-79934-7",
+        "attribution": "s41598 024 79934 7 — nature.com"
+      },
+      {
+        "title": "clip 3918170499 cows rest pasture night — shutterstock.com",
+        "url": "https://www.shutterstock.com/video/clip-3918170499-cows-rest-pasture-night",
+        "attribution": "clip 3918170499 cows rest pasture night — shutterstock.com"
+      },
+      {
+        "title": "cows come in many breeds each with its own unique characteristics and contributi — facebook.com",
+        "url": "https://www.facebook.com/gardeningloversunited/posts/cows-come-in-many-breeds-each-with-its-own-unique-characteristics-and-contributi/773319888782175/",
+        "attribution": "cows come in many breeds each with its own unique characteristics and contributi — facebook.com"
+      },
+      {
+        "title": "confusion matrix machine learning — geeksforgeeks.org",
+        "url": "https://www.geeksforgeeks.org/machine-learning/confusion-matrix-machine-learning/",
+        "attribution": "confusion matrix machine learning — geeksforgeeks.org"
+      }
+    ]
+  },
+  {
+    "jobId": "0207c905-933d-46c5-acc4-1bf993235a15",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Natural conversational Hinglish database stale-read skit. Reference: https://www.postgresql.org/docs/17/high-availability.html . Hypothetical asynchronous primary/read-replica architecture; replica can lag. Read after own write from authoritative primary for the relevant operation, balancing load. Polling a lagging replica is not evidence a purchase failed.",
+    "title": "Paise kat gaye, khareed gayab!",
+    "createdAt": "2026-10-28T14:22:27.406Z",
+    "updatedAt": "2026-10-28T14:38:44.613Z",
+    "videoUrl": "/examples/hinglish-database-replica-eleven/video.mp4",
+    "downloadUrl": "/examples/hinglish-database-replica-eleven/video.mp4",
+    "posterUrl": "/examples/hinglish-database-replica-eleven/poster.png",
+    "audioUrl": null,
+    "error": null,
+    "script": {
+      "title": "Paise kat gaye, khareed gayab!",
+      "participants": {
+        "learner": "jhaplu",
+        "expert": "paplu"
+      },
+      "dialogue": [
+        {
+          "speaker": "jhaplu",
+          "text": "Mamu, samose ka payment ho gaya, par order history khaali! Apun buy wala button dobara daba de?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "online shopping order confirmation",
+              "url": "https://www.drip.com/hs-fs/hubfs/Imported_Blog_Media/ASOS-Order-Confirmation-Email-1-542x1024-1.png?width=542&height=1024&name=ASOS-Order-Confirmation-Email-1-542x1024-1.png",
+              "caption": "",
+              "sourceUrl": "https://www.drip.com/blog/order-confirmation-emails",
+              "title": "order confirmation emails — drip.com"
+            }
+          ]
+        },
+        {
+          "speaker": "paplu",
+          "text": "Re baba, pehle payment aur order verify kar! Write primary database pe gaya, par history read replica se aa rahi hai. Replica ko update milne mein delay ho sakta hai. Empty history ka matlab failed order nahi.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "database primary replica diagram",
+              "url": "https://assets.qlik.com/image/upload/w_1408/q_auto/qlik/glossary/data-replication/seo-hero-database-replication_abgbrk.jpg",
+              "caption": "",
+              "sourceUrl": "https://www.qlik.com/us/data-replication/database-replication",
+              "title": "database replication — qlik.com"
+            },
+            {
+              "kind": "image",
+              "query": "database replication lag diagram",
+              "url": "https://substackcdn.com/image/fetch/$s_!Bj1H!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3cec7ec6-383c-4bdf-bd55-8ec456b6ff08_1938x1116.png",
+              "caption": "",
+              "sourceUrl": "https://blog.bytebytego.com/p/a-guide-to-database-replication-key",
+              "title": "a guide to database replication key — blog.bytebytego.com"
+            }
+          ]
+        },
+        {
+          "speaker": "jhaplu",
+          "text": "Primary pe order mil gaya! Toh saari reads bhi primary pe bhej dein, tension khatam?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "PostgreSQL database server",
+              "url": "https://learn.microsoft.com/en-us/azure/postgresql/media/overview/overview-flexible-server.png",
+              "caption": "",
+              "sourceUrl": "https://learn.microsoft.com/en-us/azure/postgresql/overview",
+              "title": "overview — learn.microsoft.com"
+            }
+          ]
+        },
+        {
+          "speaker": "paplu",
+          "text": "Phir saara load udhar jayega. Abhi purchase confirmation aur apne recent order ko primary se read kara. Jahan thoda stale data chale, wahan replica ka benefit le. Har read ko same consistency nahi chahiye.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "read replica load balancing diagram",
+              "url": "https://d2908q01vomqb2.cloudfront.net/887309d048beef83ad3eabf2a79a64a389ab1c9f/2024/09/24/dbblog-3604-archdiagram.jpg",
+              "caption": "",
+              "sourceUrl": "https://aws.amazon.com/blogs/database/load-balancing-strategies-for-amazon-rds-for-sql-server-read-replicas-to-scale-read-workloads-and-reduce-latency/",
+              "title": "load balancing strategies for amazon rds for sql server read replicas to scale read workloads and reduce latency — aws.amazon.com"
+            },
+            {
+              "kind": "image",
+              "query": "order confirmation receipt",
+              "url": "https://cdn.dribbble.com/userupload/6502918/file/original-4ed03cb87ee2adb2804af53f3f2c51a8.jpg",
+              "caption": "",
+              "sourceUrl": "https://dribbble.com/shots/21283991-Order-Confirmation-Email-Receipt-Daily-UI-017",
+              "title": "21283991 Order Confirmation Email Receipt Daily UI 017 — dribbble.com"
+            },
+            {
+              "kind": "code",
+              "code": "await primary.save(order);\nconst saved = await primary.get(order.id);\nreturn saved;",
+              "language": "javascript"
+            }
+          ]
+        },
+        {
+          "speaker": "jhaplu",
+          "text": "Aur replica lag bahut badh gaya, toh refresh dabaate rehna padega?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "database replication lag graph",
+              "url": "https://a.storyblok.com/f/187930/640x480/e3bc9d2d83/replication_lag_plot.png",
+              "caption": "",
+              "sourceUrl": "https://www.pgedge.com/blog/understanding-and-reducing-postgresql-replication-lag",
+              "title": "understanding and reducing postgresql replication lag — pgedge.com"
+            }
+          ]
+        },
+        {
+          "speaker": "paplu",
+          "text": "Refresh se replica catch up hone ki guarantee nahi. Lag monitor kar, replication ki problem check kar aur critical reads ke liye reliable route rakh. Order dobara banana alag problem paida karega: do bill, ek plate samose!",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "server monitoring dashboard",
+              "url": "https://miro.medium.com/v2/resize:fit:2000/1*pqwUp0uPpr4EcfD9iM0iCQ.png",
+              "caption": "",
+              "sourceUrl": "https://medium.com/swlh/intro-to-server-monitoring-b782fc82911e",
+              "title": "intro to server monitoring b782fc82911e — medium.com"
+            },
+            {
+              "kind": "image",
+              "query": "duplicate payment receipt",
+              "url": "https://trison.in/cdn/shop/files/B0DPG2MGBF_IN01_jpg.jpg?v=1733214517&width=1445",
+              "caption": "",
+              "sourceUrl": "https://trison.in/products/trison-cash-receipt-book-duplicate",
+              "title": "trison cash receipt book duplicate — trison.in"
+            }
+          ]
+        }
+      ]
+    },
+    "durationSeconds": 50.350408,
+    "cast": "auto",
+    "language": "hinglish",
+    "participants": {
+      "learner": "jhaplu",
+      "expert": "paplu"
+    },
+    "voiceBackend": "elevenlabs",
+    "voiceNames": {
+      "jhaplu": "Jhaplu",
+      "paplu": "Paplu"
+    },
+    "backgroundName": "GTA Stunts",
+    "sourceCredits": [
+      {
+        "title": "GTA 5 - Jump Stunts EP.27 Free To Use NO COPYRIGHT GAMEPLAY",
+        "url": "https://www.youtube.com/watch?v=KvS0MLj5IIE",
+        "attribution": "GTA 5 - Jump Stunts EP.27 — RipstaStylez, https://www.youtube.com/watch?v=KvS0MLj5IIE, Creative Commons Attribution. Muted, cropped, resized and overlaid. Original soundtrack is not included."
+      },
+      {
+        "title": "order confirmation emails — drip.com",
+        "url": "https://www.drip.com/blog/order-confirmation-emails",
+        "attribution": "order confirmation emails — drip.com"
+      },
+      {
+        "title": "database replication — qlik.com",
+        "url": "https://www.qlik.com/us/data-replication/database-replication",
+        "attribution": "database replication — qlik.com"
+      },
+      {
+        "title": "a guide to database replication key — blog.bytebytego.com",
+        "url": "https://blog.bytebytego.com/p/a-guide-to-database-replication-key",
+        "attribution": "a guide to database replication key — blog.bytebytego.com"
+      },
+      {
+        "title": "overview — learn.microsoft.com",
+        "url": "https://learn.microsoft.com/en-us/azure/postgresql/overview",
+        "attribution": "overview — learn.microsoft.com"
+      },
+      {
+        "title": "load balancing strategies for amazon rds for sql server read replicas to scale read workloads and reduce latency — aws.amazon.com",
+        "url": "https://aws.amazon.com/blogs/database/load-balancing-strategies-for-amazon-rds-for-sql-server-read-replicas-to-scale-read-workloads-and-reduce-latency/",
+        "attribution": "load balancing strategies for amazon rds for sql server read replicas to scale read workloads and reduce latency — aws.amazon.com"
+      },
+      {
+        "title": "21283991 Order Confirmation Email Receipt Daily UI 017 — dribbble.com",
+        "url": "https://dribbble.com/shots/21283991-Order-Confirmation-Email-Receipt-Daily-UI-017",
+        "attribution": "21283991 Order Confirmation Email Receipt Daily UI 017 — dribbble.com"
+      },
+      {
+        "title": "understanding and reducing postgresql replication lag — pgedge.com",
+        "url": "https://www.pgedge.com/blog/understanding-and-reducing-postgresql-replication-lag",
+        "attribution": "understanding and reducing postgresql replication lag — pgedge.com"
+      },
+      {
+        "title": "intro to server monitoring b782fc82911e — medium.com",
+        "url": "https://medium.com/swlh/intro-to-server-monitoring-b782fc82911e",
+        "attribution": "intro to server monitoring b782fc82911e — medium.com"
+      },
+      {
+        "title": "trison cash receipt book duplicate — trison.in",
+        "url": "https://trison.in/products/trison-cash-receipt-book-duplicate",
+        "attribution": "trison cash receipt book duplicate — trison.in"
+      }
+    ]
+  },
+  {
+    "jobId": "73407710-7270-4635-845e-b320d7b4d4e8",
+    "state": "ready",
+    "stage": "ready",
+    "progress": 100,
+    "prompt": "Natural conversational Hinglish AI reliability skit. Source: https://arxiv.org/abs/2005.11401 . Retrieval-augmented generation supplies external evidence but doesn't guarantee correctness. Diagnose retrieval coverage, require attributable support, verify outputs and allow abstention. A confident generated claim or invented citation is not evidence.",
+    "title": "AI ne jawaab bhi banaya, saboot bhi!",
+    "createdAt": "2026-10-28T14:28:28.023Z",
+    "updatedAt": "2026-10-28T14:40:28.002Z",
+    "videoUrl": "/examples/hinglish-ai-evidence-eleven/video.mp4",
+    "downloadUrl": "/examples/hinglish-ai-evidence-eleven/video.mp4",
+    "posterUrl": "/examples/hinglish-ai-evidence-eleven/poster.png",
+    "audioUrl": null,
+    "error": null,
+    "script": {
+      "title": "AI ne jawaab bhi banaya, saboot bhi!",
+      "participants": {
+        "learner": "john",
+        "expert": "jhatka"
+      },
+      "dialogue": [
+        {
+          "speaker": "john",
+          "text": "Mere AI ne confident answer aur book ka reference de diya. John banega don! Par book mein woh fact mil hi nahi raha?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "ChatGPT answer sources screenshot",
+              "url": "https://www.researchgate.net/publication/371651458/figure/fig2/AS:11431281169324303@1687296535237/A-screenshot-of-ChatGPTs-response-to-reading-the-datacsv-file-and-writing-an-R-code.ppm",
+              "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:7DBhXps9gOGXsM",
+              "caption": "",
+              "sourceUrl": "https://www.researchgate.net/figure/A-screenshot-of-ChatGPTs-response-to-reading-the-datacsv-file-and-writing-an-R-code_fig2_371651458",
+              "title": "A screenshot of ChatGPTs response to reading the datacsv file and writing an R code fig2 371651458 — researchgate.net"
+            }
+          ]
+        },
+        {
+          "speaker": "jhatka",
+          "text": "Oye mere yaar, confidence evidence nahi hota! Pehle check kar model ko relevant passage mila bhi tha? Ho sakta hai answer ke saath citation bhi bana diya ho.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "open reference book library",
+              "url": "https://thumbs.dreamstime.com/b/open-book-library-23266127.jpg",
+              "caption": "",
+              "sourceUrl": "https://www.dreamstime.com/photos-images/library-open-book.html",
+              "title": "library open book — dreamstime.com"
+            },
+            {
+              "kind": "image",
+              "query": "book index page",
+              "url": "https://i.pinimg.com/736x/60/44/46/604446bb71b270f44196c799effec83b.jpg",
+              "caption": "",
+              "sourceUrl": "https://in.pinterest.com/pin/index-page-layout-designs--145100419228743941/",
+              "title": "index page layout designs 145100419228743941 — in.pinterest.com"
+            }
+          ]
+        },
+        {
+          "speaker": "john",
+          "text": "Relevant passage bheja hi nahi tha. Ab poori book prompt mein daal doon, hallucination band?",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "stack of books",
+              "url": "https://plus.unsplash.com/premium_photo-1669652639337-c513cc42ead6?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
+              "caption": "",
+              "sourceUrl": "https://unsplash.com/s/photos/stack-of-books",
+              "title": "stack of books — unsplash.com"
+            }
+          ]
+        },
+        {
+          "speaker": "jhatka",
+          "text": "Aisa hota toh meri har machine first try mein chalti! Relevant passage retrieve kar, phir answer ke claims ko us passage se verify kar. Retrieval fail hua ya answer generation, dono ko alag test kar.",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "retrieval augmented generation diagram",
+              "url": "https://cdn.educba.com/academy/wp-content/uploads/2024/12/Retrieval-Augmented-Generation-RAG.png",
+              "caption": "",
+              "sourceUrl": "https://www.educba.com/retrieval-augmented-generation/",
+              "title": "retrieval augmented generation — educba.com"
+            },
+            {
+              "kind": "image",
+              "query": "document search results",
+              "url": "https://cdn.logicaldoc.com/images/stories/search_results.gif",
+              "caption": "",
+              "sourceUrl": "https://www.logicaldoc.com/software-features/document-searching",
+              "title": "document searching — logicaldoc.com"
+            }
+          ]
+        },
+        {
+          "speaker": "john",
+          "text": "Aur retrieved passage mein bhi answer na ho toh? Jaldi bolo, time kam hai!",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "no search results found",
+              "url": "https://cdn.coveo.com/images/w_1000,h_563,c_scale/f_auto,q_auto:good/v1707312974/blogprod/NoSearchResults-XeroCentral_98338075be87/NoSearchResults-XeroCentral_98338075be87.jpg?_i=AA",
+              "caption": "",
+              "sourceUrl": "https://www.coveo.com/blog/avoid-no-search-results-found/",
+              "title": "avoid no search results found — coveo.com"
+            }
+          ]
+        },
+        {
+          "speaker": "jhatka",
+          "text": "Tab insufficient evidence bolna valid answer hai. Question clarify kar ya aur sources dhoondh. Citation ka naam dekhkar trust mat kar; claim support hota hai ya nahi, woh check kar. Kasam mere mareezon ki, RAG bhi truth ki magic stamp nahi!",
+          "brollSequence": [
+            {
+              "kind": "image",
+              "query": "fact checking source document",
+              "url": "https://s3.amazonaws.com/libapps/accounts/3013/images/Fact_Check_graphic2.jpg",
+              "caption": "",
+              "sourceUrl": "https://libguides.niagaracc.suny.edu/c.php?g=600825&p=8175808",
+              "title": "fact checking source document — libguides.niagaracc.suny.edu"
+            },
+            {
+              "kind": "image",
+              "query": "retrieval augmented generation evaluation diagram",
+              "url": "https://media.geeksforgeeks.org/wp-content/uploads/20251212162328624857/rag_system_evaluation_cycle.webp",
+              "caption": "",
+              "sourceUrl": "https://www.geeksforgeeks.org/nlp/evaluation-metrics-for-retrieval-augmented-generation-rag-systems/",
+              "title": "evaluation metrics for retrieval augmented generation rag systems — geeksforgeeks.org"
+            }
+          ]
+        }
+      ]
+    },
+    "durationSeconds": 54.101995,
+    "cast": "auto",
+    "language": "hinglish",
+    "participants": {
+      "learner": "john",
+      "expert": "jhatka"
+    },
+    "voiceBackend": "elevenlabs",
+    "voiceNames": {
+      "john": "John",
+      "jhatka": "Dr Jhatka"
+    },
+    "backgroundName": "Minecraft · Lava",
+    "sourceCredits": [
+      {
+        "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
+        "url": "https://www.youtube.com/watch?v=LofyMQts7hY",
+        "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=LofyMQts7hY. Muted, cropped, resized and overlaid."
+      },
+      {
+        "title": "A screenshot of ChatGPTs response to reading the datacsv file and writing an R code fig2 371651458 — researchgate.net",
+        "url": "https://www.researchgate.net/figure/A-screenshot-of-ChatGPTs-response-to-reading-the-datacsv-file-and-writing-an-R-code_fig2_371651458",
+        "attribution": "A screenshot of ChatGPTs response to reading the datacsv file and writing an R code fig2 371651458 — researchgate.net"
+      },
+      {
+        "title": "library open book — dreamstime.com",
+        "url": "https://www.dreamstime.com/photos-images/library-open-book.html",
+        "attribution": "library open book — dreamstime.com"
+      },
+      {
+        "title": "index page layout designs 145100419228743941 — in.pinterest.com",
+        "url": "https://in.pinterest.com/pin/index-page-layout-designs--145100419228743941/",
+        "attribution": "index page layout designs 145100419228743941 — in.pinterest.com"
+      },
+      {
+        "title": "stack of books — unsplash.com",
+        "url": "https://unsplash.com/s/photos/stack-of-books",
+        "attribution": "stack of books — unsplash.com"
+      },
+      {
+        "title": "retrieval augmented generation — educba.com",
+        "url": "https://www.educba.com/retrieval-augmented-generation/",
+        "attribution": "retrieval augmented generation — educba.com"
+      },
+      {
+        "title": "document searching — logicaldoc.com",
+        "url": "https://www.logicaldoc.com/software-features/document-searching",
+        "attribution": "document searching — logicaldoc.com"
+      },
+      {
+        "title": "avoid no search results found — coveo.com",
+        "url": "https://www.coveo.com/blog/avoid-no-search-results-found/",
+        "attribution": "avoid no search results found — coveo.com"
+      },
+      {
+        "title": "fact checking source document — libguides.niagaracc.suny.edu",
+        "url": "https://libguides.niagaracc.suny.edu/c.php?g=600825&p=8175808",
+        "attribution": "fact checking source document — libguides.niagaracc.suny.edu"
+      },
+      {
+        "title": "evaluation metrics for retrieval augmented generation rag systems — geeksforgeeks.org",
+        "url": "https://www.geeksforgeeks.org/nlp/evaluation-metrics-for-retrieval-augmented-generation-rag-systems/",
+        "attribution": "evaluation metrics for retrieval augmented generation rag systems — geeksforgeeks.org"
+      }
+    ]
+  }
+]

@@ -3,7 +3,9 @@ import {SiteLayout} from './SiteLayout.js';
 import {Icon} from './Icons.js';
 import {GummyScene} from './GummyScene.js';
 import {AgentFlow} from './AgentFlow.js';
-import {REAL_EXAMPLES} from './realExamples.js';
+import {EXAMPLES,FORMAT_HINTS,FORMAT_NAMES} from './examples.js';
+
+const FORMATS=['sketch','skit','prreview','tierlist','groupchat'].filter(format=>EXAMPLES.some(example=>example.format===format));
 
 const workflows={
   MCP:{heading:'Your agent writes it.',description:'Any MCP client works. The agent already has the diff and the reasons, so it picks the format, writes the script and queues the video without leaving your session.',code:'get_video_formats({ format: "sketch" })\n\ngenerate_short_video({\n  format: "sketch",\n  narrator: "jack",\n  script: { title: "Lambda ko handler kyun nahi mila?",\n            sketch: { nodes: […], edges: […] },\n            dialogue: […] }\n})',link:'/mcp',action:'Connect an agent'},
@@ -15,10 +17,12 @@ type WorkflowName=keyof typeof workflows;
 const WORKFLOW_NAMES=Object.keys(workflows) as WorkflowName[];
 
 export function LandingPage():React.ReactElement{
-  const[selected,setSelected]=useState(0),[playing,setPlaying]=useState(false),[workflow,setWorkflow]=useState<WorkflowName>('MCP');
-  const root=useRef<HTMLDivElement>(null),video=useRef<HTMLVideoElement>(null);const example=REAL_EXAMPLES[selected]!,flow=workflows[workflow];
+  const[formatIndex,setFormatIndex]=useState(0),[pick,setPick]=useState<Record<string,number>>({}),[playing,setPlaying]=useState(false),[workflow,setWorkflow]=useState<WorkflowName>('MCP');
+  const root=useRef<HTMLDivElement>(null),video=useRef<HTMLVideoElement>(null);const format=FORMATS[formatIndex]!,options=EXAMPLES.filter(item=>item.format===format),example=options[Math.min(pick[format]??0,options.length-1)]!,flow=workflows[workflow];
   useEffect(()=>{if(typeof IntersectionObserver==='undefined')return;const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('has-entered');observer.unobserve(entry.target);}}),{threshold:.12});root.current?.querySelectorAll('.shelf-enter').forEach(element=>observer.observe(element));return()=>observer.disconnect();},[]);
-  const choose=(index:number)=>{video.current?.pause();setPlaying(false);setSelected(index);};
+  const stop=()=>{video.current?.pause();setPlaying(false);};
+  const choose=(index:number)=>{stop();setFormatIndex(index);};
+  const chooseExample=(index:number)=>{stop();setPick(current=>({...current,[format]:index}));};
   const pickTab=(event:React.KeyboardEvent,index:number,count:number,select:(next:number)=>void,id:(next:number)=>string)=>{
     if(event.key!=='ArrowRight'&&event.key!=='ArrowLeft')return;event.preventDefault();
     const next=(index+(event.key==='ArrowRight'?1:count-1))%count;select(next);document.getElementById(id(next))?.focus();
@@ -28,7 +32,7 @@ export function LandingPage():React.ReactElement{
       <div className="intro-copy">
         <h1 id="landing-title">Stop doomscrolling. Understand what your agent just changed.</h1>
         <p>A one-minute video on your agent’s latest change: the approach it took, the trade-offs, and where a better practice exists. Drawn as a sketch, a skit, a PR review, a tier list or a group chat.</p>
-        <div className="intro-actions"><a className="site-button" href="/studio">Open Studio <Icon name="arrow"/></a><a className="watch-link" href="#clips">Watch real examples <Icon name="play" size={16}/></a></div>
+        <div className="intro-actions"><a className="site-button" href="/studio">Open Studio <Icon name="arrow"/></a><a className="watch-link" href="#clips">Watch examples <Icon name="play" size={16}/></a></div>
       </div>
       <GummyScene/>
     </section>
@@ -36,16 +40,17 @@ export function LandingPage():React.ReactElement{
     <AgentFlow heading={<div className="flow-heading"><h2 id="story-title">The code moved on. You can too.</h2><a href="/mcp">Connect MCP <Icon name="arrow" size={18}/></a></div>}/>
 
     <section id="clips" className="work-shelf" aria-labelledby="work-title">
-      <div className="shelf-heading"><div><h2 id="work-title" className="shelf-enter">Made from real sessions.</h2><p className="shelf-enter">Each video below was written by the coding agent from work in this repository, one per format.</p></div><a href="/examples" className="shelf-enter">All examples <Icon name="arrow" size={18}/></a></div>
-      <div className="format-tabs" role="tablist" aria-label="Choose a format">{REAL_EXAMPLES.map((item,index)=><button key={item.slug} id={`format-${item.format}`} role="tab" aria-selected={selected===index} aria-controls="format-panel" tabIndex={selected===index?0:-1} onClick={()=>choose(index)} onKeyDown={event=>pickTab(event,index,REAL_EXAMPLES.length,choose,next=>`format-${REAL_EXAMPLES[next]!.format}`)}><span>{item.formatName}</span><small>{item.when}</small></button>)}</div>
+      <div className="shelf-heading"><div><h2 id="work-title" className="shelf-enter">Five formats, every stack.</h2><p className="shelf-enter">Example sessions from beginner to advanced, across Python, JavaScript, Go, Rust, Flutter, Kubernetes and more, in English and Hinglish.</p></div><a href="/examples" className="shelf-enter">All {EXAMPLES.length} examples <Icon name="arrow" size={18}/></a></div>
+      <div className="format-tabs" role="tablist" aria-label="Choose a format">{FORMATS.map((item,index)=><button key={item} id={`format-${item}`} role="tab" aria-selected={formatIndex===index} aria-controls="format-panel" tabIndex={formatIndex===index?0:-1} onClick={()=>choose(index)} onKeyDown={event=>pickTab(event,index,FORMATS.length,choose,next=>`format-${FORMATS[next]}`)}><span>{FORMAT_NAMES[item]}</span><small>{FORMAT_HINTS[item]}</small></button>)}</div>
       <div className="example-stage" id="format-panel" role="tabpanel" aria-labelledby={`format-${example.format}`}>
         <div className="example-selection">
-          <p className="example-kicker">{example.formatName} · {example.seconds}s · Hinglish</p>
+          {options.length>1&&<div className="example-picker" role="group" aria-label={`${FORMAT_NAMES[format]} examples`}>{options.map((item,index)=><button key={item.slug} type="button" aria-pressed={item.slug===example.slug} onClick={()=>chooseExample(index)}>{item.stack}</button>)}</div>}
+          <p className="example-kicker">{example.level} · {example.stack} · {example.language}</p>
           <h3>{example.title}</h3>
-          <dl className="example-facts"><div><dt>What happened</dt><dd>{example.session}</dd></div><div><dt>What the agent did</dt><dd>{example.agentDid}</dd></div></dl>
+          <dl className="example-facts"><div><dt>What happened ({example.project})</dt><dd>{example.session}</dd></div><div><dt>What the agent did</dt><dd>{example.agentDid}</dd></div></dl>
           <p className="example-voices">Voices: {example.voices}</p>
         </div>
-        <div className="example-screen" key={example.slug}>{playing?<video ref={video} controls autoPlay playsInline preload="none" src={`/examples/${example.slug}/video.mp4`} poster={`/examples/${example.slug}/poster.png`} aria-label={example.title}/>:<button className="sleeve-play" onClick={()=>setPlaying(true)} aria-label={`Play example: ${example.title}`}><img src={`/examples/${example.slug}/poster.png`} alt={`A frame from the ${example.formatName.toLowerCase()} video`} width="540" height="960" loading="lazy"/><span className="play-disc"><Icon name="play" size={24}/><span>Play</span></span></button>}</div>
+        <div className="example-screen" key={example.slug}>{playing?<video ref={video} controls autoPlay playsInline preload="none" src={`/examples/${example.slug}/video.mp4`} poster={`/examples/${example.slug}/poster.png`} aria-label={example.title}/>:<button className="sleeve-play" onClick={()=>setPlaying(true)} aria-label={`Play example: ${example.title}`}><img src={`/examples/${example.slug}/poster.png`} alt={`A frame from the ${FORMAT_NAMES[example.format]!.toLowerCase()} video`} width="540" height="960" loading="lazy"/><span className="play-disc"><Icon name="play" size={24}/><span>Play</span></span></button>}</div>
       </div>
     </section>
 

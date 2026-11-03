@@ -1,0 +1,258 @@
+{
+ "jobId": "48f8ded0-b68a-47a1-98f2-58b5d164a40e",
+ "state": "ready",
+ "stage": "ready",
+ "progress": 100,
+ "prompt": "I copied the list. Why did both change?",
+ "title": "I copied the list. Why did both change?",
+ "createdAt": "2026-11-03T06:39:31.048Z",
+ "updatedAt": "2026-11-03T06:39:50.998Z",
+ "videoUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/video",
+ "posterUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/poster",
+ "audioUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/audio",
+ "error": null,
+ "durationSeconds": 47.361565,
+ "cast": "auto",
+ "language": "en",
+ "voiceBackend": "elevenlabs",
+ "participants": {
+  "learner": "motu",
+  "expert": "jhatka"
+ },
+ "format": "skit",
+ "script": {
+  "title": "I copied the list. Why did both change?",
+  "participants": {
+   "learner": "motu",
+   "expert": "jhatka"
+  },
+  "dialogue": [
+   {
+    "speaker": "motu",
+    "text": "I copied my to-do list, removed a task from the copy, and the original lost it too! Why?"
+   },
+   {
+    "speaker": "jhatka",
+    "text": "Because you never copied it. backup equals tasks just gives the same list a second name, so both names point to one list.",
+    "broll": {
+     "kind": "code",
+     "code": "tasks = ['buy milk', 'study']\nbackup = tasks\nbackup.remove('study')\nprint(tasks)  # ['buy milk']",
+     "language": "python"
+    }
+   },
+   {
+    "speaker": "motu",
+    "text": "So how do I get a real copy? Do I have to loop and append every task myself?"
+   },
+   {
+    "speaker": "jhatka",
+    "text": "No loop needed. tasks dot copy, or list of tasks, builds a brand new list with the same items.",
+    "broll": {
+     "kind": "code",
+     "code": "backup = tasks.copy()",
+     "language": "python"
+    }
+   },
+   {
+    "speaker": "motu",
+    "text": "Wait. What if every task is a dictionary, and I change a title in the copy? What happens to the original?",
+    "pause": {
+     "prompt": "You copy a list of dictionaries with .copy() and change one task's title in the copy. What happens to the original?",
+     "choices": [
+      "Its title changes too",
+      "It stays the same",
+      "Python raises an error"
+     ],
+     "answer": 0
+    }
+   },
+   {
+    "speaker": "jhatka",
+    "text": "The original changes too. copy is shallow: a new list, but the same dictionaries inside. For nested data, use copy dot deepcopy.",
+    "broll": {
+     "kind": "code",
+     "code": "import copy\nbackup = copy.deepcopy(tasks)",
+     "language": "python"
+    }
+   }
+  ],
+  "takeaway": "Assigning a list gives it a second name; use .copy() for a new list, and copy.deepcopy when the items are nested.",
+  "questions": [
+   {
+    "prompt": "Why did removing a task from backup also change tasks?",
+    "choices": [
+     "backup = tasks made a second name for the same list",
+     "remove() edits every list",
+     "Python copies lists lazily"
+    ],
+    "answer": 0,
+    "explanation": "Assignment never copies a list; both names refer to the same object.",
+    "turnIndices": [
+     0,
+     1
+    ]
+   }
+  ]
+ },
+ "learning": {
+  "schemaVersion": "BrainrottenLearningPackV1",
+  "jobId": "48f8ded0-b68a-47a1-98f2-58b5d164a40e",
+  "format": "skit",
+  "title": "I copied the list. Why did both change?",
+  "language": "en",
+  "durationSeconds": 47.361565,
+  "takeaway": "Assigning a list gives it a second name; use .copy() for a new list, and copy.deepcopy when the items are nested.",
+  "chapters": [
+   {
+    "id": "turn-0",
+    "title": "I copied my to-do list, removed a task",
+    "startMs": 0,
+    "endMs": 5786
+   },
+   {
+    "id": "turn-1",
+    "title": "Because you never copied it. backup equals tasks",
+    "startMs": 5786,
+    "endMs": 13214
+   },
+   {
+    "id": "turn-2",
+    "title": "So how do I get a real copy?",
+    "startMs": 13214,
+    "endMs": 17714
+   },
+   {
+    "id": "turn-3",
+    "title": "No loop needed. tasks dot copy, or list",
+    "startMs": 17714,
+    "endMs": 23571
+   },
+   {
+    "id": "turn-4",
+    "title": "Wait. What if every task is a dictionary,",
+    "startMs": 23571,
+    "endMs": 29214
+   },
+   {
+    "id": "turn-5",
+    "title": "The original changes too. copy is shallow: a",
+    "startMs": 39214,
+    "endMs": 47362
+   }
+  ],
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Why did removing a task from backup also change tasks?",
+    "choices": [
+     "backup = tasks made a second name for the same list",
+     "remove() edits every list",
+     "Python copies lists lazily"
+    ],
+    "answer": 0,
+    "explanation": "Assignment never copies a list; both names refer to the same object.",
+    "turnIndices": [
+     0,
+     1
+    ],
+    "startMs": 0,
+    "endMs": 13214
+   },
+   {
+    "id": "pause-4",
+    "prompt": "You copy a list of dictionaries with .copy() and change one task's title in the copy. What happens to the original?",
+    "choices": [
+     "Its title changes too",
+     "It stays the same",
+     "Python raises an error"
+    ],
+    "answer": 0,
+    "explanation": "The original changes too. copy is shallow: a new list, but the same dictionaries inside. For nested data, use copy dot deepcopy.",
+    "turnIndices": [
+     4,
+     5
+    ],
+    "startMs": 23571,
+    "endMs": 47362
+   }
+  ],
+  "flashcards": [
+   {
+    "id": "q1",
+    "front": "Why did removing a task from backup also change tasks?",
+    "back": "backup = tasks made a second name for the same list — Assignment never copies a list; both names refer to the same object.",
+    "startMs": 0,
+    "endMs": 13214
+   },
+   {
+    "id": "pause-4",
+    "front": "You copy a list of dictionaries with .copy() and change one task's title in the copy. What happens to the original?",
+    "back": "Its title changes too — The original changes too. copy is shallow: a new list, but the same dictionaries inside. For nested data, use copy dot deepcopy.",
+    "startMs": 23571,
+    "endMs": 47362
+   }
+  ],
+  "transcript": [
+   {
+    "turnIndex": 0,
+    "speaker": "motu",
+    "text": "I copied my to-do list, removed a task from the copy, and the original lost it too! Why?",
+    "startMs": 0,
+    "endMs": 5786
+   },
+   {
+    "turnIndex": 1,
+    "speaker": "jhatka",
+    "text": "Because you never copied it. backup equals tasks just gives the same list a second name, so both names point to one list.",
+    "startMs": 5786,
+    "endMs": 13214
+   },
+   {
+    "turnIndex": 2,
+    "speaker": "motu",
+    "text": "So how do I get a real copy? Do I have to loop and append every task myself?",
+    "startMs": 13214,
+    "endMs": 17714
+   },
+   {
+    "turnIndex": 3,
+    "speaker": "jhatka",
+    "text": "No loop needed. tasks dot copy, or list of tasks, builds a brand new list with the same items.",
+    "startMs": 17714,
+    "endMs": 23571
+   },
+   {
+    "turnIndex": 4,
+    "speaker": "motu",
+    "text": "Wait. What if every task is a dictionary, and I change a title in the copy? What happens to the original?",
+    "startMs": 23571,
+    "endMs": 29214
+   },
+   {
+    "turnIndex": 5,
+    "speaker": "jhatka",
+    "text": "The original changes too. copy is shallow: a new list, but the same dictionaries inside. For nested data, use copy dot deepcopy.",
+    "startMs": 39214,
+    "endMs": 47362
+   }
+  ]
+ },
+ "backgroundName": "Minecraft · Lava",
+ "sourceCredits": [
+  {
+   "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
+   "url": "https://www.youtube.com/watch?v=LofyMQts7hY",
+   "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=LofyMQts7hY. Muted, cropped, resized and overlaid."
+  }
+ ],
+ "outputs": {
+  "learningUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/learning",
+  "notesUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/notes",
+  "captionsUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/captions",
+  "flashcardsUrl": "/api/v1/videos/48f8ded0-b68a-47a1-98f2-58b5d164a40e/flashcards"
+ },
+ "voiceNames": {
+  "motu": "Motu",
+  "jhatka": "Dr Jhatka"
+ }
+}
