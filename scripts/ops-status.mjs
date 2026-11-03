@@ -30,8 +30,16 @@ for(const job of active)console.log(`  ${job.state.padEnd(10)} ${job.format.padE
 const done=jobs.filter(job=>job.state==='ready'),failed=jobs.filter(job=>job.state==='failed'||job.state==='needs_review');
 const minutes=done.map(job=>(Date.parse(job.updatedAt)-Date.parse(job.createdAt))/60000).sort((a,b)=>a-b);
 console.log(`\nLast ${hours}h: ${jobs.length} jobs from ${new Set(jobs.map(job=>job.user)).size} users: ${done.length} ready, ${failed.length} failed${minutes.length?`, median ${minutes[Math.floor(minutes.length/2)].toFixed(1)} min from click to video`:''}`);
+// The same numbers since the worker was last deployed, so you can see whether a fix is working.
+const deployed=Date.parse(aws(['lambda','get-function-configuration','--function-name',physical('Worker')]).LastModified);
+const recent=jobs.filter(job=>Date.parse(job.createdAt)>=deployed);
+const at=new Date(deployed).toLocaleString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'});
+console.log(`Since the last backend deploy (${at} IST): ${recent.length} job${recent.length===1?'':'s'}, ${recent.filter(job=>job.state==='ready').length} ready, ${recent.filter(job=>job.state==='failed'||job.state==='needs_review').length} failed`);
+console.log(`Failure reasons (last ${hours}h, time in IST):`);
 const reasons=new Map();for(const job of failed){const reason=String(job.error?.message??job.error??'unknown').replace(/\(.*?\)/g,'(…)').slice(0,110);reasons.set(reason,(reasons.get(reason)??0)+1);}
-for(const[reason,count]of[...reasons].sort((a,b)=>b[1]-a[1]))console.log(`  ${String(count).padStart(3)} × ${reason}`);
+const last=new Map();for(const job of failed){const reason=String(job.error?.message??job.error??'unknown').replace(/\(.*?\)/g,'(…)').slice(0,110);last.set(reason,job.createdAt);}
+const clock=iso=>new Date(iso).toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit'});
+for(const[reason,count]of[...reasons].sort((a,b)=>b[1]-a[1]))console.log(`  ${String(count).padStart(3)} × last ${clock(last.get(reason))}  ${reason}`);
 
 // Script model fallbacks
 const group=aws(['logs','describe-log-groups','--log-group-name-prefix',`${stack}-WorkerLogs`]).logGroups?.[0]?.logGroupName;
