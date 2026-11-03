@@ -123,7 +123,7 @@ build-backend:
     - *aws-login
     - apk add --no-cache aws-cli nodejs bash git >/dev/null
     - IMAGE="$(scripts/ci/build-runtime-image.sh | tail -1)"
-    - echo "Backend image ready, nothing live yet: $IMAGE. Run the deploy-backend job in this pipeline to ship it."
+    - 'echo "Backend image ready (nothing live yet): $IMAGE. Run the deploy-backend job in this pipeline to ship it."'
 
 # The approval step for the backend: press play on this job in a main pipeline.
 deploy-backend:
