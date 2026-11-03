@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],
+    globalSetup: ['../../scripts/test-gameplay.mjs'],
     testTimeout: 30_000,
   },
 });
