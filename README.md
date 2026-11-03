@@ -137,7 +137,9 @@ Tests never call paid services or use real keys.
 
 ### Deploys and releases
 
-Every push and merge request runs the checks in GitLab CI (`.gitlab-ci.yml`). On `main`, website changes go live automatically. Backend changes build the Lambda image straight away and go live when you press play on the **deploy-backend** job (about 20 seconds for code-only changes). GitLab signs in to AWS with OIDC, so no AWS keys are stored anywhere. One-time setup: `scripts/ci/bootstrap.sh`.
+Deploy from your own computer with your AWS login: `pnpm deploy:site` (website) and `pnpm deploy:backend` (API and worker; needs Docker).
+
+The same steps can also run in GitLab CI: every push and merge request runs the checks (`.gitlab-ci.yml`). On `main`, website changes go live automatically. Backend changes build the Lambda image straight away and go live when you press play on the **deploy-backend** job (about 20 seconds for code-only changes). GitLab signs in to AWS with OIDC, so no AWS keys are stored anywhere. One-time setup: `scripts/ci/bootstrap.sh`.
 
 To release the installer, bump the version in `apps/companion/package.json`, push to `main`, then push the tag `mcp-v<version>`. The pipeline publishes `brainrotten-mcp` to npm through Trusted Publishing with provenance and creates a GitLab release.
 
