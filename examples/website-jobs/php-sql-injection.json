@@ -1,0 +1,253 @@
+{
+ "jobId": "fcdc1b31-68a7-48c8-a21f-3edf923c9393",
+ "state": "ready",
+ "stage": "ready",
+ "progress": 100,
+ "prompt": "Logged in as admin without a password?",
+ "title": "Logged in as admin without a password?",
+ "createdAt": "2026-11-03T08:57:53.422Z",
+ "updatedAt": "2026-11-03T08:58:20.844Z",
+ "videoUrl": "/api/v1/videos/fcdc1b31-68a7-48c8-a21f-3edf923c9393/video",
+ "posterUrl": "/api/v1/videos/fcdc1b31-68a7-48c8-a21f-3edf923c9393/poster",
+ "audioUrl": "/api/v1/videos/fcdc1b31-68a7-48c8-a21f-3edf923c9393/audio",
+ "error": null,
+ "durationSeconds": 48.501633,
+ "cast": "auto",
+ "language": "en",
+ "voiceBackend": "elevenlabs",
+ "participants": {
+  "learner": "budhdev",
+  "expert": "badri"
+ },
+ "format": "skit",
+ "script": {
+  "title": "Logged in as admin without a password?",
+  "participants": {
+   "learner": "budhdev",
+   "expert": "badri"
+  },
+  "dialogue": [
+   {
+    "speaker": "budhdev",
+    "text": "My PHP login works, but my friend got in as admin without the password. He just typed a quote and some dashes in the username box. How?"
+   },
+   {
+    "speaker": "badri",
+    "text": "Your query glues the username straight into the SQL text. His quote closed your string, and everything after it became SQL.",
+    "broll": {
+     "kind": "code",
+     "code": "$sql = \"SELECT * FROM users\n  WHERE name = '$name'\n  AND pass = '$pass'\";",
+     "language": "php"
+    }
+   },
+   {
+    "speaker": "budhdev",
+    "text": "So if he types admin, a quote, then two dashes, what does the database actually run?",
+    "pause": {
+     "prompt": "The username is admin'-- . What happens to the password check?",
+     "choices": [
+      "It turns into a comment and is skipped",
+      "It still runs",
+      "MySQL rejects the quote"
+     ],
+     "answer": 0
+    }
+   },
+   {
+    "speaker": "badri",
+    "text": "Two dashes start a comment, so the password check simply disappears. The query finds admin and logs him in."
+   },
+   {
+    "speaker": "budhdev",
+    "text": "Should I just strip quotes out of the input, then?"
+   },
+   {
+    "speaker": "badri",
+    "text": "No. Use a prepared statement. The query and the values travel separately, so input can never turn into code.",
+    "broll": {
+     "kind": "code",
+     "code": "$stmt = $pdo->prepare(\n  'SELECT * FROM users WHERE name = ?');\n$stmt->execute([$name]);",
+     "language": "php"
+    }
+   }
+  ],
+  "takeaway": "Never build SQL by pasting input into the query text; use prepared statements so input stays data.",
+  "questions": [
+   {
+    "prompt": "Why could the friend log in without a password?",
+    "choices": [
+     "The username input became part of the SQL query",
+     "The admin password was empty",
+     "PHP sessions were broken"
+    ],
+    "answer": 0,
+    "explanation": "The quote ended the string and the dashes commented out the password check.",
+    "turnIndices": [
+     1,
+     3
+    ]
+   }
+  ]
+ },
+ "learning": {
+  "schemaVersion": "BrainrottenLearningPackV1",
+  "jobId": "fcdc1b31-68a7-48c8-a21f-3edf923c9393",
+  "format": "skit",
+  "title": "Logged in as admin without a password?",
+  "language": "en",
+  "durationSeconds": 48.501633,
+  "takeaway": "Never build SQL by pasting input into the query text; use prepared statements so input stays data.",
+  "chapters": [
+   {
+    "id": "turn-0",
+    "title": "My PHP login works, but my friend got",
+    "startMs": 0,
+    "endMs": 8786
+   },
+   {
+    "id": "turn-1",
+    "title": "Your query glues the username straight into the",
+    "startMs": 8786,
+    "endMs": 16571
+   },
+   {
+    "id": "turn-2",
+    "title": "So if he types admin, a quote, then",
+    "startMs": 16571,
+    "endMs": 22786
+   },
+   {
+    "id": "turn-3",
+    "title": "Two dashes start a comment, so the password",
+    "startMs": 32786,
+    "endMs": 39214
+   },
+   {
+    "id": "turn-4",
+    "title": "Should I just strip quotes out of the",
+    "startMs": 39214,
+    "endMs": 41786
+   },
+   {
+    "id": "turn-5",
+    "title": "No. Use a prepared statement. The query and",
+    "startMs": 41786,
+    "endMs": 48502
+   }
+  ],
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Why could the friend log in without a password?",
+    "choices": [
+     "The username input became part of the SQL query",
+     "The admin password was empty",
+     "PHP sessions were broken"
+    ],
+    "answer": 0,
+    "explanation": "The quote ended the string and the dashes commented out the password check.",
+    "turnIndices": [
+     1,
+     3
+    ],
+    "startMs": 8786,
+    "endMs": 39214
+   },
+   {
+    "id": "pause-2",
+    "prompt": "The username is admin'-- . What happens to the password check?",
+    "choices": [
+     "It turns into a comment and is skipped",
+     "It still runs",
+     "MySQL rejects the quote"
+    ],
+    "answer": 0,
+    "explanation": "Two dashes start a comment, so the password check simply disappears. The query finds admin and logs him in.",
+    "turnIndices": [
+     2,
+     3
+    ],
+    "startMs": 16571,
+    "endMs": 39214
+   }
+  ],
+  "flashcards": [
+   {
+    "id": "q1",
+    "front": "Why could the friend log in without a password?",
+    "back": "The username input became part of the SQL query — The quote ended the string and the dashes commented out the password check.",
+    "startMs": 8786,
+    "endMs": 39214
+   },
+   {
+    "id": "pause-2",
+    "front": "The username is admin'-- . What happens to the password check?",
+    "back": "It turns into a comment and is skipped — Two dashes start a comment, so the password check simply disappears. The query finds admin and logs him in.",
+    "startMs": 16571,
+    "endMs": 39214
+   }
+  ],
+  "transcript": [
+   {
+    "turnIndex": 0,
+    "speaker": "budhdev",
+    "text": "My PHP login works, but my friend got in as admin without the password. He just typed a quote and some dashes in the username box. How?",
+    "startMs": 0,
+    "endMs": 8786
+   },
+   {
+    "turnIndex": 1,
+    "speaker": "badri",
+    "text": "Your query glues the username straight into the SQL text. His quote closed your string, and everything after it became SQL.",
+    "startMs": 8786,
+    "endMs": 16571
+   },
+   {
+    "turnIndex": 2,
+    "speaker": "budhdev",
+    "text": "So if he types admin, a quote, then two dashes, what does the database actually run?",
+    "startMs": 16571,
+    "endMs": 22786
+   },
+   {
+    "turnIndex": 3,
+    "speaker": "badri",
+    "text": "Two dashes start a comment, so the password check simply disappears. The query finds admin and logs him in.",
+    "startMs": 32786,
+    "endMs": 39214
+   },
+   {
+    "turnIndex": 4,
+    "speaker": "budhdev",
+    "text": "Should I just strip quotes out of the input, then?",
+    "startMs": 39214,
+    "endMs": 41786
+   },
+   {
+    "turnIndex": 5,
+    "speaker": "badri",
+    "text": "No. Use a prepared statement. The query and the values travel separately, so input can never turn into code.",
+    "startMs": 41786,
+    "endMs": 48502
+   }
+  ]
+ },
+ "backgroundName": "Minecraft · Lava",
+ "sourceCredits": [
+  {
+   "title": "Minecraft Parkour Gameplay - NO COPYRIGHT (4K QUALITY)",
+   "url": "https://www.youtube.com/watch?v=LofyMQts7hY",
+   "attribution": "Minecraft Parkour Gameplay — BlockVista - No Copyright Gameplay, https://www.youtube.com/watch?v=LofyMQts7hY. Muted, cropped, resized and overlaid."
+  }
+ ],
+ "outputs": {
+  "learningUrl": "/api/v1/videos/fcdc1b31-68a7-48c8-a21f-3edf923c9393/learning",
+  "notesUrl": "/api/v1/videos/fcdc1b31-68a7-48c8-a21f-3edf923c9393/notes",
+  "captionsUrl": "/api/v1/videos/fcdc1b31-68a7-48c8-a21f-3edf923c9393/captions",
+  "flashcardsUrl": "/api/v1/videos/fcdc1b31-68a7-48c8-a21f-3edf923c9393/flashcards"
+ },
+ "voiceNames": {
+  "budhdev": "Budhdev",
+  "badri": "Badri"
+ }
+}

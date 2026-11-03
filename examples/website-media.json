@@ -16,6 +16,10 @@
       "size": 5257024,
       "sha256": "6fe5b92103fc3d1c093ebcc258f6518b7dad435e68f74fd89e36d0b03a57e841"
     },
+    "php-sql-injection": {
+      "size": 14300919,
+      "sha256": "2eb965f527e783365f5583588e1614b3ff564adda0facd265368f8cc63fa4c34"
+    },
     "react-useeffect-loop": {
       "size": 5800650,
       "sha256": "4d9b42e5f6c3aedf7dbb8a37ed801d3957bd4000f10fa97b0007a3895bb54a72"
@@ -31,6 +35,10 @@
     "flutter-setstate-dispose": {
       "size": 13960943,
       "sha256": "70839bde03f14b40ff542aef4c0d3c81bb323ccaf33a41c661efdce7bcace59d"
+    },
+    "docker-localhost-db": {
+      "size": 18032937,
+      "sha256": "d339e2e4a429c62720dcac79b8236bf588d7c622144bda0f9e2c02bcdac35678"
     },
     "go-goroutine-leak": {
       "size": 4923199,

@@ -1,4 +1,4 @@
-"""Website example videos: twelve example coding sessions across stacks and levels, in English and Hinglish.
+"""Website example videos: fourteen example coding sessions across stacks and levels, in English and Hinglish.
 
     python3 scripts/website-examples.py validate        # free: checks every script
     python3 scripts/website-examples.py generate [ids]  # spends ElevenLabs credits; needs local Studio running
@@ -102,6 +102,22 @@ EXAMPLES = {
     q("Why create a branch before switching away from a detached HEAD?", ["So a branch points to your new commits and they are kept", "Git requires it to push", "It deletes the old commits"], 0,
       "Commits that no branch points to can be lost; a branch keeps them reachable.", [3, 4])),
 
+"php-sql-injection": skit("en", "budhdev", "badri", "Logged in as admin without a password?",
+    "Never build SQL by pasting input into the query text; use prepared statements so input stays data.",
+    [
+        {"speaker": "budhdev", "text": "My PHP login works, but my friend got in as admin without the password. He just typed a quote and some dashes in the username box. How?"},
+        {"speaker": "badri", "text": "Your query glues the username straight into the SQL text. His quote closed your string, and everything after it became SQL.",
+         "broll": code("php", "$sql = \"SELECT * FROM users\n  WHERE name = '$name'\n  AND pass = '$pass'\";")},
+        {"speaker": "budhdev", "text": "So if he types admin, a quote, then two dashes, what does the database actually run?",
+         "pause": {"prompt": "The username is admin'-- . What happens to the password check?", "choices": ["It turns into a comment and is skipped", "It still runs", "MySQL rejects the quote"], "answer": 0}},
+        {"speaker": "badri", "text": "Two dashes start a comment, so the password check simply disappears. The query finds admin and logs him in."},
+        {"speaker": "budhdev", "text": "Should I just strip quotes out of the input, then?"},
+        {"speaker": "badri", "text": "No. Use a prepared statement. The query and the values travel separately, so input can never turn into code.",
+         "broll": code("php", "$stmt = $pdo->prepare(\n  'SELECT * FROM users WHERE name = ?');\n$stmt->execute([$name]);")},
+    ],
+    q("Why could the friend log in without a password?", ["The username input became part of the SQL query", "The admin password was empty", "PHP sessions were broken"], 0,
+      "The quote ended the string and the dashes commented out the password check.", [1, 3])),
+
 # ── Intermediate ─────────────────────────────────────────────────────────────
 "react-useeffect-loop": interface("prreview", "en", "Stop the useEffect request loop",
     "Effect dependencies should be values, not objects rebuilt on every render.",
@@ -186,6 +202,22 @@ EXAMPLES = {
     ],
     q("Why did the app throw 'setState called after dispose'?", ["The fetch finished after the screen was closed", "The API returned an error", "setState was called twice"], 0,
       "The await resumed after the State was disposed, and setState ran on a widget that no longer existed.", [0, 1])),
+
+"docker-localhost-db": skit("hinglish", "oggy", "jack", "Docker mein localhost kaam kyun nahi karta?",
+    "Inside a container, localhost is the container itself; reach other Compose services by their service name.",
+    [
+        {"speaker": "oggy", "text": "Jack, mera Node app laptop pe chal raha tha, par Docker mein daala toh database se connect hi nahi hota. ECONNREFUSED aa raha hai!"},
+        {"speaker": "jack", "text": "Kyunki tumne host localhost likha hai. Container ke andar localhost matlab woh container khud, na tumhara laptop, na database.",
+         "broll": code("bash", "DB_HOST=localhost\n# inside the app container,\n# localhost = the app itself")},
+        {"speaker": "oggy", "text": "Par app aur database dono ek hi compose file mein hain. Toh app database ko kis naam se dhoondhe?",
+         "pause": {"prompt": "The app and Postgres are services in one docker-compose file. Which host should the app use?", "choices": ["The service name, db", "localhost", "127.0.0.1"], "answer": 0}},
+        {"speaker": "jack", "text": "Service ke naam se. Compose ek network banata hai jahan har service ka naam hi uska address hota hai, toh host db likho.",
+         "broll": code("yaml", "services:\n  app:\n    environment:\n      DB_HOST: db\n  db:\n    image: postgres:16")},
+        {"speaker": "oggy", "text": "Aur pehli baar start karne pe phir bhi error aata hai, restart karun toh chal jaata hai. Woh kyun?"},
+        {"speaker": "jack", "text": "App database ke ready hone se pehle hi start ho jaata hai. depends_on ke saath healthcheck lagao, ya connect pe retry karo."},
+    ],
+    q("Why did localhost fail inside the container?", ["localhost pointed to the app container itself", "Docker blocks port 5432", "Postgres needed a password"], 0,
+      "Each container has its own localhost; the database is reachable by its service name on the Compose network.", [1, 3])),
 
 # ── Advanced ────────────────────────────────────────────────────────────────
 "go-goroutine-leak": narrated("sketch", "en", "john", "Why memory kept climbing",

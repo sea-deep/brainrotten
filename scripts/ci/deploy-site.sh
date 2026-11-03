@@ -40,9 +40,10 @@ aws s3 sync "$DIST" "s3://$BUCKET" --region "$AWS_REGION" --delete "${NO_VIDEOS[
 # Videos no longer listed go last, once the new example index is live.
 node scripts/examples-media.mjs deploy --bucket "$BUCKET" --media-bucket "$MEDIA_BUCKET" --region "$AWS_REGION" --prune >/dev/null
 
+# Example posters and videos keep their names when they change, so /examples/* is refreshed too (one wildcard path).
 # HTML, the example index and the install files are no-cache and every asset name is hashed, so the deploy
 # does not wait for the invalidation to finish; the smoke test below retries briefly instead.
-INVALIDATION="$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION" --paths '/index.html' '/' '/examples/index.json' '/install.md' '/llms.txt' '/install/brainrotten-mcp.tgz' $CHANGED_VIDEOS --query 'Invalidation.Id' --output text)"
+INVALIDATION="$(aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION" --paths '/index.html' '/' '/examples/index.json' '/install.md' '/llms.txt' '/install/brainrotten-mcp.tgz' '/examples/*' --query 'Invalidation.Id' --output text)"
 echo "CloudFront invalidation $INVALIDATION started."
 
 # Smoke test the live routes.
