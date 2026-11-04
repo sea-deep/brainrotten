@@ -14,7 +14,6 @@ import {LearningPanel} from './LearningPanel.js';
 import {VideoLibrary} from './VideoLibrary.js';
 import {ScriptComposer} from './ScriptComposer.js';
 import {useVideoReview} from './useVideoReview.js';
-import {LearningSessions} from './LearningSessions.js';
 type Tab='studio'|'mcp';
 function safeMedia(url:string|null|undefined,origins:string[]=[]):string|undefined{if(!url)return;try{const parsed=new URL(url,window.location.origin);if(parsed.origin===window.location.origin&&(parsed.pathname.startsWith('/api/')||parsed.pathname.startsWith('/examples/')))return parsed.pathname+parsed.search;if(parsed.protocol==='https:'&&origins.includes(parsed.origin))return parsed.toString();}catch{/*unusable URL*/}return;}
 function localDownload(url:string):string{if(!url.startsWith('/api/'))return url;const parsed=new URL(url,window.location.origin);parsed.searchParams.set('download','1');return parsed.pathname+parsed.search;}
@@ -67,7 +66,7 @@ export function App():React.ReactElement{
     <SiteHeader studio={{tab,onSelect:selectTab}} account={{signedIn:Boolean(account),name:account?.name??account?.email,left:quota?.remaining??null,onSignIn:login,onSignOut:logout}}
       menuItem={config&&config.mode!=='hosted'?{label:'Settings',active:settings!==null,onClick:()=>setSettings(value=>value===null?'keys':null)}:undefined}/>
     {settings!==null&&<Settings config={config} tab={settings} onTab={setSettings} onConfig={setConfig} onClose={()=>setSettings(null)}/>}
-    <main id="content">{tab==='mcp'?<><McpSetup onOpenAccount={()=>setSettings('account')}/>{config&&<LearningSessions mode={config.mode} onConnect={()=>setTab('mcp')} onOpenVideo={id=>{selectTab('studio');void selectVideo(id);}}/>}</>:<>
+    <main id="content">{tab==='mcp'?<McpSetup onOpenAccount={()=>setSettings('account')}/>:<>
       <section className={`workspace ${selected?'has-output':'composer-only'}`}><div className="composer"><div className="section-line"><h1>Studio</h1></div>
         <form onSubmit={event=>void submit(event)}><div className="input-modes" aria-label="Script source"><button type="button" aria-pressed={inputMode==='topic'} onClick={()=>setInputMode('topic')}>Topic</button><button type="button" aria-pressed={inputMode==='script'} onClick={()=>setInputMode('script')}>Agent script</button></div>{inputMode==='script'?<ScriptComposer value={scriptText} onValue={setScriptText} onInput={acceptScript}/>:<><label className="field-label" htmlFor="topic">Topic or context</label><textarea id="topic" ref={promptRef} value={prompt} onChange={e=>{setPrompt(e.target.value);requestId.current=null;}} placeholder="Paste a concept, code, or an explanation…" rows={6} maxLength={32000} required/>
           <fieldset className="format-picker"><legend>Format</legend><div className="format-options">{(config?.formats??CREATABLE_FORMATS).map(item=><button type="button" key={item.id} aria-pressed={format===item.id} disabled={'ready' in item&&item.ready===false} onClick={()=>{setFormat(item.id);requestId.current=null;}}>{item.name}</button>)}</div><p>{(config?.formats??CREATABLE_FORMATS).find(item=>item.id===format)?.description}</p></fieldset>
