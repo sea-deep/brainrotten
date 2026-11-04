@@ -1,0 +1,189 @@
+name: CI
+
+# Every push and pull request runs the checks. A push to main also:
+#   - deploys the website (S3 + CloudFront) when site files changed, and
+#   - builds the backend image when backend files changed, then waits for you to run "Deploy backend".
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      deploy_all:
+        description: Deploy the website and build the backend image even if nothing changed
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: Build, typecheck, lint, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: FFmpeg (static build, cached)
+        uses: FedericoCarboni/setup-ffmpeg@v3
+        with:
+          ffmpeg-version: release
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm build
+      - name: Type-check
+        run: pnpm typecheck
+      - name: Lint
+        run: pnpm lint
+      - name: Test (packages in parallel)
+        run: |
+          node --test scripts/release.test.mjs
+          pnpm -r --no-sort --workspace-concurrency=4 test
+      - name: Python SDK tests
+        run: pnpm test:python
+      - name: Build and verify static demo
+        run: |
+          pnpm build:demo
+          pnpm release:verify
+
+  templates:
+    name: Validate AWS templates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: .github/workflows/ci.yml
+      - run: python -m pip install cfn-lint==1.48.1
+      - run: cfn-lint infra/site/template.yaml infra/sam/template.yaml infra/ci/template.yaml
+
+  changes:
+    name: Detect what changed
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      site: ${{ inputs.deploy_all && 'true' || steps.filter.outputs.site }}
+      backend: ${{ inputs.deploy_all && 'true' || steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # Compare with the last commit whose CI run succeeded, so changes from a failed run still deploy next time.
+      - name: Last successful run
+        id: base
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha="$(gh api "repos/${{ github.repository }}/actions/workflows/ci.yml/runs?branch=main&status=success&per_page=1" --jq '.workflow_runs[0].head_sha // empty')"
+          if [ -z "$sha" ] || ! git merge-base --is-ancestor "$sha" HEAD; then sha="${{ github.event.before }}"; fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          base: ${{ steps.base.outputs.sha }}
+          filters: |
+            site:
+              - 'apps/web/**'
+              - 'apps/companion/**'
+              - 'assets/characters/*/*.png'
+              - 'packages/**'
+              - 'scripts/build-mcp-package.mjs'
+              - 'infra/site/**'
+              - 'scripts/ci/deploy-site.sh'
+              - 'scripts/examples-media.mjs'
+              - 'examples/website-media.json'
+              - 'pnpm-lock.yaml'
+            backend:
+              - 'apps/cloud/**'
+              - 'packages/**'
+              - 'infra/sam/**'
+              - 'assets/gameplay/**'
+              - 'assets/characters/*/*.png'
+              - 'scripts/ci/build-runtime-image.sh'
+              - 'scripts/ci/deploy-backend.sh'
+              - 'pnpm-lock.yaml'
+
+  deploy-site:
+    name: Deploy website
+    needs: [check, templates, changes]
+    if: needs.changes.outputs.site == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: site
+      url: ${{ steps.deploy.outputs.url }}
+    permissions:
+      contents: read
+      id-token: write
+    concurrency:
+      group: deploy-site
+      cancel-in-progress: false
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      SITE_STACK: ${{ vars.SITE_STACK }}
+      API_STACK: ${{ vars.API_STACK }}
+      CFN_EXECUTION_ROLE_ARN: ${{ vars.CFN_EXECUTION_ROLE_ARN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - id: deploy
+        run: |
+          scripts/ci/deploy-site.sh | tee deploy.log
+          echo "url=$(grep -o 'https://[^ ]*' deploy.log | tail -1)" >> "$GITHUB_OUTPUT"
+
+  build-backend:
+    name: Build backend image
+    # Building the image puts nothing live, so it starts with the tests instead of after them.
+    needs: [changes]
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - uses: docker/setup-buildx-action@v3
+      - name: Build and push the arm64 runtime image
+        run: |
+          IMAGE="$(scripts/ci/build-runtime-image.sh | tail -1)"
+          {
+            echo "### Backend image ready"
+            echo "\`$IMAGE\`"
+            echo
+            echo "Nothing is live yet. To ship it: **Actions → Deploy backend → Run workflow** on \`main\`."
+          } >> "$GITHUB_STEP_SUMMARY"

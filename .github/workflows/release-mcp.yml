@@ -1,0 +1,57 @@
+name: Publish MCP installer to npm
+
+# Manual only: Actions → "Publish MCP installer to npm" → Run workflow, on main.
+# Publishes brainrotten-mcp to npm with npm Trusted Publishing (OIDC, no stored token) and provenance.
+# It creates no GitHub Release and no GitHub Package: npm is the only place the installer lives.
+#   1. Bump "version" in apps/companion/package.json and push to main.
+#   2. Run this workflow.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-mcp
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish brainrotten-mcp
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write   # npm Trusted Publishing and provenance
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - name: npm with Trusted Publishing support
+        run: npm install -g npm@latest
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Installer tests (config writers and real stdio MCP)
+        run: pnpm --filter @brainrot/companion exec vitest run src/standalone
+      - name: Version
+        id: version
+        run: |
+          version="$(node -p "require('./apps/companion/package.json').version")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if npm view "brainrotten-mcp@$version" version >/dev/null 2>&1; then echo "published=true" >> "$GITHUB_OUTPUT"; else echo "published=false" >> "$GITHUB_OUTPUT"; fi
+      - name: Pack
+        run: node scripts/build-mcp-package.mjs --out release --guides release
+      - name: Publish to npm
+        if: steps.version.outputs.published == 'false'
+        run: npm publish "./release/brainrotten-mcp-${{ steps.version.outputs.version }}.tgz" --access public --provenance
+      - name: Summary
+        run: |
+          echo "### brainrotten-mcp ${{ steps.version.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.version.outputs.published == 'true' && 'Already on npm; nothing published.' || 'Published to npm.' }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Install: \`npx -y brainrotten-mcp@latest setup\`" >> "$GITHUB_STEP_SUMMARY"

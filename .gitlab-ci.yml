@@ -1,7 +1,7 @@
 # Every push and merge request runs the checks. A push to main also:
 #   - deploys the website (S3 + CloudFront) when site files changed, and
 #   - builds the backend image when backend files changed; ship it with the manual "deploy-backend" job.
-# A tag mcp-v<version> publishes the brainrotten-mcp installer to npm (Trusted Publishing, no stored token).
+# The brainrotten-mcp installer is published to npm from GitHub (.github/workflows/release-mcp.yml).
 # Run a pipeline on main with DEPLOY_ALL=true to deploy everything even if nothing changed.
 #
 # AWS access is keyless: GitLab signs an ID token, and the AWS CLI exchanges it for the deploy role
@@ -13,7 +13,6 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_COMMIT_BRANCH == "develop"
-    - if: $CI_COMMIT_TAG =~ /^mcp-v/
     - if: $CI_PIPELINE_SOURCE == "web"
 
 stages: [check, deploy]
@@ -147,38 +146,3 @@ deploy-backend:
     - pip install --quiet --break-system-packages aws-sam-cli
     - IMAGE="$(scripts/ci/build-runtime-image.sh | tail -1)"
     - scripts/ci/deploy-backend.sh "$IMAGE"
-
-release-mcp:
-  stage: deploy
-  extends: .node
-  rules:
-    - if: $CI_COMMIT_TAG =~ /^mcp-v/
-  id_tokens:
-    NPM_ID_TOKEN:
-      aud: npm:registry.npmjs.org
-    SIGSTORE_ID_TOKEN:
-      aud: sigstore
-  script:
-    - npm install -g npm@latest >/dev/null
-    - pnpm build
-    - pnpm --filter @brainrot/companion exec vitest run src/standalone
-    - VERSION="$(node -p "require('./apps/companion/package.json').version")"
-    - '[ "${CI_COMMIT_TAG#mcp-v}" = "$VERSION" ] || { echo "Tag $CI_COMMIT_TAG does not match version $VERSION" >&2; exit 1; }'
-    - node scripts/build-mcp-package.mjs --out release --guides release
-    - if npm view "brainrotten-mcp@$VERSION" version >/dev/null 2>&1; then echo "Already on npm."; else npm publish "./release/brainrotten-mcp-$VERSION.tgz" --access public --provenance; fi
-  artifacts:
-    paths: [release/*.tgz]
-
-# The GitLab release page for the tag, with the installer tarball attached.
-release-mcp-page:
-  stage: deploy
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
-  needs: [{job: release-mcp, artifacts: true}]
-  rules:
-    - if: $CI_COMMIT_TAG =~ /^mcp-v/
-  script:
-    - echo "Release $CI_COMMIT_TAG"
-  release:
-    tag_name: $CI_COMMIT_TAG
-    name: brainrotten-mcp ${CI_COMMIT_TAG}
-    description: 'Install: `npx -y brainrotten-mcp@latest setup` · npm: https://www.npmjs.com/package/brainrotten-mcp'

@@ -1,6 +1,5 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/brainrotten-mcp"><img alt="npm" src="https://img.shields.io/npm/v/brainrotten-mcp?color=684393&label=npm%20brainrotten-mcp"></a>
-  <a href="https://gitlab.com/wdipak/brainrotten/-/pipelines"><img alt="pipeline" src="https://gitlab.com/wdipak/brainrotten/badges/main/pipeline.svg"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/code-MIT-30263c"></a>
   <a href="https://d3sk6lwsh4ufyv.cloudfront.net"><img alt="Website" src="https://img.shields.io/badge/try%20it-website-f0b19b"></a>
 </p>
@@ -141,7 +140,7 @@ Deploy from your own computer with your AWS login: `pnpm deploy:site` (website) 
 
 The same steps can also run in GitLab CI: every push and merge request runs the checks (`.gitlab-ci.yml`). On `main`, website changes go live automatically. Backend changes build the Lambda image straight away and go live when you press play on the **deploy-backend** job (about 20 seconds for code-only changes). GitLab signs in to AWS with OIDC, so no AWS keys are stored anywhere. One-time setup: `scripts/ci/bootstrap.sh`.
 
-To release the installer, bump the version in `apps/companion/package.json`, push to `main`, then push the tag `mcp-v<version>`. The pipeline publishes `brainrotten-mcp` to npm through Trusted Publishing with provenance and creates a GitLab release.
+To release the installer, bump the version in `apps/companion/package.json`, push to `main`, then run **Actions → Publish MCP installer to npm** on GitHub. It publishes `brainrotten-mcp` to npm through Trusted Publishing with provenance; there are no GitHub Releases.
 
 ---
 
@@ -151,4 +150,4 @@ Brainrotten is an **unofficial, non-commercial fan project**. The cartoon charac
 
 The code is released under the [MIT License](LICENSE). That license does not cover the third-party characters, voices, footage or fonts.
 
-Questions and ideas: [issues](https://gitlab.com/wdipak/brainrotten/-/issues).
+Questions and ideas: [issues](https://github.com/sea-deep/brainrotten/issues). Mirror: [gitlab.com/wdipak/brainrotten](https://gitlab.com/wdipak/brainrotten).

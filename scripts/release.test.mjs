@@ -28,7 +28,7 @@ test('CLI submits once with a stable request ID and downloads authenticated loca
 test('no third-party media is tracked in git (it lives in the private media bucket)',async()=>{
   const {execFileSync}=await import('node:child_process');
   const tracked=execFileSync('git',['ls-files'],{encoding:'utf8'}).split('\n').filter(Boolean);
-  const banned=/^(assets\/(characters|gameplay)\/|apps\/web\/public\/characters\/|apps\/web\/public\/flow\/|apps\/web\/public\/og\.png$|\.github\/)|\.(mp4|mov|webm|wav|m4a|mp3|flac)$|^(apps\/web\/public\/examples|examples\/website-archive)\/[^/]+\/[^/]+\.png$/;
+  const banned=/^(assets\/(characters|gameplay)\/|apps\/web\/public\/characters\/|apps\/web\/public\/flow\/|apps\/web\/public\/og\.png$|\.github\/(?!workflows\/[\w-]+\.ya?ml$))|\.(mp4|mov|webm|wav|m4a|mp3|flac)$|^(apps\/web\/public\/examples|examples\/website-archive)\/[^/]+\/[^/]+\.png$/;
   assert.deepEqual(tracked.filter(file=>banned.test(file)),[],'Third-party media must not be committed; use pnpm media:push.');
 });
 
