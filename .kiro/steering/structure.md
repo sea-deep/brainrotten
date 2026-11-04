@@ -51,8 +51,19 @@ Never commit `.env` files. The test suite uses synthetic values.
 ## Git conventions
 
 - Commit messages: `type(scope): description` (conventional commits)
-- Never commit: `.env`, `*.key`, `*.pem`, `data/` directory contents, `node_modules/`
+- Never commit: `.env`, `*.key`, `*.pem`, `data/` directory contents, `node_modules/`, or any third-party media (see "Scripts and operations" below)
 - The `pnpm-lock.yaml` lockfile is committed
+- Remotes: GitHub (`sea-deep/brainrotten`) is home; GitLab (`wdipak/brainrotten`, remote `origin`) is the mirror and CI. Do not push, tag or create GitHub Releases without the user's instruction.
+
+## Scripts and operations
+
+These `scripts/` entry points back the `pnpm` commands referenced across the repo:
+
+- `media.mjs` (`pnpm media:pull` / `media:push`) — move third-party media in/out of the private bucket; nothing third-party is ever committed, enforced by `scripts/release.test.mjs` and `scripts/git-hooks/pre-push`.
+- `deploy-local.sh` (`pnpm deploy:site` / `deploy:backend`) — deploy site or backend from your own machine; the same steps run in GitLab CI over OIDC.
+- `ops-status.mjs` (`pnpm ops:status`) — read-only hosted health: queue, current jobs, last-24h outcomes and failure reasons, script-model fallbacks.
+- `ops-refund.mjs` (`pnpm ops:refund <jobId>`) — return the free video for a job stuck on review (our own error).
+- `app-sync.mjs` (`pnpm app:sync`) — read-only BrainRotGram clone in `../brainrotgram`, checked against the live OpenAPI and Cognito.
 
 ## Adding a new MCP tool
 

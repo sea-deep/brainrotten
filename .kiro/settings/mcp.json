@@ -9,7 +9,19 @@
       ],
       "disabled": false,
       "autoApprove": [
-        "*"
+        "get_video_formats",
+        "get_character_guide",
+        "get_learning_guide",
+        "list_video_voices",
+        "validate_video_script",
+        "get_video_status",
+        "list_videos",
+        "get_video_learning_pack",
+        "get_video_review",
+        "list_learning_sessions",
+        "get_learning_session",
+        "get_change_context",
+        "search_broll_image"
       ]
     }
   }

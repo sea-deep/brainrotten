@@ -33,12 +33,25 @@ apps/web          React player (Vite)
 packages/contracts Zod schemas + inferred types (single source of truth)
 packages/core     business logic (transport-independent)
 packages/media   shared script, clone speech, B-roll and FFmpeg renderer
-apps/cloud/src         JWT-authenticated AWS adapter (not deployed)
-infra/sam         SAM template (not deployed)
+apps/cloud/src    JWT-authenticated AWS adapter (deployed: Lambda API + render worker)
+infra/sam         API stack (API Gateway, Lambda, SQS, DynamoDB, S3, Cognito)
+infra/site        website stack (private S3 behind CloudFront)
+infra/ci          keyless GitLab CI deploy role (OIDC) and the private media bucket
 examples/         fixture repo + example lessons
+scripts/          build, release, deploy and ops scripts (scripts/ci for the pipeline)
 .kiro/            specs, steering, skills, hooks, settings
 docs/             decisions, handoff, feasibility (preserved)
 ```
+
+## Scripts you will actually use
+
+- `pnpm check` — build, typecheck, lint and every test (TypeScript and Python); the gate before anything is "done".
+- `pnpm verify:e2e` — render a real MP4 in every format through the MCP and HTTP paths with fake providers (no credits).
+- `pnpm deploy:site` / `pnpm deploy:backend` — deploy from this machine with your AWS login (`scripts/deploy-local.sh`); the backend path needs Docker. The same steps run in GitLab CI via OIDC.
+- `pnpm ops:status` — read-only hosted health: queue depth, jobs now, last-24h outcomes with failure reasons, and script-model fallbacks.
+- `pnpm ops:refund <jobId>` — return the free video for a hosted job stuck on review (our own error), marking it failed with a clear message.
+- `pnpm app:sync` — update the read-only BrainRotGram clone in `../brainrotgram` and check every API call and sign-in setting it uses against the live backend.
+- `pnpm media:pull` / `pnpm media:push` — move third-party media in and out of the private bucket (`scripts/media.mjs`); never commit that media.
 
 ## Architectural invariants — never violate
 
@@ -72,3 +85,10 @@ docs/             decisions, handoff, feasibility (preserved)
 - Sketch boards use `@dagrejs/dagre` for layout and `roughjs` for hand-drawn shapes, with the Virgil font (OFL, shipped as WOFF2 and decompressed at render time).
 - Icons: Lucide (generic) and Simple Icons (brands); emoji: Twemoji. All local, nothing fetched while rendering.
 - Speech: ElevenLabs cloned voices; Pause & Predict silence inserted with FFmpeg.
+- Script text: `packages/media/src/scriptProviders.ts`. `SCRIPT_PROVIDERS = [gemini, paper]`; in `auto` mode a failed or invalid Gemini script falls back to Paper (`withScriptFallback`). An explicitly chosen provider never falls back. Agents supplying a complete script skip this entirely.
+
+## Media, remotes and release
+
+- **Third-party media is never committed** (character art, voices, gameplay, example videos/posters, `og.png`, any `.mp4`/`.mp3`/`.wav`). It lives in the private bucket (stack `brainrotten-ci`, output `MediaBucketName`); move it with `pnpm media:pull` / `pnpm media:push`. Enforced by a test in `scripts/release.test.mjs` and the `scripts/git-hooks/pre-push` hook (install once: `git config core.hooksPath scripts/git-hooks`). Never bypass either.
+- **Remotes:** GitHub (`sea-deep/brainrotten`) is home; GitLab (`wdipak/brainrotten`, remote `origin`) is the mirror and CI.
+- **No GitHub Releases or tags.** The installer `brainrotten-mcp` is published to npm only via `.github/workflows/release-mcp.yml` (manual, Trusted Publishing with provenance).

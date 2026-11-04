@@ -2,9 +2,11 @@
   "version": "v1",
   "_disabled": true,
   "_notes": [
-    "DISABLED BY DEFAULT. Enable deliberately by removing the '_disabled' field.",
-    "Only acts when BRAINROT_AUTO_LESSON=true, so finishing a task never spends speech credits by surprise.",
-    "Missing Brainrotten companion must NOT block coding work."
+    "DISABLED BY DEFAULT. Enable deliberately by removing the '_disabled' field (see HACKATHON.md).",
+    "Opt-in: it does nothing unless BRAINROT_AUTO_LESSON=true is set or the task explicitly asks for a video.",
+    "Asks first: generating a video spends speech credits, so the hook asks before calling generate_short_video.",
+    "No self-trigger loop: this fires on PostTaskExec (a spec-task status change). Making a video is MCP tool calls, not a task status change, so it cannot re-fire PostTaskExec on itself.",
+    "Never blocks coding: if the Brainrotten companion is unreachable, skip silently."
   ],
   "hooks": [
     {
@@ -12,7 +14,7 @@
       "trigger": "PostTaskExec",
       "action": {
         "type": "agent",
-        "prompt": "A spec task was just completed. Only if BRAINROT_AUTO_LESSON=true is set (or the task explicitly asks for a video), explain this task's change as a Brainrotten video using the brainrotten MCP server: pick the format (code changed -> prreview, parts interacting -> groupchat, architecture -> sketch, options weighed -> tierlist, concept -> skit), call get_video_formats for that format and copy its storyExample structure, write the full script from the real change, call validate_video_script and fix every issue, then call generate_short_video once and report the job id. Otherwise do nothing. If the companion is not reachable, skip silently."
+        "prompt": "A spec task was just completed. Do nothing unless BRAINROT_AUTO_LESSON=true is set or the task explicitly asked for a video; otherwise stop here. When opted in: pick the format (systems/architecture/bug/change -> sketch; concept or misconception -> skit; a real diff -> prreview; options weighed -> tierlist; a literal conversation -> groupchat), call get_video_formats for that format and copy its storyExample structure, and write the full script from the real change (never invent code, test results or metrics). Because a video spends speech credits, ASK the user for confirmation before generating. Only after they confirm, call validate_video_script, fix every issue, then call generate_short_video once and report the job id. If the Brainrotten companion is not reachable, skip silently. Do not start another video from this hook."
       }
     }
   ]

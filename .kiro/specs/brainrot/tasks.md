@@ -28,5 +28,14 @@ Spec revision: 2026-11-01. Requirement numbers refer to `requirements.md`.
   - [x] 13.5 Deploy pipeline: GitLab CI with OIDC (moved from GitHub Actions), automatic site deploys, one-click backend deploys
 - [ ] 14. BrainRotGram Android app against the hosted API (Req 7)
   - [x] 14.1 Native Cognito app client (`AndroidClient`, `brainrotgram://` callbacks)
-  - [ ] 14.2 Sessions, library, player, predictions and reflections
-- [ ] 15. Demo: an agent explains its own change in each format, recorded end to end
+  - [ ] 14.2 Sessions, library, player, predictions and reflections — app lives in a separate repo; `pnpm app:sync` checks a read-only clone against the live API
+- [ ] 15. Demo: an agent explains its own change in each format, recorded end to end — not done; one sketch "watermark" video was made in the hackathon-polish pass (see `.kiro/specs/hackathon-polish/`)
+
+## Since this spec (2026-11-04 hackathon-polish note)
+
+What changed after this spec was written, verified against the current repo:
+
+- **GitLab is now the CI/deploy remote.** CI moved from GitHub Actions to GitLab CI with keyless OIDC (`.gitlab-ci.yml`, `infra/ci`, `scripts/ci`). GitHub (`sea-deep/brainrotten`) stays the home remote; GitLab (`wdipak/brainrotten`) is the mirror. (See task 13.5.) The npm installer still publishes from GitHub via `.github/workflows/release-mcp.yml`; no GitHub Releases or tags.
+- **Private media bucket.** Character art, voices, gameplay and example videos are no longer in git. They live in the `brainrotten-ci` stack's media bucket and move with `pnpm media:pull` / `pnpm media:push` (`scripts/media.mjs`). A test in `scripts/release.test.mjs` and `scripts/git-hooks/pre-push` block committing them.
+- **Per-job telemetry.** `pnpm ops:status` reports queue depth, jobs in flight, last-24h outcomes with failure reasons, and how often the script model fell back (Gemini → Paper).
+- **Refunds on our own errors.** `pnpm ops:refund <jobId>` returns the free video for a hosted job stuck on review, marking it failed with a clear retry message.

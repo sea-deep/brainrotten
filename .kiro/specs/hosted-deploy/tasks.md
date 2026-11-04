@@ -157,3 +157,26 @@ Confirm region (default: ap-south-1) before starting T-1.
 - [ ] T-13.3  Ask user before creating the commit and pushing a new branch
 - [ ] T-13.4  Create commit: `feat(cloud): hosted deploy, AndroidClient, Android integration handoff`
 - [ ] T-13.5  Push new branch; ask user before opening PR
+
+---
+
+## Since this spec (2026-11-04 hackathon-polish note)
+
+Honest status at the end of the hackathon pass, kept separate from the per-task checkboxes
+above because this pass did not re-run the AWS steps and cannot tick individual boxes from
+in-repo evidence alone:
+
+- **The hosted backend is live.** Site and API stacks are deployed, Google sign-in works,
+  quota reservation works, and one hosted video rendered end to end (~61 s). See
+  `.kiro/specs/brainrot/tasks.md` task 13 and `ANDROID-INTEGRATION.md` for the real values.
+  So Phases 2–10 happened even though their per-step boxes above are unticked — treat the
+  outcome as done and the boxes as unverified-in-repo, not as outstanding work.
+- **Deploys run locally or in GitLab CI.** `pnpm deploy:site` / `pnpm deploy:backend`
+  (`scripts/deploy-local.sh`) deploy from a maintainer's machine; GitLab CI runs the same
+  steps keylessly over OIDC (`.gitlab-ci.yml`, `infra/ci`). The one-time CI bootstrap is
+  `scripts/ci/bootstrap.sh`.
+- **Operations.** `pnpm ops:status` gives read-only health (queue, outcomes, script-model
+  fallbacks); `pnpm ops:refund <jobId>` returns a free video for a job stuck on review after
+  one of our own errors.
+- **Still open:** the BrainRotGram app screens (brainrot task 14.2) and the full
+  record-every-format demo (brainrot task 15).
