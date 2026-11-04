@@ -18,6 +18,7 @@ ORIGIN="$(aws cloudformation describe-stacks --region "$AWS_REGION" --stack-name
 LIVE_ALERT_EMAIL="$(aws cloudformation describe-stacks --region "$AWS_REGION" --stack-name "$API_STACK" --query "Stacks[0].Parameters[?ParameterKey=='AlertEmail'].ParameterValue | [0]" --output text 2>/dev/null || true)"
 [[ "$LIVE_ALERT_EMAIL" == "None" ]] && LIVE_ALERT_EMAIL=""
 ALERT_EMAIL="${ALERT_EMAIL:-$LIVE_ALERT_EMAIL}"
+ALERT_PARAM=();[[ -n "$ALERT_EMAIL" ]] && ALERT_PARAM=("AlertEmail=$ALERT_EMAIL")   # SAM rejects an empty value; the default is no email
 
 # Fast path: when the template and every setting except the image are already live, swap the image on the two
 # Lambda functions directly (about 20 seconds) instead of a full CloudFormation update (about 2 minutes).
@@ -61,7 +62,7 @@ sam deploy \
     "GoogleOAuthSecretArn=$GOOGLE_OAUTH_SECRET_ARN" \
     "ProviderSecretArn=$PROVIDER_SECRET_ARN" \
     "EnableHostedTrial=$ENABLE_HOSTED_TRIAL" \
-    "AlertEmail=$ALERT_EMAIL" \
+    ${ALERT_PARAM[@]+"${ALERT_PARAM[@]}"} \
   --tags "TemplateSha=$TEMPLATE_SHA"
 fi
 

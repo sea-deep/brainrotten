@@ -9,7 +9,7 @@ export function videoOpenApi(mode:'local'|'hosted'='local',baseUrl='/api/v1'){
   const schema=(value:z.ZodType)=>{const result=z.toJSONSchema(value);delete result['$schema'];return result;};
   const ref=(name:string)=>({$ref:`#/components/schemas/${name}`});
   const json=(value:unknown)=>({'application/json':{schema:value}});
-  const error={description:'Request rejected. Branch on code (stable), show message, retry only when retryable is true. 400 malformed or missing JSON, 413 body too large, 415 body not application/json, 422 failed validation. Retry an uncertain POST /videos only with its original requestId, which makes it idempotent.',content:json(ref('Error'))};
+  const error={description:'Request rejected. Branch on code (stable), show message, retry only when retryable is true. 400 malformed or missing JSON, 413 body too large, 415 body not application/json, 422 failed validation. Retry an uncertain POST /videos only with its original requestId, which makes it idempotent. A 401 for a missing or invalid token comes from API Gateway itself and carries only message.',content:json(ref('Error'))};
   const job={description:'Video job and current progress. Ready hosted jobs include short-lived signed media URLs.',content:json(ref('VideoJob'))};
   const paths:Record<string,unknown>={
     '/health':{get:{summary:'Service liveness',security:[],responses:{200:{description:'Service is responding'}}}},
