@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-// Keeps a read-only clone of the BrainRotGram Android app (a teammate's repo) next to this one, then checks that
-// it still fits the live backend. We never edit or push the clone.
+// Updates the BrainRotGram checkout on its default branch, then checks it against
+// the live backend and runs Flutter analysis/tests. Feature branches use --no-pull.
 //
 //   pnpm app:sync           update ../brainrotgram (clone it if missing) and run the checks
-//   pnpm app:sync --no-pull  only run the checks
+//   pnpm app:sync --no-pull  check local work without pulling
+//   pnpm app:sync --skip-flutter  only run API/auth integration checks
 //
 // Checks: the API base URL and every API call the app makes exist in the live OpenAPI spec; the app's Cognito
 // client exists with its redirect and sign-out URLs, the code flow and Google sign-in; the API's JWT authorizer
@@ -25,7 +26,10 @@ if(!process.argv.includes('--no-pull')){
     execFileSync('git',['-c','credential.helper=','clone','-q',REPO,app],{stdio:'inherit',env:{...process.env,GIT_TERMINAL_PROMPT:'0'}});
     console.log(`Cloned ${REPO} into ${app}`);
   }else{
-    if(git('status','--porcelain'))throw new Error(`${app} has local changes; this clone is read-only. Discard them first.`);
+    if(git('status','--porcelain'))throw new Error('App checkout has local changes. Use --no-pull to check local work.');
+    const branch=git('branch','--show-current');
+    const defaultBranch=git('symbolic-ref','--short','refs/remotes/origin/HEAD').replace(/^origin\//,'');
+    if(branch!==defaultBranch)throw new Error('App checkout is on a feature branch. Use --no-pull to check local work.');
     const before=git('rev-parse','HEAD');
     git('-c','credential.helper=','pull','-q','--ff-only');
     const after=git('rev-parse','HEAD');
@@ -36,7 +40,10 @@ console.log(`App at ${git('log','-1','--format=%h %s (%cr)')}\n`);
 
 const read=file=>fs.readFileSync(path.join(app,file),'utf8');
 const constants=read('lib/api/api_constants.dart');
-const value=name=>constants.match(new RegExp(`${name}\\s*=\\s*'([^']+)'`))?.[1];
+const value=name=>{
+  const expression=constants.match(new RegExp(`${name}\\s*=([\\s\\S]*?);`))?.[1]??'';
+  return expression.match(/defaultValue:\s*'([^']+)'/)?.[1]??expression.match(/'([^']+)'/)?.[1];
+};
 const apiBase=value('apiBaseUrl'),clientId=value('clientId'),redirect=value('redirectUri'),signOut=value('signOutUri'),issuer=value('issuer'),characters=value('characterBaseUrl');
 
 // API calls: every _dio.<method>('/path') in the app must exist in the live spec.
@@ -65,6 +72,17 @@ try{
 
 const image=await fetch(`${characters}/motu.png`,{method:'HEAD'}).catch(()=>null);
 check(image?.ok===true,`character images served from ${characters}`);
+
+if(!process.argv.includes('--skip-flutter')){
+  if(fs.existsSync(path.join(app,'test/fixtures/api-contract.json'))){
+    try{execFileSync(process.execPath,[path.join(root,'scripts/app-contract-fixtures.mjs'),'--check'],{stdio:'inherit',env:{...process.env,BRAINROTGRAM_DIR:app}});check(true,'app fixtures match canonical contracts');}
+    catch{check(false,'app fixtures match canonical contracts (run pnpm build first)');}
+  }else check(false,'app canonical contract fixtures exist');
+  for(const args of [['analyze'],['test']]){
+    try{execFileSync('flutter',args,{cwd:app,stdio:'inherit'});check(true,`flutter ${args.join(' ')}`);}
+    catch{check(false,`flutter ${args.join(' ')}`);}
+  }
+}
 
 const failed=results.filter(ok=>!ok).length;
 console.log(failed?`\n${failed} integration problem(s).`:`\nAll ${results.length} integration checks passed.`);

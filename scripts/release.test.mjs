@@ -49,3 +49,22 @@ test('explicit example export supports narrated V3 bundles and rewrites every pu
     const result=await run([path.resolve('scripts/export-examples.mjs'),'whiteboard-test='+id],{BRAINROT_DATA_DIR:data},directory);assert.equal(result.code,0,result.stderr);const publicRoot=path.join(directory,'apps/web/public/examples'),[entry]=JSON.parse(await fs.readFile(path.join(publicRoot,'index.json'),'utf8'));assert.equal(entry.format,'whiteboard');assert.equal(entry.videoUrl,'/examples/whiteboard-test/video.mp4');assert.equal(entry.outputs.notesUrl,'/examples/whiteboard-test/notes.md');assert.ok(!JSON.stringify(entry.outputs).includes('/api/'));for(const name of ['learning.json','notes.md','captions.srt'])assert.ok((await fs.stat(path.join(publicRoot,'whiteboard-test',name))).isFile());
   }finally{await fs.rm(directory,{recursive:true,force:true});}
 });
+
+test('Android contract fixture checks detect drift without overwriting local changes',async()=>{
+  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'brainrotten-app-contract-'));
+  const env={BRAINROTGRAM_DIR:directory},file=path.join(directory,'test/fixtures/api-contract.json');
+  try{
+    const missing=await run(['scripts/app-contract-fixtures.mjs','--check'],env);
+    assert.equal(missing.code,1);
+    await assert.rejects(fs.access(file));
+    const exported=await run(['scripts/app-contract-fixtures.mjs'],env);
+    assert.equal(exported.code,0,exported.stderr);
+    const original=await fs.readFile(file,'utf8');
+    const matched=await run(['scripts/app-contract-fixtures.mjs','--check'],env);
+    assert.equal(matched.code,0,matched.stderr);
+    await fs.writeFile(file,original.replace('215.6','180'));
+    const stale=await run(['scripts/app-contract-fixtures.mjs','--check'],env);
+    assert.equal(stale.code,1);
+    assert.equal(await fs.readFile(file,'utf8'),original.replace('215.6','180'));
+  }finally{await fs.rm(directory,{recursive:true,force:true});}
+});

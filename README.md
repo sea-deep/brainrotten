@@ -111,7 +111,7 @@ examples/        Test fixtures
 
 - **REST API:** `https://fqfewiusg8.execute-api.ap-south-1.amazonaws.com/api/v1` with a Cognito access token. OpenAPI spec at [`/openapi.json`](https://fqfewiusg8.execute-api.ap-south-1.amazonaws.com/api/v1/openapi.json); every format's rules and a complete example at `GET /formats/guide?format=sketch`.
 - **Python SDK:** `pip install ./sdk/python`, then `Brainrotten(account=True).make_video(request)` validates, generates, waits and returns a small summary. See [sdk/python/README.md](sdk/python/README.md).
-- **Mobile:** [ANDROID-INTEGRATION.md](ANDROID-INTEGRATION.md) covers sign-in and every endpoint; [BRAINROTGRAM.md](BRAINROTGRAM.md) is the full spec for the BrainRotGram Android app. The app itself lives in a separate repository; `pnpm app:sync` keeps a read-only clone in `../brainrotgram` and checks every API call and sign-in setting it uses against the live backend.
+- **Mobile:** [ANDROID-INTEGRATION.md](ANDROID-INTEGRATION.md) covers sign-in and every endpoint; [BRAINROTGRAM.md](BRAINROTGRAM.md) is the full spec for the BrainRotGram Android app. The app itself lives in a separate repository; `pnpm app:sync` updates the default branch in `../brainrotgram`, checks its API calls and sign-in settings against the live backend, verifies canonical contract fixtures, and runs `flutter analyze` and `flutter test`. Use `pnpm app:sync --no-pull` for local feature work, or `--skip-flutter` for API/auth checks only. After `pnpm build`, `node scripts/app-contract-fixtures.mjs` refreshes the synthetic Android fixtures for coordinated contract changes.
 
 ### Run it locally
 
