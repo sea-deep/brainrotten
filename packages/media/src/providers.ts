@@ -4,12 +4,13 @@ import * as path from 'node:path';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {z} from 'zod/v4';
-import {VideoScriptSchema,QuestionAnswerScriptSchema,NarratedScriptSchema,WhiteboardScriptSchema,PovScriptSchema,GroupChatScriptSchema,PrReviewScriptSchema,SketchScriptSchema,TierListScriptSchema,scriptForFormat,type VideoScript,type ValidatedVideoInput,type CharacterId,fitChatCodeInRawScript} from '@brainrot/contracts';
+import {maxSecondsFor,targetWordsFor,estimateSpokenSeconds,VideoScriptSchema,QuestionAnswerScriptSchema,NarratedScriptSchema,WhiteboardScriptSchema,PovScriptSchema,GroupChatScriptSchema,PrReviewScriptSchema,SketchScriptSchema,TierListScriptSchema,scriptForFormat,type VideoScript,type ValidatedVideoInput,type CharacterId,fitChatCodeInRawScript} from '@brainrot/contracts';
 import {providerKeys} from './env.js';
 import {CHARACTERS,clonedVoices,clonedVoiceCandidates,castCharacters,characterGuide} from './characters.js';
 import {GenerationError} from './generationError.js';
 import {GROUP_CHAT_RULES,PR_REVIEW_RULES,SKETCH_RULES,TIER_RULES} from './formatGuides.js';
 import {romanizeScriptStrings} from './romanize.js';
+import {pauseSeconds} from './pause.js';
 import {unknownChatIcons,GENERIC_CHAT_ICONS,BRAND_CHAT_ICON_EXAMPLES} from './chatIcons.js';
 import {activeScriptProvider,withScriptFallback} from './scriptProviders.js';
 export {GenerationError} from './generationError.js';
@@ -46,6 +47,11 @@ export function dropUnknownIcons(raw:unknown):number{
   for(const node of list(script.sketch?.nodes))optional(node);for(const item of list(script.tierlist?.items))optional(item);
   return fixed;
 }
+/** Free check before any speech is paid for: the script must fit the allowed length for the chosen duration. */
+function checkSpokenLength(script:VideoScript,input:ValidatedVideoInput):void{
+  const estimated=estimateSpokenSeconds(script,input.speechSpeed),limit=maxSecondsFor(input.durationSeconds);
+  if(estimated>limit)throw new Error(`dialogue: too long. It would take about ${estimated} seconds to speak, and this video is about ${input.durationSeconds} seconds (at most ${limit}). Use about ${targetWordsFor(input.durationSeconds,input.speechSpeed)} words in total: shorten lines rather than dropping them.`);
+}
 export async function createScript(input:ValidatedVideoInput,available?:CharacterId[]):Promise<VideoScript>{
   const allowed=castCharacters(input.cast).filter(id=>!available||available.includes(id));
   const validate=(script:VideoScript)=>{
@@ -54,7 +60,7 @@ export async function createScript(input:ValidatedVideoInput,available?:Characte
     if(result.dialogue.some(line=>!allowed.includes(line.speaker)))throw new GenerationError(input.format==='skit'?'Choose two ready characters from the selected roster. No speech was billed.':input.format==='groupchat'?'Every group chat member needs a ready voice from the selected roster. No speech was billed.':input.format==='prreview'?'Every reviewer needs a ready voice from the selected roster. No speech was billed.':'Choose a ready narrator from the selected roster. No speech was billed.');
     return result;
   };
-  if(input.script)return validate(VideoScriptSchema.parse(input.script));
+  if(input.script){const script=validate(VideoScriptSchema.parse(input.script));try{checkSpokenLength(script,input);}catch(error){throw new GenerationError(`${(error as Error).message.replace(/^dialogue: /,'The script is ')} No speech was billed.`);}return script;}
   if(['groupchat','prreview','sketch','tierlist'].includes(input.format))return createInterfaceScript(input,allowed,validate);
   const narrated=input.format!=='skit';
   if(allowed.length<(narrated?1:2))throw new GenerationError(narrated?'A narrator voice must be ready.':'At least two cloned character voices must be ready.');
@@ -63,7 +69,7 @@ export async function createScript(input:ValidatedVideoInput,available?:Characte
   if(input.participants&&(!allowed.includes(input.participants.learner)||!allowed.includes(input.participants.expert)))throw new GenerationError('The selected speakers need ready cloned voices.');
   const scriptProvider=activeScriptProvider(input.scriptProvider);
   if(!scriptProvider)throw new GenerationError('Add the selected Gemini/Paper key in Settings or .env, choose a configured script provider, or provide a complete script through MCP.');
-  const targetWords=Math.round(input.durationSeconds*1.9);
+  const targetWords=targetWordsFor(input.durationSeconds,input.speechSpeed);
   const turns=narrated?Math.max(4,Math.min(12,Math.round(input.durationSeconds/12))):2*Math.max(2,Math.min(10,Math.round(input.durationSeconds/20)));
   const schema=z.toJSONSchema(input.format==='pov'?PovScriptSchema:input.format==='whiteboard'?WhiteboardScriptSchema:narrated?NarratedScriptSchema:QuestionAnswerScriptSchema);
   const props=schema.properties as Record<string,unknown>;
@@ -93,7 +99,7 @@ FACTS: Hardware, software, AI/ML, databases, science and philosophy are all vali
   const user=`SOURCE:\n${input.prompt??''}\n\nExactly ${turns} turns. Around ${targetWords} spoken words total. Keep it compact.`;
   const parse=(raw:string)=>{
     const json=JSON.parse(raw.replace(/^```(?:json)?\s*|\s*```$/g,''));romanizeScriptStrings(json);dropUnknownIcons(json);
-    const script=validate(VideoScriptSchema.parse(json));
+    const script=validate(VideoScriptSchema.parse(json));checkSpokenLength(script,input);
     if(input.quizCount>0&&script.questions?.length!==input.quizCount)throw new Error(`questions: include exactly ${input.quizCount}`);
     for(const line of script.dialogue){const clean=(cue:NonNullable<VideoScript['dialogue'][number]['broll']>)=>{if(cue.kind!=='image')return cue;const {query,caption}=cue;if(!query)throw new Error('A generated image needs a search query');return{kind:'image' as const,query,caption};};if(line.broll)line.broll=clean(line.broll);if(line.brollSequence)line.brollSequence=line.brollSequence.map(clean);}
     return script;
@@ -127,7 +133,7 @@ async function createInterfaceScript(input:ValidatedVideoInput,allowed:Character
   const scriptProvider=activeScriptProvider(input.scriptProvider);
   if(!scriptProvider)throw new GenerationError('Add the selected Gemini/Paper key in Settings or .env, choose a configured script provider, or provide a complete script through MCP.');
   const turns=chat?Math.max(6,Math.min(16,Math.round(input.durationSeconds/6))):sketch?Math.max(4,Math.min(12,Math.round(input.durationSeconds/8))):Math.max(4,Math.min(10,Math.round(input.durationSeconds/9)));
-  const targetWords=Math.round(input.durationSeconds*1.9),block=chat?'chat':tier?'tierlist':sketch?'sketch':'pr';
+  const targetWords=targetWordsFor(input.durationSeconds,input.speechSpeed),block=chat?'chat':tier?'tierlist':sketch?'sketch':'pr';
   const schema=z.toJSONSchema(chat?GroupChatScriptSchema:tier?TierListScriptSchema:sketch?SketchScriptSchema:PrReviewScriptSchema) as {properties:Record<string,unknown>;required?:string[]};
   const props=schema.properties;
   for(const key of['participants','question',...['chat','pr','sketch','tierlist'].filter(k=>k!==block),...(sketch?[]:['narrator'])])delete props[key];
@@ -157,7 +163,7 @@ End with a concise takeaway field. ${input.quizCount?`Include exactly ${input.qu
   const parse=(raw:string)=>{
     // Models often overrun the phone-sized code bubble; wrap or trim it instead of failing the whole script.
     const json=JSON.parse(raw.replace(/^```(?:json)?\s*|\s*```$/g,''));romanizeScriptStrings(json);if(chat)fitChatCodeInRawScript(json);dropUnknownIcons(json);
-    const script=validate(VideoScriptSchema.parse(json));
+    const script=validate(VideoScriptSchema.parse(json));checkSpokenLength(script,input);
     if(input.quizCount>0&&script.questions?.length!==input.quizCount)throw new Error(`questions: include exactly ${input.quizCount}`);
     return script;
   };
@@ -271,6 +277,20 @@ async function voiceChunk(dialogue:VideoScript['dialogue'],voiceIds:Record<Chara
   const timing=parseTiming({title:'chunk',dialogue},alignment,payload.voice_segments);
   const result={...timing,durationSeconds:await durationOf(audioPath)};await fs.writeFile(timingPath,JSON.stringify({...result,timingVersion:2}));return{...result,audioPath};
 }
+/**
+ * Re-encodes the speech in a voice-cache folder (its inputs.txt list of chunks) a little faster so it fits
+ * `budgetSeconds`, instead of discarding audio that was already paid for. At most 1.25x faster than requested;
+ * beyond that it throws, because the speech would sound rushed.
+ */
+export async function speedUpToFit(dir:string,durationSeconds:number,budgetSeconds:number,speechSpeed:number):Promise<{path:string;speed:number;durationSeconds:number}>{
+  const factor=durationSeconds/budgetSeconds;
+  if(factor>1.25)throw new Error(`Speech is ${factor.toFixed(2)}x the allowed length; speeding it up that much would sound rushed.`);
+  const speed=speechSpeed*factor,file=path.join(dir,`audio-${speed.toFixed(3)}.mp3`);
+  try{await fs.access(file);}catch{
+    await execFileAsync(process.env['FFMPEG_PATH']??'ffmpeg',['-hide_banner','-loglevel','error','-y','-f','concat','-safe','0','-i',path.join(dir,'inputs.txt'),'-af',`atempo=${speed.toFixed(4)}`,'-c:a','libmp3lame','-b:a','128k',file]);
+  }
+  return{path:file,speed,durationSeconds:await durationOf(file)};
+}
 export async function synthesizeDialogue(script:VideoScript,input:ValidatedVideoInput,dataDir:string):Promise<VoiceResult>{
   if((input.voiceBackend??speechBackend())==='maya-local')return synthesizeLocal(script,input,dataDir);
   const{elevenlabs}=providerKeys();if(!elevenlabs)throw new GenerationError('Add ELEVENLABS_API_KEY in Settings or .env.');
@@ -290,9 +310,16 @@ export async function synthesizeDialogue(script:VideoScript,input:ValidatedVideo
     const concat=path.join(dir,'inputs.txt');await fs.writeFile(concat,parts.map(part=>`file '${part.audioPath.replace(/'/g,"'\\''")}'`).join('\n'));
     await execFileAsync(process.env['FFMPEG_PATH']??'ffmpeg',['-hide_banner','-loglevel','error','-y','-f','concat','-safe','0','-i',concat,'-af',`atempo=${input.speechSpeed}`,'-c:a','libmp3lame','-b:a','128k',audioPath]);
   }
-  const durationSeconds=await durationOf(audioPath);
-  if(durationSeconds>180)throw new GenerationError('The spoken script exceeds three minutes. Audio is cached; shorten the script before rendering.');
+  let durationSeconds=await durationOf(audioPath),speed=input.speechSpeed,finalPath=audioPath;
+  // The chosen length is a target. Speech that runs a little long is sped up to fit (up to 1.25x faster) rather
+  // than throwing away audio that was already paid for; only speech far over the limit fails.
+  const pauseTime=script.dialogue.slice(0,-1).reduce((n,line)=>n+(line.pause?pauseSeconds(line.pause):0),0);
+  const budget=maxSecondsFor(input.durationSeconds)-pauseTime;
+  if(durationSeconds>budget){
+    try{({path:finalPath,speed,durationSeconds}=await speedUpToFit(dir,durationSeconds,budget,input.speechSpeed));}
+    catch{throw new GenerationError(`The spoken script runs about ${Math.round(durationSeconds+pauseTime)} seconds, far longer than a ${input.durationSeconds}-second video. Audio is cached; shorten the script and try again.`);}
+  }
   // ElevenLabs alignment can end a few milliseconds after the audio file does; keep every timing inside the audio.
-  const lastMs=Math.floor(durationSeconds*1000),fit=<T extends {startMs:number;endMs:number}>(item:T):T=>{const endMs=Math.min(lastMs,Math.round(item.endMs/input.speechSpeed));return{...item,startMs:Math.min(Math.round(item.startMs/input.speechSpeed),Math.max(0,endMs-1)),endMs};};
-  return{audioPath,durationSeconds,segments:segments.map(fit),words:words.map(fit)};
+  const lastMs=Math.floor(durationSeconds*1000),fit=<T extends {startMs:number;endMs:number}>(item:T):T=>{const endMs=Math.min(lastMs,Math.round(item.endMs/speed));return{...item,startMs:Math.min(Math.round(item.startMs/speed),Math.max(0,endMs-1)),endMs};};
+  return{audioPath:finalPath,durationSeconds,segments:segments.map(fit),words:words.map(fit)};
 }

@@ -8,3 +8,4 @@ export * from './videoApi.js';
 export * from './videoFormats.js';
 export * from './videoReview.js';
 export * from './learningSession.js';
+export * from './duration.js';

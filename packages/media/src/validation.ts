@@ -1,3 +1,4 @@
+import {estimateSpokenSeconds,maxSecondsFor,targetWordsFor} from '@brainrot/contracts';
 import {GenerateVideoInputSchema,ScriptValidationSchema,scriptForFormat,normalizeScript,CAST_MEMBERS,retiredFormatMessage,type StudioConfig,type ScriptValidation} from '@brainrot/contracts';
 import {z} from 'zod/v4';
 import {requireLatinScript} from './providers.js';
@@ -16,8 +17,8 @@ export function validateVideoRequest(raw:unknown,config:StudioConfig):ScriptVali
     try{requireLatinScript(input.script);}catch{issues.push({path:'script',message:'Use Latin letters for English, Hinglish and Benglish text.'});}
   }
   const speakers=[...new Set(input.script?.dialogue.map(line=>line.speaker)??(input.narrator?[input.narrator]:input.participants?[input.participants.learner,input.participants.expert]:[]))];
-  const words=input.script?.dialogue.reduce((n,line)=>n+line.text.split(/\s+/).length,0)??0,spokenCharacters=input.script?.dialogue.reduce((n,line)=>n+line.text.length,0)??0;
-  const estimatedSeconds=Math.round(words/(1.9*input.speechSpeed));if(estimatedSeconds>180)warnings.push('This script may exceed three minutes. Shorten it before generating.');
+  const estimatedSeconds=input.script?estimateSpokenSeconds(input.script,input.speechSpeed):0,spokenCharacters=input.script?.dialogue.reduce((n,line)=>n+line.text.length,0)??0;
+  if(input.script){const estimated=estimatedSeconds,limit=maxSecondsFor(input.durationSeconds);if(estimated>limit)issues.push({path:'script.dialogue',message:`Too long: about ${estimated} seconds to speak for a ${input.durationSeconds}-second video (at most ${limit}). Use about ${targetWordsFor(input.durationSeconds,input.speechSpeed)} words.`});}
   if(!input.script&&!scriptReady)warnings.push('The selected script provider needs a key. A complete script bypasses that provider.');
   if(!config.ffmpegAvailable)warnings.push('FFmpeg is unavailable.');
   const backend=input.voiceBackend??config.voiceBackend??'elevenlabs',voiceReady=backend==='elevenlabs'?config.elevenlabsConfigured:config.speechBackends?.some(b=>b.id===backend&&b.ready)??false;
@@ -33,6 +34,6 @@ export function validateVideoRequest(raw:unknown,config:StudioConfig):ScriptVali
     if(input.script.dialogue.filter(line=>line.chat?.reaction).length>3)warnings.push('More than three reactions makes reactions feel random. Keep them for real punchlines.');
   }
   if(input.broll)warnings.push('Image references and code cards are resolved during generation, before paid speech. This check does not verify external image availability or factual claims.');
-  const ready=issues.length===0&&Boolean(config.ffmpegAvailable)&&voiceReady&&missing.length===0&&enoughVoices&&(Boolean(input.script)||scriptReady)&&estimatedSeconds<=180;
+  const ready=issues.length===0&&Boolean(config.ffmpegAvailable)&&voiceReady&&missing.length===0&&enoughVoices&&(Boolean(input.script)||scriptReady)&&estimatedSeconds<=maxSecondsFor(input.durationSeconds);
   return ScriptValidationSchema.parse({valid:issues.length===0,generationReady:ready,issues,warnings,format:input.format,spokenCharacters,estimatedSeconds,speakers});
 }

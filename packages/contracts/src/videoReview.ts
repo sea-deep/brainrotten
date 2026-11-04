@@ -1,17 +1,18 @@
+import {MAX_VIDEO_SECONDS} from './duration.js';
 import {z} from 'zod/v4';
 import {VideoJobSchema,type VideoJob} from './videoSchema.js';
 import {VideoFormatSchema} from './videoFormats.js';
 const QuestionId=z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,47}$/);
 export const VideoReviewSchema=z.object({
   schemaVersion:z.literal('BrainrottenReviewV1'),jobId:z.string().uuid(),version:z.number().int().nonnegative(),
-  positionMs:z.number().int().min(0).max(180000),furthestMs:z.number().int().min(0).max(180000),completed:z.boolean(),bookmarked:z.boolean(),
+  positionMs:z.number().int().min(0).max(MAX_VIDEO_SECONDS*1000),furthestMs:z.number().int().min(0).max(MAX_VIDEO_SECONDS*1000),completed:z.boolean(),bookmarked:z.boolean(),
   answers:z.record(QuestionId,z.object({choice:z.number().int().min(0).max(3),correct:z.boolean(),attempts:z.number().int().positive(),answeredAt:z.string().datetime()})),
   updatedAt:z.string().datetime().nullable(),
 });
 export const ReviewConflictSchema=z.object({message:z.string(),review:VideoReviewSchema});
 const revision={expectedVersion:z.number().int().nonnegative()};
 export const VideoReviewPatchSchema=z.discriminatedUnion('kind',[
-  z.object({...revision,kind:z.literal('watch'),positionMs:z.number().int().min(0).max(180000),completed:z.boolean().optional()}).strict(),
+  z.object({...revision,kind:z.literal('watch'),positionMs:z.number().int().min(0).max(MAX_VIDEO_SECONDS*1000),completed:z.boolean().optional()}).strict(),
   z.object({...revision,kind:z.literal('answer'),questionId:QuestionId,choice:z.number().int().min(0).max(3)}).strict(),
   z.object({...revision,kind:z.literal('bookmark'),value:z.boolean()}).strict(),
   z.object({...revision,kind:z.literal('reset-answers')}).strict(),

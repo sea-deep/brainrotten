@@ -1,3 +1,4 @@
+import {maxSecondsFor} from '@brainrot/contracts';
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import os from 'node:os';
@@ -52,6 +53,6 @@ export async function synthesizeLocal(script:VideoScript,input:ValidatedVideoInp
   const result=receiptSchema.parse(JSON.parse(await fsp.readFile(resultFile,'utf8')));
   if(result.segments.length!==script.dialogue.length||result.segments.some((s,i)=>s.turnIndex!==i||s.speaker!==script.dialogue[i]!.speaker||s.text!==script.dialogue[i]!.text)||result.words.some(w=>!selected.includes(w.speaker as CharacterId)||w.turnIndex>=script.dialogue.length||script.dialogue[w.turnIndex]?.speaker!==w.speaker||w.endMs<=w.startMs||w.endMs>result.durationSeconds*1000+2))throw new GenerationError('Local speech timing did not match the submitted script. Review its cached output.');
   const audioPath=path.join(directory,`audio-${input.speechSpeed}.mp3`);if(!fs.existsSync(audioPath))await execute(process.env['FFMPEG_PATH']??'ffmpeg',['-hide_banner','-loglevel','error','-y','-i',path.join(directory,'source.wav'),'-af',`atempo=${input.speechSpeed}`,'-c:a','libmp3lame','-b:a','128k',audioPath]);
-  const durationSeconds=result.durationSeconds/input.speechSpeed;if(durationSeconds>180)throw new GenerationError('The spoken script exceeds three minutes. Shorten it before rendering.');
+  const durationSeconds=result.durationSeconds/input.speechSpeed;if(durationSeconds>maxSecondsFor(input.durationSeconds))throw new GenerationError(`The spoken script runs about ${Math.round(durationSeconds)} seconds, longer than a ${input.durationSeconds}-second video allows. Shorten the script and try again.`);
   return{audioPath,durationSeconds,segments:result.segments.map(s=>({...s,speaker:s.speaker as CharacterId,startMs:Math.round(s.startMs/input.speechSpeed),endMs:Math.round(s.endMs/input.speechSpeed)})),words:mergeLocalPunctuation(result.words).map(w=>({...w,speaker:w.speaker as CharacterId,startMs:Math.round(w.startMs/input.speechSpeed),endMs:Math.round(w.endMs/input.speechSpeed)}))};
 }

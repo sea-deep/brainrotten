@@ -1,3 +1,4 @@
+import {MAX_VIDEO_SECONDS} from './duration.js';
 import {z} from 'zod/v4';
 
 export const VideoFormatSchema=z.enum(['skit','casefile','whiteboard','pov','groupchat','prreview','sketch','tierlist']);
@@ -44,7 +45,7 @@ export const ReviewQuestionSchema=z.object({
 });
 export const LearningPackSchema=z.object({
   schemaVersion:z.literal('BrainrottenLearningPackV1'),jobId:z.string().uuid(),format:VideoFormatSchema,
-  title:z.string().min(1).max(140),language:z.enum(['en','hinglish','benglish','hi']),durationSeconds:z.number().positive().max(180),
+  title:z.string().min(1).max(140),language:z.enum(['en','hinglish','benglish','hi']),durationSeconds:z.number().positive().max(MAX_VIDEO_SECONDS),
   takeaway:z.string().min(1).max(650),
   chapters:z.array(z.object({id:z.string(),title:z.string(),startMs:z.number().nonnegative(),endMs:z.number().positive()})).min(1).max(60),
   questions:z.array(ReviewQuestionSchema.safeExtend({id:z.string(),startMs:z.number().nonnegative(),endMs:z.number().positive()})).max(3),

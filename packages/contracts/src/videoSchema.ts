@@ -1,3 +1,4 @@
+import {MAX_VIDEO_SECONDS} from './duration.js';
 import { z } from 'zod/v4';
 import {VideoFormatSchema,VideoSceneSchema,DiagramSchema,JourneyStepSchema,ReviewQuestionSchema,LearningPackSchema} from './videoFormats.js';
 
@@ -424,7 +425,7 @@ export type VideoJob=z.infer<typeof VideoJobSchema>;
 export type StudioConfig=z.infer<typeof StudioConfigSchema>;
 
 export const VideoManifestV2Schema=z.object({
-  schemaVersion:z.literal('BrainrottenPlaybackManifestV2'),voiceBackend:VoiceBackendSchema.optional(),jobId:z.string().uuid(),title:z.string(),cast:CastIdSchema,participants:ParticipantsSchema.optional(),language:PlaybackLanguageSchema,speechSpeed:z.number().min(1).max(1.3),durationSeconds:z.number().positive().max(180),script:VideoScriptSchema,
+  schemaVersion:z.literal('BrainrottenPlaybackManifestV2'),voiceBackend:VoiceBackendSchema.optional(),jobId:z.string().uuid(),title:z.string(),cast:CastIdSchema,participants:ParticipantsSchema.optional(),language:PlaybackLanguageSchema,speechSpeed:z.number().min(1).max(1.3),durationSeconds:z.number().positive().max(MAX_VIDEO_SECONDS),script:VideoScriptSchema,
   segments:z.array(z.object({speaker:CharacterIdSchema,turnIndex:z.number().int().nonnegative().optional(),text:z.string(),startMs:z.number().nonnegative(),endMs:z.number().nonnegative()})),
   words:z.array(z.object({speaker:CharacterIdSchema,turnIndex:z.number().int().nonnegative().optional(),text:z.string(),startMs:z.number().nonnegative(),endMs:z.number().nonnegative()})),
   broll:z.array(z.object({kind:z.enum(['code','image']),startMs:z.number().nonnegative(),endMs:z.number().nonnegative(),code:z.string().optional(),language:z.string().optional(),caption:z.string().optional(),imageFile:z.string().regex(/^[\w.-]+$/).optional()})),

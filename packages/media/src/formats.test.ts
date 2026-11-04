@@ -45,3 +45,29 @@ describe('POV narrated state',()=>{
   it('keeps scene context steady during speech gaps and never presents source strings as markup',()=>{const modified={...script,dialogue:script.dialogue.map(line=>({...line,scene:{...line.scene!,journey:{...line.scene!.journey!,location:'<script> & API'}}}))};const timed={...voice,segments:voice.segments.map((segment,i)=>i===1?{...segment,endMs:900}:i===2?{...segment,startMs:1500}:segment)};const frame=renderFrameSvg({...timed,title:script.title,script:modified,format:'pov',style:'brainrot'},1.2);expect(frame).toContain('Trace the timeout');expect(frame).toContain('&lt;script&gt; &amp; API');expect(frame).not.toContain('<script>');expect(frame).not.toContain('data-caption-turn=');});
   it('requires bounded per-step journey state before generation',()=>{const missing={...script,dialogue:script.dialogue.map(line=>({...line,scene:{beat:line.scene!.beat,heading:line.scene!.heading}}))};expect(GenerateVideoInputSchema.safeParse({format:'pov',script:missing}).success).toBe(false);});
 });
+
+describe('length is a target, checked before any speech is paid for',()=>{
+  // The same script, padded until it would take several minutes to speak.
+  const long={...script,dialogue:script.dialogue.map(line=>({...line,text:Array(100).fill('word').join(' ')}))};
+  it('sends a model-written script that is too long back once to be shortened, with the word budget',async()=>{
+    vi.stubEnv('BRAINROT_SKIP_ENV','1');vi.stubEnv('PAPER_API_KEY','synthetic-paper-key');
+    const fetch=vi.fn().mockImplementationOnce(async()=>Response.json({choices:[{message:{content:JSON.stringify(long)}}]}))
+      .mockImplementationOnce(async()=>Response.json({choices:[{message:{content:JSON.stringify(script)}}]}));
+    vi.stubGlobal('fetch',fetch);
+    const result=await createScript(GenerateVideoInputSchema.parse({format:'whiteboard',prompt:'Payment retries',quizCount:1,durationSeconds:60}),['jhatka']);
+    expect(result.dialogue[0]!.text).toBe(script.dialogue[0]!.text);
+    expect(fetch).toHaveBeenCalledTimes(2);
+    const repair=JSON.parse(fetch.mock.calls[1]![1].body).messages.at(-1).content as string;
+    expect(repair).toMatch(/too long/);expect(repair).toMatch(/words in total/);
+  });
+  it('rejects an agent-written script that is far too long before any speech, saying nothing was billed',async()=>{
+    const fetch=vi.fn();vi.stubGlobal('fetch',fetch);
+    await expect(createScript(GenerateVideoInputSchema.parse({format:'whiteboard',script:long,quizCount:1,durationSeconds:60}),['jhatka'])).rejects.toThrow(/too long.*No speech was billed/);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+  it('accepts a script that runs a little over the chosen length',async()=>{
+    const fetch=vi.fn();vi.stubGlobal('fetch',fetch);
+    const bitLong={...script,dialogue:script.dialogue.map(line=>({...line,text:Array(40).fill('word').join(' ')}))};
+    await expect(createScript(GenerateVideoInputSchema.parse({format:'whiteboard',script:bitLong,quizCount:1,durationSeconds:60}),['jhatka'])).resolves.toBeTruthy();
+  });
+});
