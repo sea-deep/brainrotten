@@ -31,71 +31,71 @@ Confirm region (default: ap-south-1) before starting T-1.
 
 ## Phase 2 — Site stack  ⚠️ Creates AWS resources — ask user first
 
-- [ ] T-2.1  Ask user to confirm before running `aws cloudformation deploy` for site stack
-- [ ] T-2.2  Deploy `infra/site/template.yaml` as `brainrotten-site` (Req HD-2.1)
-- [ ] T-2.3  Record `SiteUrl`, `SiteBucketName`, `DistributionId` from stack outputs (Req HD-2.1)
-- [ ] T-2.4  Verify HTTPS redirect and router function with `curl -I {SiteUrl}` (Req HD-2.2)
+- [x] T-2.1  Ask user to confirm before running `aws cloudformation deploy` for site stack
+- [x] T-2.2  Deploy `infra/site/template.yaml` as `brainrotten-site` (Req HD-2.1)
+- [x] T-2.3  Record `SiteUrl`, `SiteBucketName`, `DistributionId` from stack outputs (Req HD-2.1)
+- [x] T-2.4  Verify HTTPS redirect and router function with `curl -I {SiteUrl}` (Req HD-2.2)
 
 ---
 
 ## Phase 3 — Google OAuth  ⚠️ Requires browser — stop and give instructions
 
-- [ ] T-3.1  Compute `GoogleRedirectUri` = `https://{CognitoDomainPrefix}.auth.ap-south-1.amazoncognito.com/oauth2/idpresponse`; tell user the exact value
-- [ ] T-3.2  Give user step-by-step instructions for Google Cloud Console (Req HD-3.1):
+- [x] T-3.1  Compute `GoogleRedirectUri` = `https://{CognitoDomainPrefix}.auth.ap-south-1.amazoncognito.com/oauth2/idpresponse`; tell user the exact value
+- [x] T-3.2  Give user step-by-step instructions for Google Cloud Console (Req HD-3.1):
              - Open https://console.cloud.google.com
              - Select/create project → APIs & Services → OAuth consent screen
              - Audience: External; add test users
              - Create Web OAuth client
              - Authorized redirect URI: the exact `GoogleRedirectUri` from T-3.1
              - Copy `client_id` and `client_secret`
-- [ ] T-3.3  Wait for user to confirm they have `client_id` and `client_secret`
-- [ ] T-3.4  Ask user before creating the Secrets Manager secret (Req HD-3.2) ⚠️
-- [ ] T-3.5  Create `brainrotten/google` secret in Secrets Manager; record its ARN (Req HD-3.2)
+- [x] T-3.3  Wait for user to confirm they have `client_id` and `client_secret`
+- [x] T-3.4  Ask user before creating the Secrets Manager secret (Req HD-3.2) ⚠️
+- [x] T-3.5  Create `brainrotten/google` secret in Secrets Manager; record its ARN (Req HD-3.2)
 
 ---
 
 ## Phase 4 — Provider secret  ⚠️ Creates AWS resources — ask user first
 
-- [ ] T-4.1  Ask user before running export + Secrets Manager create
-- [ ] T-4.2  Run `node scripts/export-provider-secret.mjs $HOME/.local/share/brainrot/deploy/providers.json` (Req HD-4.1)
-- [ ] T-4.3  Ask user before creating/updating `brainrotten/providers` secret in Secrets Manager ⚠️
-- [ ] T-4.4  Create/update `brainrotten/providers`; record its ARN (Req HD-4.2)
-- [ ] T-4.5  Confirm upload succeeded, then delete temp file `$HOME/.local/share/brainrot/deploy/providers.json` (Req HD-4.2)
+- [x] T-4.1  Ask user before running export + Secrets Manager create
+- [x] T-4.2  Run `node scripts/export-provider-secret.mjs $HOME/.local/share/brainrot/deploy/providers.json` (Req HD-4.1)
+- [x] T-4.3  Ask user before creating/updating `brainrotten/providers` secret in Secrets Manager ⚠️
+- [x] T-4.4  Create/update `brainrotten/providers`; record its ARN (Req HD-4.2)
+- [x] T-4.5  Confirm upload succeeded, then delete temp file `$HOME/.local/share/brainrot/deploy/providers.json` (Req HD-4.2)
 
 ---
 
 ## Phase 5 — Build and push Lambda image  ⚠️ ECR push, costs bandwidth — ask user first
 
-- [ ] T-5.1  Ask user before ECR create-repository and Docker push
-- [ ] T-5.2  Set `AWS_ACCOUNT_ID`, `ECR_REGISTRY`, `RUNTIME_IMAGE` variables (Req HD-6.1)
-- [ ] T-5.3  Run `aws ecr create-repository --repository-name brainrotten-runtime` (skip if exists) ⚠️
-- [ ] T-5.4  Run ECR login and `docker buildx build … --push` (Req HD-6.1) ⚠️
-- [ ] T-5.5  Record the pushed image digest (use `@sha256:…` in deploy for reproducibility)
+- [x] T-5.1  Ask user before ECR create-repository and Docker push
+- [x] T-5.2  Set `AWS_ACCOUNT_ID`, `ECR_REGISTRY`, `RUNTIME_IMAGE` variables (Req HD-6.1)
+- [x] T-5.3  Run `aws ecr create-repository --repository-name brainrotten-runtime` (skip if exists) ⚠️
+- [x] T-5.4  Run ECR login and `docker buildx build … --push` (Req HD-6.1) ⚠️
+- [x] T-5.5  Record the pushed image digest (use `@sha256:…` in deploy for reproducibility)
 
 ---
 
 ## Phase 6 — API stack deploy (trial off)  ⚠️ Creates AWS resources — ask user first
 
-- [ ] T-6.1  Ask user before running `sam deploy` for the API stack
-- [ ] T-6.2  Set all parameter variables: `SITE_ORIGIN`, `COGNITO_PREFIX`, `GOOGLE_CLIENT_ID`,
+- [x] T-6.1  Ask user before running `sam deploy` for the API stack
+- [x] T-6.2  Set all parameter variables: `SITE_ORIGIN`, `COGNITO_PREFIX`, `GOOGLE_CLIENT_ID`,
              `GOOGLE_SECRET_ARN`, `PROVIDER_SECRET_ARN`, `RUNTIME_IMAGE`
-- [ ] T-6.3  Run `sam validate --lint` — must pass (Req HD-6.6)
-- [ ] T-6.4  Run `sam deploy … EnableHostedTrial=false` (Req HD-6.1) ⚠️
-- [ ] T-6.5  Record all stack outputs (Req HD-6.7)
-- [ ] T-6.6  Verify `GET /api/v1/health` returns `{"hostedEnabled":false}` (Req HD-6.2)
-- [ ] T-6.7  Verify `GET /api/v1/studio/config` returns config with no secrets (Req HD-6.3)
-- [ ] T-6.8  Verify `GET /api/v1/openapi.json` returns the spec (Req HD-6.4)
-- [ ] T-6.9  Verify unauthenticated call to `/api/v1/me` returns 401 (Req HD-6.5)
+- [x] T-6.3  Run `sam validate --lint` — must pass (Req HD-6.6)
+- [x] T-6.4  Run `sam deploy … EnableHostedTrial=false` (Req HD-6.1) ⚠️
+- [x] T-6.5  Record all stack outputs (Req HD-6.7)
+- [~] T-6.6  Verify `GET /api/v1/health` returns `{"hostedEnabled":false}` (Req HD-6.2)
+- [x] T-6.7  Verify `GET /api/v1/studio/config` returns config with no secrets (Req HD-6.3)
+- [x] T-6.8  Verify `GET /api/v1/openapi.json` returns the spec (Req HD-6.4)
+- [x] T-6.9  Verify unauthenticated call to `/api/v1/me` returns 401 (Req HD-6.5)
 
 ---
 
 ## Phase 7 — Website deployment  ⚠️ S3 sync + CloudFront invalidation — ask user first
 
 - [ ] T-7.1  Ask user before running S3 sync and CloudFront invalidation
-- [ ] T-7.2  Set `VITE_HOSTED=true`, `VITE_API_BASE_URL` from stack output, then run `pnpm build` (Req HD-7.1)
-- [ ] T-7.3  Sync `apps/web/dist/` to `SiteBucketName` with `--delete` (Req HD-7.2) ⚠️
-- [ ] T-7.4  Run `aws cloudfront create-invalidation --distribution-id … --paths '/*'` ⚠️
-- [ ] T-7.5  Open `SiteUrl` in browser — Studio should load; check `/api/v1/health` from Network tab (Req HD-7.4)
+- [x] T-7.2  Set `VITE_HOSTED=true`, `VITE_API_BASE_URL` from stack output, then run `pnpm build` (Req HD-7.1)
+- [x] T-7.3  Sync `apps/web/dist/` to `SiteBucketName` with `--delete` (Req HD-7.2) ⚠️
+- [x] T-7.4  Run `aws cloudfront create-invalidation --distribution-id … --paths '/*'` ⚠️
+- [x] T-7.5  Open `SiteUrl` in browser — Studio should load; check `/api/v1/health` from Network tab (Req HD-7.4)
 
 ---
 
@@ -113,9 +113,9 @@ Confirm region (default: ap-south-1) before starting T-1.
 
 - [ ] T-9.1  **Describe cost impact to user and wait for explicit OK** (Req HD-9.1)
 - [ ] T-9.2  Ask user before re-running `sam deploy … EnableHostedTrial=true` ⚠️
-- [ ] T-9.3  Run `sam deploy … EnableHostedTrial=true` (Req HD-9.2)
-- [ ] T-9.4  Verify `GET /api/v1/health` returns `{"hostedEnabled":true}` (Req HD-9.2)
-- [ ] T-9.5  Verify `GET /api/v1/studio/config` shows `auth.configured: true` (Req HD-9.3)
+- [x] T-9.3  Run `sam deploy … EnableHostedTrial=true` (Req HD-9.2)
+- [x] T-9.4  Verify `GET /api/v1/health` returns `{"hostedEnabled":true}` (Req HD-9.2)
+- [x] T-9.5  Verify `GET /api/v1/studio/config` shows `auth.configured: true` (Req HD-9.3)
 
 ---
 
@@ -143,10 +143,10 @@ Confirm region (default: ap-south-1) before starting T-1.
 
 ## Phase 12 — Handoff documents and README
 
-- [ ] T-12.1  Write `ANDROID-INTEGRATION.md` at repository root with all real values (Req HD-12)
-- [ ] T-12.2  Add "Hosted" section to `README.md` with site URL and `ApiBaseUrl` (Req HD-13.1)
-- [ ] T-12.3  Tick tasks 13.1, 13.2, 13.3 and 14.1 in `.kiro/specs/brainrot/tasks.md` (Req HD-13.2)
-- [ ] T-12.4  Update `docs/HANDOFF.md` with `CognitoAndroidClientId` output and allowlist change (Req HD-13.4)
+- [x] T-12.1  Write `ANDROID-INTEGRATION.md` at repository root with all real values (Req HD-12)
+- [x] T-12.2  Add "Hosted" section to `README.md` with site URL and `ApiBaseUrl` (Req HD-13.1)
+- [x] T-12.3  Tick tasks 13.1, 13.2, 13.3 and 14.1 in `.kiro/specs/brainrot/tasks.md` (Req HD-13.2)
+- [x] T-12.4  Update `docs/HANDOFF.md` with `CognitoAndroidClientId` output and allowlist change (Req HD-13.4)
 
 ---
 
@@ -180,3 +180,21 @@ in-repo evidence alone:
   one of our own errors.
 - **Still open:** the BrainRotGram app screens (brainrot task 14.2) and the full
   record-every-format demo (brainrot task 15).
+
+## Verification log (2026-11-04)
+
+Boxes above are ticked only where there is direct evidence: commands run in the 2026-11-01
+deploy session (secrets, ECR, `sam deploy`), or read-only live checks on 2026-11-04.
+
+- Live: `/health` 200 `hostedEnabled: true`; `/studio/config` 200, `auth.configured: true`, no
+  secrets; `/openapi.json` 200; anonymous `/me` 401; site HTTP→HTTPS 301, `/studio` and
+  `/auth/callback` serve `index.html`, missing asset 403.
+- Live Cognito `AndroidClient` (`162fuccsquq1md62vftam7cnjc`) matches HD-5.1 and is in the JWT
+  audience.
+- `[~] T-6.6`: superseded. The first trial-off deploy returned 500 (handler path, then undici on
+  Node 20) before the image fixes; the trial was later enabled.
+- Still unticked here, recorded as done in `.kiro/specs/brainrot/tasks.md` 13.3 without step
+  evidence in this spec: Phase 8 (Google sign-in), Phase 10 (end-to-end video, second-account
+  isolation, sixth-video rejection), Phase 11 (MCP account connection). Re-run them before
+  relying on them.
+- Phase 13 is not done: this handoff check is uncommitted.
