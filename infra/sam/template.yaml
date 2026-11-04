@@ -36,7 +36,12 @@ Parameters:
     Type: String
     Default: 'false'
     AllowedValues: ['true', 'false']
+  AlertEmail:
+    Type: String
+    Default: ''
+    Description: Optional. Email address subscribed to the alarms topic (AWS sends a confirmation email first).
 Conditions:
+  HasAlertEmail: !Not [!Equals [!Ref AlertEmail, '']]
   HasGoogleSecretArn: !Not [!Equals [!Ref GoogleOAuthSecretArn, '']]
   HasGoogle: !And [!Not [!Equals [!Ref GoogleClientId, '']], !Or [!Condition HasGoogleSecretArn, !Not [!Equals [!Ref GoogleClientSecret, '']]]]
   HasProvider: !Not [!Equals [!Ref ProviderSecretArn, '']]
@@ -46,6 +51,7 @@ Globals:
     MemorySize: 512
     Timeout: 30
     Architectures: [arm64]
+    Tracing: Active
     Environment:
       Variables:
         NODE_ENV: production
@@ -150,6 +156,10 @@ Resources:
     Type: AWS::Serverless::HttpApi
     Properties:
       StageName: $default
+      # One JSON line per request: who called what, the result and how long it took.
+      AccessLogSettings:
+        DestinationArn: !GetAtt ApiAccessLogs.Arn
+        Format: '{"requestId":"$context.requestId","time":"$context.requestTime","ip":"$context.identity.sourceIp","method":"$context.httpMethod","route":"$context.routeKey","path":"$context.path","status":"$context.status","latencyMs":"$context.responseLatency","integrationMs":"$context.integrationLatency","integrationStatus":"$context.integrationStatus","error":"$context.error.message","authError":"$context.authorizer.error","userAgent":"$context.identity.userAgent","bytes":"$context.responseLength"}'
       DefaultRouteSettings:
         ThrottlingBurstLimit: 20
         ThrottlingRateLimit: 5
@@ -439,6 +449,112 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       RetentionInDays: 7
+  ApiAccessLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 14
+
+  # Alarms: every alarm notifies AlertsTopic (subscribe by setting AlertEmail) and clears itself when healthy.
+  AlertsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: Brainrotten alerts
+  AlertsEmailSubscription:
+    Type: AWS::SNS::Subscription
+    Condition: HasAlertEmail
+    Properties:
+      TopicArn: !Ref AlertsTopic
+      Protocol: email
+      Endpoint: !Ref AlertEmail
+  DeadLettersAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: A video job failed every delivery and landed in the dead-letter queue.
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions: [{Name: QueueName, Value: !GetAtt DeadLetters.QueueName}]
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertsTopic]
+      OKActions: [!Ref AlertsTopic]
+  QueueBacklogAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: A video has waited in the queue for more than 15 minutes.
+      Namespace: AWS/SQS
+      MetricName: ApproximateAgeOfOldestMessage
+      Dimensions: [{Name: QueueName, Value: !GetAtt VideoQueue.QueueName}]
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 900
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertsTopic]
+      OKActions: [!Ref AlertsTopic]
+  WorkerErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: The video worker crashed or timed out (errors the code did not handle).
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions: [{Name: FunctionName, Value: !Ref Worker}]
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertsTopic]
+      OKActions: [!Ref AlertsTopic]
+  ApiErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: The API function crashed or timed out.
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions: [{Name: FunctionName, Value: !Ref ApiFunction}]
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertsTopic]
+      OKActions: [!Ref AlertsTopic]
+  Api5xxAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: The API answered 5 or more requests with a server error in 5 minutes.
+      Namespace: AWS/ApiGateway
+      MetricName: 5xx
+      Dimensions: [{Name: ApiId, Value: !Ref Api}, {Name: Stage, Value: $default}]
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 5
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertsTopic]
+      OKActions: [!Ref AlertsTopic]
+  VideoFailuresAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 3 or more videos failed in 15 minutes (from the worker's per-job telemetry).
+      Namespace: Brainrotten
+      MetricName: JobFailed
+      Statistic: Sum
+      Period: 900
+      EvaluationPeriods: 1
+      Threshold: 3
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertsTopic]
+      OKActions: [!Ref AlertsTopic]
 Outputs:
   ApiBaseUrl:
     Value: !Sub 'https://${Api}.execute-api.${AWS::Region}.amazonaws.com/api/v1'
@@ -462,3 +578,6 @@ Outputs:
     Value: !Ref MediaBucket
   QueueUrl:
     Value: !Ref VideoQueue
+  AlertsTopicArn:
+    Description: Alarm notifications; subscribe with the AlertEmail parameter or any SNS subscription.
+    Value: !Ref AlertsTopic

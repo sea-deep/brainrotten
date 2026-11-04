@@ -14,6 +14,11 @@ done
 ORIGIN="$(aws cloudformation describe-stacks --region "$AWS_REGION" --stack-name "$SITE_STACK" --query "Stacks[0].Outputs[?OutputKey=='SiteUrl'].OutputValue" --output text)"
 [[ "$ORIGIN" == https://* ]] || { echo "Deploy the site stack first ($SITE_STACK has no SiteUrl)." >&2; exit 1; }
 
+# Alarm emails: ALERT_EMAIL sets or changes the subscribed address; without it the live value is kept.
+LIVE_ALERT_EMAIL="$(aws cloudformation describe-stacks --region "$AWS_REGION" --stack-name "$API_STACK" --query "Stacks[0].Parameters[?ParameterKey=='AlertEmail'].ParameterValue | [0]" --output text 2>/dev/null || true)"
+[[ "$LIVE_ALERT_EMAIL" == "None" ]] && LIVE_ALERT_EMAIL=""
+ALERT_EMAIL="${ALERT_EMAIL:-$LIVE_ALERT_EMAIL}"
+
 # Fast path: when the template and every setting except the image are already live, swap the image on the two
 # Lambda functions directly (about 20 seconds) instead of a full CloudFormation update (about 2 minutes).
 TEMPLATE_SHA="$(node -e 'process.stdout.write(require("crypto").createHash("sha256").update(require("fs").readFileSync("infra/sam/template.yaml")).digest("hex").slice(0,16))')"
@@ -23,11 +28,11 @@ fast_path() {
   local live
   live="$(aws cloudformation describe-stacks --region "$AWS_REGION" --stack-name "$API_STACK" --query "Stacks[0].Tags[?Key=='TemplateSha'].Value | [0]" --output text 2>/dev/null)" || return 1
   [[ "$live" == "$TEMPLATE_SHA" ]] || { echo "Template changed: full deploy." >&2; return 1; }
-  local expected="AppOrigin=$ORIGIN CognitoDomainPrefix=$COGNITO_DOMAIN_PREFIX GoogleClientId=$GOOGLE_CLIENT_ID GoogleOAuthSecretArn=$GOOGLE_OAUTH_SECRET_ARN ProviderSecretArn=$PROVIDER_SECRET_ARN EnableHostedTrial=$ENABLE_HOSTED_TRIAL"
+  local expected="AppOrigin=$ORIGIN CognitoDomainPrefix=$COGNITO_DOMAIN_PREFIX GoogleClientId=$GOOGLE_CLIENT_ID GoogleOAuthSecretArn=$GOOGLE_OAUTH_SECRET_ARN ProviderSecretArn=$PROVIDER_SECRET_ARN EnableHostedTrial=$ENABLE_HOSTED_TRIAL AlertEmail=$ALERT_EMAIL"
   local actual
   actual="$(aws cloudformation describe-stacks --region "$AWS_REGION" --stack-name "$API_STACK" --query 'Stacks[0].Parameters' --output json | node -e '
     const params=JSON.parse(require("fs").readFileSync(0,"utf8")),value=k=>(params.find(p=>p.ParameterKey===k)||{}).ParameterValue;
-    console.log(["AppOrigin","CognitoDomainPrefix","GoogleClientId","GoogleOAuthSecretArn","ProviderSecretArn","EnableHostedTrial"].map(k=>k+"="+value(k)).join(" "));')"
+    console.log(["AppOrigin","CognitoDomainPrefix","GoogleClientId","GoogleOAuthSecretArn","ProviderSecretArn","EnableHostedTrial","AlertEmail"].map(k=>k+"="+(value(k)??"")).join(" "));')"
   [[ "$actual" == "$expected" ]] || { echo "Settings changed: full deploy." >&2; return 1; }
   for logical in ApiFunction Worker; do
     local name
@@ -56,6 +61,7 @@ sam deploy \
     "GoogleOAuthSecretArn=$GOOGLE_OAUTH_SECRET_ARN" \
     "ProviderSecretArn=$PROVIDER_SECRET_ARN" \
     "EnableHostedTrial=$ENABLE_HOSTED_TRIAL" \
+    "AlertEmail=$ALERT_EMAIL" \
   --tags "TemplateSha=$TEMPLATE_SHA"
 fi
 

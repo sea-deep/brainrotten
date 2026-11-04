@@ -9,7 +9,25 @@ import {CreateLearningSessionSchema,SessionListQuerySchema,SessionReviewPatchSch
 import {learningGuide,prepareSessionLesson,formatGuide} from '@brainrot/media';
 import {createSession,findSession,listSessions,getSessionReview,saveSessionReview} from './store.js';
 const sqs=new SQSClient({}),s3=new S3Client({});
-const reply=(statusCode:number,body:unknown):APIGatewayProxyResultV2=>({statusCode,headers:{'content-type':'application/json','cache-control':'no-store'},body:JSON.stringify(body)});
+// Every response carries the request ID (x-request-id, also in error bodies) and nosniff. Every error body has the
+// documented shape {code, message, retryable, requestId}: a stable machine-readable code, a human message, and
+// whether retrying the same request can succeed. Endpoint-specific fields (e.g. the latest review on 409) are kept.
+let requestId='';
+const ERROR_CODES:Record<number,string>={400:'bad_request',401:'unauthorized',403:'forbidden',404:'not_found',409:'conflict',413:'payload_too_large',415:'unsupported_media_type',422:'validation_failed',429:'rate_limited',500:'internal_error',502:'upstream_failed',503:'unavailable',504:'upstream_timeout'};
+export const RETRYABLE=new Set([429,500,502,503,504]);
+const reply=(statusCode:number,body:unknown):APIGatewayProxyResultV2=>{
+  const payload=statusCode>=400&&body&&typeof body==='object'?{code:ERROR_CODES[statusCode]??'error',retryable:RETRYABLE.has(statusCode),...body as Record<string,unknown>,requestId}:body;
+  return{statusCode,headers:{'content-type':'application/json','cache-control':'no-store','x-content-type-options':'nosniff',...(requestId?{'x-request-id':requestId}:{})},body:JSON.stringify(payload)};
+};
+/** Reads a JSON request body: 413 when too large, 415 for a non-JSON content type, 400 when missing or malformed. */
+function readJson(event:APIGatewayProxyEventV2,maxBytes:number,{optional=false}:{optional?:boolean}={}):{value:unknown}|{response:APIGatewayProxyResultV2}{
+  if(!event.body)return optional?{value:{}}:{response:reply(400,{code:'missing_body',message:'Send a JSON request body.'})};
+  if(event.isBase64Encoded)return{response:reply(415,{message:'Send the body as application/json.'})};
+  const type=(event.headers?.['content-type']??'application/json').toLowerCase();
+  if(!/^application\/(?:[\w.+-]+\+)?json\b/.test(type))return{response:reply(415,{message:'Send the body as application/json.'})};
+  if(Buffer.byteLength(event.body,'utf8')>maxBytes)return{response:reply(413,{message:`The request body is larger than ${Math.round(maxBytes/1000)} KB.`})};
+  try{return{value:JSON.parse(event.body)};}catch{return{response:reply(400,{code:'invalid_json',message:'The request body is not valid JSON.'})};}
+}
 export function authenticatedSubject(event:APIGatewayProxyEventV2):string|undefined{
   const context=event.requestContext as typeof event.requestContext&{authorizer?:{jwt?:{claims?:Record<string,unknown>}}};
   const claims=context.authorizer?.jwt?.claims;
@@ -32,6 +50,7 @@ function hostedConfig(enabled:boolean):StudioConfig{
   return config;
 }
 export async function handler(event:APIGatewayProxyEventV2):Promise<APIGatewayProxyResultV2>{
+  requestId=event.requestContext?.requestId??'';
   // Scheduled keep-warm ping: keeps a container ready so users skip the large-image cold start.
   if((event as unknown as {warmup?:boolean}).warmup)return{statusCode:200,body:'warm'};
   const enabled=process.env['HOSTED_ENABLED']==='true';
@@ -41,14 +60,14 @@ export async function handler(event:APIGatewayProxyEventV2):Promise<APIGatewayPr
   if(route==='/health'&&method==='GET')return reply(200,{status:'ok',service:'brainrotten-api',hostedEnabled:enabled});
   if(route==='/studio/config')return reply(200,hostedConfig(enabled));
   if(route==='/formats/guide'&&method==='GET'){const language=VideoLanguageSchema.safeParse(event.queryStringParameters?.['language']??'hinglish');if(!language.success)return reply(400,{message:'language must be en, hinglish or benglish'});return reply(200,formatGuide(event.queryStringParameters?.['format'],language.data,enabled?(Object.keys(CHARACTERS) as Array<keyof typeof CHARACTERS>):[]));}
-  if(!enabled||!process.env['DYNAMODB_TABLE']||!process.env['JOB_QUEUE_URL'])return reply(503,{message:'The hosted trial is not configured. Use local Studio or MCP.'});
+  if(!enabled||!process.env['DYNAMODB_TABLE']||!process.env['JOB_QUEUE_URL'])return reply(503,{code:'not_configured',message:'The hosted trial is not configured. Use local Studio or MCP.'});
   const sub=authenticatedSubject(event);if(!sub)return reply(401,{message:'Sign in with Google to use the trial.'});
   try{
     if(route==='/learning-guide'&&method==='GET')return reply(200,learningGuide());
     if(route==='/sessions'&&method==='GET'){const query=SessionListQuerySchema.safeParse(event.queryStringParameters??{});if(!query.success)return reply(400,{message:'Check the session page and cursor.'});return reply(200,await listSessions(sub,query.data));}
     if(route==='/sessions'&&method==='POST'){
-      if(event.isBase64Encoded||!event.body||Buffer.byteLength(event.body)>40000)return reply(422,{message:'Invalid session body.'});
-      let raw:unknown;try{raw=JSON.parse(event.body);}catch{return reply(422,{message:'Invalid JSON.'});}
+      const body=readJson(event,40000);if('response' in body)return body.response;
+      const raw:unknown=body.value;
       const input=CreateLearningSessionSchema.safeParse(raw);if(!input.success)return reply(422,{message:'Provide bounded context, an objective, a prediction prompt and a practice task.'});return reply(201,await createSession(sub,input.data));
     }
     const sessionMatch=/^\/sessions\/([a-f0-9-]{36})(?:\/(guide|review))?$/.exec(route);
@@ -59,8 +78,8 @@ export async function handler(event:APIGatewayProxyEventV2):Promise<APIGatewayPr
       if(method==='GET'&&!sessionMatch[2])return reply(200,{session,review:await getSessionReview(sub,session.sessionId),videos:await Promise.all((await listJobs(sub)).filter(record=>record.job.sessionId===session.sessionId).map(record=>media(record.job,sub)))});
       if(method==='PUT'&&sessionMatch[2]==='review'){
         const claims=(event.requestContext as unknown as {authorizer:{jwt:{claims:Record<string,unknown>}}}).authorizer.jwt.claims;if(process.env['COGNITO_AGENT_CLIENT_ID']&&claims['client_id']===process.env['COGNITO_AGENT_CLIENT_ID'])return reply(403,{message:'Learning responses belong to the learner. Use Studio or the first-party app.'});
-        if(event.isBase64Encoded||!event.body||Buffer.byteLength(event.body)>16000)return reply(422,{message:'Invalid learning response.'});
-        let raw:unknown;try{raw=JSON.parse(event.body);}catch{return reply(422,{message:'Invalid JSON.'});}const parsed=SessionReviewPatchSchema.safeParse(raw);if(!parsed.success)return reply(422,{message:'Check the learning response, confidence and version.'});return reply(200,await saveSessionReview(sub,session.sessionId,parsed.data));
+        const body=readJson(event,16000);if('response' in body)return body.response;
+        const raw:unknown=body.value;const parsed=SessionReviewPatchSchema.safeParse(raw);if(!parsed.success)return reply(422,{message:'Check the learning response, confidence and version.'});return reply(200,await saveSessionReview(sub,session.sessionId,parsed.data));
       }
     }
     if(route==='/library'&&method==='GET'){
@@ -69,18 +88,18 @@ export async function handler(event:APIGatewayProxyEventV2):Promise<APIGatewayPr
       const jobs=await Promise.all(page.jobs.map(async item=>{const record=records.find(r=>r.job.jobId===item.jobId)!;const signed=await media(record.job,sub);return{...item,posterUrl:signed.posterUrl,mediaExpired:signed.mediaExpired,mediaExpiresAt:signed.mediaExpiresAt};}));return reply(200,{...page,jobs});
     }
     if(route==='/videos/validate'&&method==='POST'){
-      if(event.isBase64Encoded||!event.body||Buffer.byteLength(event.body)>128000)return reply(422,{message:'Invalid request body.'});
-      let raw:unknown;try{raw=JSON.parse(event.body);}catch{return reply(422,{message:'Invalid JSON.'});}return reply(200,validateVideoRequest(raw,hostedConfig(enabled)));
+      const body=readJson(event,128000);if('response' in body)return body.response;
+      const raw:unknown=body.value;return reply(200,validateVideoRequest(raw,hostedConfig(enabled)));
     }
     const reviewMatch=/^\/videos\/([a-f0-9-]{36})\/review$/.exec(route);
     if(reviewMatch&&(method==='GET'||method==='PUT')){
       const record=await findJob(sub,reviewMatch[1]!);if(!record)return reply(404,{message:'Video not found.'});
       if(method==='GET')return reply(200,await getReview(sub,record.job.jobId));
-      if(event.isBase64Encoded||!event.body||Buffer.byteLength(event.body)>16000)return reply(422,{message:'Invalid review request.'});
-      let raw:unknown;try{raw=JSON.parse(event.body);}catch{return reply(422,{message:'Invalid JSON.'});}const parsed=VideoReviewPatchSchema.safeParse(raw);if(!parsed.success)return reply(422,{message:'Check the review action and version.'});return reply(200,await saveReview(sub,record.job,parsed.data));
+      const body=readJson(event,16000);if('response' in body)return body.response;
+      const raw:unknown=body.value;const parsed=VideoReviewPatchSchema.safeParse(raw);if(!parsed.success)return reply(422,{message:'Check the review action and version.'});return reply(200,await saveReview(sub,record.job,parsed.data));
     }
     if(route==='/images/search'&&method==='POST'){
-      let raw:unknown;try{raw=JSON.parse(event.body??'{}');}catch{return reply(422,{message:'Invalid JSON.'});}
+      const body=readJson(event,16000,{optional:true});if('response' in body)return body.response;const raw:unknown=body.value;
       const input=ImageSearchInputSchema.safeParse(raw);if(!input.success)return reply(422,{message:'Enter an image query.'});
       try{return reply(200,await searchBrollImage(input.data,'/tmp/brainrotten-image-search'));}catch(error){return reply(502,{message:error instanceof Error?error.message:'Image search failed.'});}
     }
@@ -88,8 +107,8 @@ export async function handler(event:APIGatewayProxyEventV2):Promise<APIGatewayPr
     if(route==='/videos'&&method==='GET'){const jobs=(await listJobs(sub)).sort((a,b)=>b.job.createdAt.localeCompare(a.job.createdAt));return reply(200,{jobs:await Promise.all(jobs.map(r=>media(r.job,sub)))});}
     const sessionLesson=/^\/sessions\/([a-f0-9-]{36})\/videos$/.exec(route);
     if((route==='/videos'||sessionLesson)&&method==='POST'){
-      if(event.isBase64Encoded||!event.body||Buffer.byteLength(event.body,'utf8')>128000)return reply(422,{message:'Invalid request body.'});
-      let raw:unknown;try{raw=JSON.parse(event.body);}catch{return reply(422,{message:'Invalid JSON.'});}
+      const body=readJson(event,128000);if('response' in body)return body.response;
+      let raw:unknown=body.value;
       if(sessionLesson){const session=await findSession(sub,sessionLesson[1]!);if(!session)return reply(404,{message:'Learning session not found.'});try{raw=prepareSessionLesson(session,raw);}catch{return reply(422,{message:'Session lessons require a complete script and comprehension questions.'});}}
       const parsed=GenerateVideoInputSchema.safeParse(raw);if(!parsed.success)return reply(422,{message:'Invalid video request. Check the script, cast, and duration.'});
       const retired=retiredFormatMessage(parsed.data.format);if(retired)return reply(422,{message:retired});
@@ -108,5 +127,5 @@ export async function handler(event:APIGatewayProxyEventV2):Promise<APIGatewayPr
     if(learningMatch&&method==='GET'){const record=await findJob(sub,learningMatch[1]!);return record?.job.state==='ready'&&record.job.learning?reply(200,record.job.learning):reply(404,{message:'Learning pack not found or not ready.'});}
     const match=/^\/videos\/([a-f0-9-]{36})$/.exec(route);if(match&&method==='GET'){const record=await findJob(sub,match[1]!);return record?reply(200,await media(record.job,sub)):reply(404,{message:'Video not found.'});}
     return reply(404,{message:'Not found.'});
-  }catch(error){if(error instanceof SessionReviewConflictError)return reply(409,{message:error.message,sessionReview:error.review});if(error instanceof ReviewConflictError)return reply(409,{message:error.message,review:error.review});if(error instanceof ReviewInputError)return reply(422,{message:error.message});if(error instanceof LibraryCursorError)return reply(400,{message:error.message});if(error instanceof TrialLimitError)return reply(403,{message:error.message});if(error instanceof RequestConflictError)return reply(409,{message:error.message});console.error('Hosted API operation failed',{name:error instanceof Error?error.name:'UnknownError',requestId:event.requestContext.requestId});return reply(503,{message:'The hosted service is temporarily unavailable.'});}
+  }catch(error){if(error instanceof SessionReviewConflictError)return reply(409,{code:'version_conflict',message:error.message,sessionReview:error.review});if(error instanceof ReviewConflictError)return reply(409,{code:'version_conflict',message:error.message,review:error.review});if(error instanceof ReviewInputError)return reply(422,{message:error.message});if(error instanceof LibraryCursorError)return reply(400,{message:error.message});if(error instanceof TrialLimitError)return reply(403,{code:'trial_limit_reached',message:error.message});if(error instanceof RequestConflictError)return reply(409,{code:'request_conflict',message:error.message});console.error('Hosted API operation failed',{name:error instanceof Error?error.name:'UnknownError',requestId:event.requestContext.requestId});return reply(503,{message:'The hosted service is temporarily unavailable.'});}
 }

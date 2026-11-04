@@ -11,10 +11,10 @@ import {findJob,claim,putJob,failAndRefund} from './store.js';
 const secrets=new SecretsManagerClient({}),s3=new S3Client({});
 /**
  * One structured log line per finished job. CloudWatch turns the _aws block into metrics (namespace Brainrotten,
- * by format): JobSucceeded, JobFailed, JobSeconds and QueueWaitSeconds. Errors are the user-facing message only.
+ * per format and in total): JobSucceeded, JobFailed, JobSeconds and QueueWaitSeconds. Errors are the user-facing message only.
  */
 export function jobTelemetry(entry:{jobId:string;format:string;ok:boolean;stage:string;jobSeconds:number;queueWaitSeconds:number;error?:string}):string{
-  return JSON.stringify({_aws:{Timestamp:Date.now(),CloudWatchMetrics:[{Namespace:'Brainrotten',Dimensions:[['Format']],Metrics:[
+  return JSON.stringify({_aws:{Timestamp:Date.now(),CloudWatchMetrics:[{Namespace:'Brainrotten',Dimensions:[['Format'],[]],Metrics:[
     {Name:'JobSucceeded',Unit:'Count'},{Name:'JobFailed',Unit:'Count'},{Name:'JobSeconds',Unit:'Seconds'},{Name:'QueueWaitSeconds',Unit:'Seconds'}]}]},
     event:'video-job',Format:entry.format,JobSucceeded:entry.ok?1:0,JobFailed:entry.ok?0:1,JobSeconds:Math.round(entry.jobSeconds),QueueWaitSeconds:Math.round(entry.queueWaitSeconds),
     jobId:entry.jobId,outcome:entry.ok?'ready':'failed',stage:entry.stage,...(entry.error?{error:entry.error.slice(0,300)}:{})});
