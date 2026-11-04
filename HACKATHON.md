@@ -28,6 +28,8 @@ SQS, DynamoDB, S3, Cognito with Google) and is deployed with SAM.
 
 ## Two-minute demo
 
+The Android companion is a team contribution maintained separately: **[brainrotgram, our teammate's repository](https://github.com/bhumikasudarshani-cmd/brainrotgram)**. [Signed Android releases](https://github.com/bhumikasudarshani-cmd/brainrotgram/releases/latest) use the same account/API as this backend. The repository boundary preserves the teammate's ownership; Kiro workflow evidence should describe the specific work performed in each repository rather than imply it authored the entire Android app.
+
 1. **The problem (15s).** "Your agent just refactored three files. Do you actually understand
    what changed?" Open the [examples page](https://d3sk6lwsh4ufyv.cloudfront.net/examples).
 2. **Make one (45s).** In your agent, say: *"Explain what we just did as a Brainrotten video."*

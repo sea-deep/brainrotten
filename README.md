@@ -39,6 +39,10 @@ Videos can pause for **Pause & Predict**: the screen asks what happens next, giv
 
 ## Get started
 
+### Android companion
+
+**[brainrotgram — teammate's Android repository](https://github.com/bhumikasudarshani-cmd/brainrotgram)** is the Flutter companion maintained in our teammate's repository. It shares the Brainrotten account and API for reels, project checkpoints and learning activities. [Download the signed Android release](https://github.com/bhumikasudarshani-cmd/brainrotgram/releases/latest). Use the same Google account as your connected coding agent.
+
 ### On the website
 
 Open **[the website](https://d3sk6lwsh4ufyv.cloudfront.net/studio)**, sign in with Google, type a topic or paste an error, pick a format and press Generate. Five videos per account are free.
