@@ -23,4 +23,17 @@ describe('the shared header',()=>{
     render(<SiteHeader studio={{tab:'studio',onSelect:()=>{}}} account={{signedIn:false,left:null,onSignIn:()=>{},onSignOut:()=>{}}} menuItem={{label:'Settings',active:false,onClick}}/>);
     fireEvent.click(screen.getByRole('button',{name:'Settings'}));expect(onClick).toHaveBeenCalled();
   });
+  it('opens mobile navigation and closes it with Escape or a Studio tab',()=>{
+    const onSelect=vi.fn();
+    render(<SiteHeader studio={{tab:'studio',onSelect}} account={{signedIn:false,left:null,onSignIn:()=>{},onSignOut:()=>{}}}/>);
+    fireEvent.click(screen.getByRole('button',{name:'Open menu'}));
+    expect(screen.getByRole('button',{name:'Close menu'})).toHaveAttribute('aria-expanded','true');
+    fireEvent.keyDown(window,{key:'Escape'});
+    expect(screen.getByRole('button',{name:'Open menu'})).toHaveAttribute('aria-expanded','false');
+    fireEvent.click(screen.getByRole('button',{name:'Open menu'}));
+    fireEvent.click(screen.getByRole('button',{name:'MCP'}));
+    expect(onSelect).toHaveBeenCalledWith('mcp');
+    expect(screen.getByRole('button',{name:'Open menu'})).toHaveAttribute('aria-expanded','false');
+  });
+
 });
