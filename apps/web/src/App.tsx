@@ -23,7 +23,7 @@ const names:Record<string,string>={oggy:'Oggy',jack:'Jack',badri:'Badri',budhdev
 export function App():React.ReactElement{
   const[tab,setTab]=useState<Tab>(window.location.hash==='#mcp'?'mcp':'studio'),[config,setConfig]=useState<StudioConfig|null>(null),[jobs,setJobs]=useState<VideoJob[]>([]),[examples,setExamples]=useState<VideoJob[]>([]),[selectedId,setSelectedId]=useState<string|null>(null);
   const[prompt,setPrompt]=useState(()=>initialDraft()?.prompt??''),[cast,setCast]=useState<NonNullable<GenerateVideoInput['cast']>>('auto'),[language,setLanguage]=useState<NonNullable<GenerateVideoInput['language']>>(()=>initialDraft()?.language??'hinglish');
-  const[format,setFormat]=useState<VideoFormat>(()=>initialDraft()?.format??'sketch'),[narrator,setNarrator]=useState<CharacterId|null>(null),[quizCount,setQuizCount]=useState(1);
+  const[format,setFormat]=useState<VideoFormat>(()=>initialDraft()?.format??'skit'),[narrator,setNarrator]=useState<CharacterId|null>(null),[quizCount,setQuizCount]=useState(1);
   const videoRef=useRef<HTMLVideoElement>(null);
   const[inputMode,setInputMode]=useState<'topic'|'script'>('topic'),[scriptText,setScriptText]=useState(''),[scriptInput,setScriptInput]=useState<GenerateVideoInput|null>(null),[reviewRevision,setReviewRevision]=useState(0);
   const acceptScript=useCallback((input:GenerateVideoInput|null)=>{setScriptInput(input);requestId.current=null;},[]);

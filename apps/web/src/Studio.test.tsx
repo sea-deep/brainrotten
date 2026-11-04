@@ -23,12 +23,13 @@ describe('Studio sign-in entry',()=>{
     // Signed out on the hosted site: no personal video list, only the composer and examples.
     expect(screen.queryByRole('heading',{name:'Your videos'})).toBeNull();
     expect(screen.queryByLabelText('Settings')).toBeNull();
+    expect(screen.getByRole('button',{name:'Character skit'})).toHaveAttribute('aria-pressed','true');
     const button=screen.getByRole('button',{name:'Continue with Google to generate'});expect(button).toBeDisabled();
     fireEvent.change(screen.getByLabelText('Topic or context'),{target:{value:'Why did the old price come back?'}});
     fireEvent.click(button);
     await waitFor(()=>expect(assign).toHaveBeenCalled());
     expect(String(assign.mock.calls[0]![0])).toContain('identity_provider=Google');
-    expect(JSON.parse(sessionStorage.getItem('brainrotten.draft')!)).toMatchObject({prompt:'Why did the old price come back?',format:'sketch'});
+    expect(JSON.parse(sessionStorage.getItem('brainrotten.draft')!)).toMatchObject({prompt:'Why did the old price come back?',format:'skit'});
     expect(JSON.parse(sessionStorage.getItem('brainrotten.oauth')!).returnTo).toBe('/studio');
     expect(generateVideo).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
