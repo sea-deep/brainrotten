@@ -2,6 +2,7 @@ import React from 'react';
 import {afterEach,beforeEach,describe,it,expect,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen} from '@testing-library/react';
 import {LandingPage} from './LandingPage.js';
+import {ANDROID_DOWNLOAD_URL} from './mobileApp.js';
 import {editorConfig} from './editorConfig.js';
 vi.mock('./GummyScene.js',()=>({GummyScene:()=>null}));
 vi.mock('./AgentFlow.js',()=>({AgentFlow:()=>null}));
@@ -23,6 +24,13 @@ describe('production landing page',()=>{
     fireEvent.keyDown(screen.getByRole('tab',{name:/PR review/}),{key:'ArrowRight'});
     expect(screen.getByRole('tab',{name:/Tier list/})).toHaveAttribute('aria-selected','true');
     expect(document.querySelector('video')).toBeNull();
+  });
+  it('links the Android companion to the signed release and explains project continuity',()=>{
+    render(<LandingPage/>);
+    expect(screen.getByRole('heading',{name:'Your projects, in your pocket.'})).toBeInTheDocument();
+    expect(screen.getByRole('link',{name:/Download for Android/})).toHaveAttribute('href',ANDROID_DOWNLOAD_URL);
+    expect(screen.getByRole('link',{name:'App'})).toHaveAttribute('href','/#android-app');
+    expect(screen.getByText(/Open a project, review your agent/)).toBeInTheDocument();
   });
   it('sends Studio links to Studio without forcing a Google redirect',()=>{
     render(<LandingPage/>);

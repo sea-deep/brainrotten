@@ -1,5 +1,6 @@
 import React,{useEffect,useState} from 'react';
 import {Icon} from './Icons.js';
+import {ANDROID_DOWNLOAD_URL} from './mobileApp.js';
 import {currentProfile,isSignedIn,onSessionChange,signInWithGoogle,type Profile} from './googleAuth.js';
 import {getStudioConfig,getTrialQuota} from './api.js';
 
@@ -56,7 +57,7 @@ export function SiteHeader({studio,account,menuItem}:HeaderProps):React.ReactEle
     <a className="site-brand" href="/" aria-label="Brainrotten home"><BrainMark/><span>brainrotten</span></a>
     <nav id="site-nav" aria-label={studio?'Workspace':'Main navigation'}>
       {studio?<><button aria-current={studio.tab==='studio'?'page':undefined} onClick={()=>{studio.onSelect('studio');setOpen(false);}}>Studio</button><button aria-current={studio.tab==='mcp'?'page':undefined} onClick={()=>{studio.onSelect('mcp');setOpen(false);}}>MCP</button></>:<><a href="/studio" aria-current={here('/studio')}>Studio</a><a href="/mcp" aria-current={here('/mcp')}>MCP</a></>}
-      <a href="/api" aria-current={here('/api')}>API</a><a href="/examples" aria-current={here('/examples')}>Examples</a>{(HOSTED||studio)&&<a href="/setup" aria-current={here('/setup')}>Setup</a>}{menuItem&&<button type="button" aria-expanded={menuItem.active} onClick={()=>{menuItem.onClick();setOpen(false);}}>{menuItem.label}</button>}
+      <a href="/#android-app">App</a><a href="/api" aria-current={here('/api')}>API</a><a href="/examples" aria-current={here('/examples')}>Examples</a>{(HOSTED||studio)&&<a href="/setup" aria-current={here('/setup')}>Setup</a>}{menuItem&&<button type="button" aria-expanded={menuItem.active} onClick={()=>{menuItem.onClick();setOpen(false);}}>{menuItem.label}</button>}
     </nav>
     <div className="header-actions"><AccountChip account={account}/></div>
     <button type="button" className="menu-toggle" aria-expanded={open} aria-controls="site-nav" aria-label={open?'Close menu':'Open menu'} onClick={()=>setOpen(value=>!value)}><span/><span/></button>
@@ -64,7 +65,7 @@ export function SiteHeader({studio,account,menuItem}:HeaderProps):React.ReactEle
 }
 
 const FOOTER_LINKS:Array<[string,Array<[string,string]>]>=[
-  ['Make',[['Studio','/studio'],['Examples','/examples']]],
+  ['Make',[['Studio','/studio'],['Examples','/examples'],['Android app',ANDROID_DOWNLOAD_URL]]],
   ['Connect',[['MCP server','/mcp'],['Python SDK','/mcp#python'],['REST API','/api']]],
   ['Run',[['Local setup','/setup#local'],['Deploy on AWS','/setup#aws']]],
 ];

@@ -1,5 +1,6 @@
 import React,{useEffect,useRef,useState} from 'react';
-import {SiteLayout} from './SiteLayout.js';
+import {SiteLayout,BrainMark} from './SiteLayout.js';
+import {ANDROID_DOWNLOAD_URL} from './mobileApp.js';
 import {Icon} from './Icons.js';
 import {GummyScene} from './GummyScene.js';
 import {AgentFlow} from './AgentFlow.js';
@@ -32,7 +33,7 @@ export function LandingPage():React.ReactElement{
       <div className="intro-copy">
         <h1 id="landing-title">Stop doomscrolling. Understand what your agent just changed.</h1>
         <p>A one-minute video on your agent’s latest change: the approach it took, the trade-offs, and where a better practice exists. Drawn as a sketch, a skit, a PR review, a tier list or a group chat.</p>
-        <div className="intro-actions"><a className="site-button" href="/studio">Open Studio <Icon name="arrow"/></a><a className="watch-link" href="#clips">Watch examples <Icon name="play" size={16}/></a></div>
+        <div className="intro-actions"><a className="site-button" href="/studio">Open Studio <Icon name="arrow"/></a><a className="android-download-link" href={ANDROID_DOWNLOAD_URL}><Icon name="download" size={18}/>Android app</a><a className="watch-link" href="#clips">Watch examples <Icon name="play" size={16}/></a></div>
       </div>
       <GummyScene/>
     </section>
@@ -52,6 +53,27 @@ export function LandingPage():React.ReactElement{
         </div>
         <div className="example-screen" key={example.slug}>{playing?<video ref={video} controls autoPlay playsInline preload="none" src={`/examples/${example.slug}/video.mp4`} poster={`/examples/${example.slug}/poster.png`} aria-label={example.title}/>:<button className="sleeve-play" onClick={()=>setPlaying(true)} aria-label={`Play example: ${example.title}`}><img src={`/examples/${example.slug}/poster.png`} alt={`A frame from the ${FORMAT_NAMES[example.format]!.toLowerCase()} video`} width="540" height="960" loading="lazy"/><span className="play-disc"><Icon name="play" size={24}/><span>Play</span></span></button>}</div>
       </div>
+    </section>
+
+    <section id="android-app" className="android-section" aria-labelledby="android-title">
+      <div className="android-copy">
+        <h2 id="android-title">Your projects, in your pocket.</h2>
+        <p><strong>brainrotgram</strong> is the Android companion for Brainrotten. Open a project, review your agent’s checkpoints and watch its reels on the same account.</p>
+        <ul><li>Project context alongside the explanation.</li><li>Saved reels, watch progress and quizzes across devices.</li><li>Create a reel from your phone when a question comes up.</li></ul>
+        <a className="site-button" href={ANDROID_DOWNLOAD_URL}>Download for Android <Icon name="download" size={20}/></a>
+        <p className="android-install-note">Android 7 or later · APK · Sign in with the same Google account.</p>
+      </div>
+      <figure className="android-figure">
+        <div className="android-preview" data-ui="android-app-preview">
+          <div className="android-preview-brand"><BrainMark size={24}/><span>brainrotgram</span></div>
+          <h3>Projects</h3>
+          <div className="android-preview-project"><span>Weather app</span><p>Guard async state updates</p><small>Flutter · Agent checkpoint</small></div>
+          <h3>Recent reels</h3>
+          <div className="android-preview-reels"><img src="/examples/flutter-setstate-dispose/poster.png" alt="Flutter reel explaining a mounted check" width="170" height="235" loading="lazy"/><img src="/examples/react-useeffect-loop/poster.png" alt="PR review reel explaining an effect loop" width="170" height="235" loading="lazy"/></div>
+          <div className="android-preview-nav" aria-hidden="true"><span className="is-selected"><Icon name="code" size={18}/>Home</span><span><Icon name="search" size={18}/>Search</span><span><Icon name="plus" size={18}/>Create</span><span><Icon name="play" size={18}/>Learn</span><span><Icon name="user" size={18}/>Profile</span></div>
+        </div>
+        <figcaption>Example project and public demonstration reels.</figcaption>
+      </figure>
     </section>
 
     <section className="workflow-section" aria-labelledby="workflow-title"><h2 id="workflow-title" className="shelf-enter">Four ways in.</h2><div className="workflow-tabs" role="tablist" aria-label="Choose an interface">{WORKFLOW_NAMES.map((name,index)=><button role="tab" id={`tab-${name}`} aria-controls="workflow-panel" aria-selected={workflow===name} key={name} onClick={()=>setWorkflow(name)} onKeyDown={event=>pickTab(event,index,WORKFLOW_NAMES.length,next=>setWorkflow(WORKFLOW_NAMES[next]!),next=>`tab-${WORKFLOW_NAMES[next]}`)} tabIndex={workflow===name?0:-1}>{name}</button>)}</div><div className="workflow-body" id="workflow-panel" role="tabpanel" aria-labelledby={`tab-${workflow}`}><div className="workflow-copy"><h3>{flow.heading}</h3><p>{flow.description}</p><a href={flow.link}>{flow.action} <Icon name="arrow" size={18}/></a></div><pre className="workflow-code"><code>{flow.code}</code></pre></div></section>
