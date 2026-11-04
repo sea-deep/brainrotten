@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Blocks a push if any commit being pushed adds third-party media (character art, voices, gameplay, videos,
+# example posters). That media lives in the private bucket (pnpm media:push), never in git.
+# Install once: git config core.hooksPath scripts/git-hooks
+set -euo pipefail
+banned='^(assets/(characters|gameplay)/|apps/web/public/characters/|apps/web/public/flow/|apps/web/public/og\.png$|(oggy|motupatlu|cockroaches|budbak)/|\.github/[^/]+\.png$)|\.(mp4|mov|webm|wav|m4a|mp3|flac)$|^(apps/web/public/examples|examples/website-archive)/[^/]+/[^/]+\.png$'
+zero=0000000000000000000000000000000000000000
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [[ "$local_sha" == "$zero" ]] && continue                       # deleting a branch
+  if [[ "$local_ref" == refs/tags/* ]]; then echo "pre-push: pushing tags is disabled for this repo ($local_ref)." >&2; exit 1; fi
+  range="$local_sha"; [[ "$remote_sha" != "$zero" ]] && range="$remote_sha..$local_sha"
+  found="$(git log --pretty=format: --name-only --no-renames "$range" --not --remotes="$1" 2>/dev/null | sort -u | grep -E "$banned" || true)"
+  if [[ -n "$found" ]]; then
+    echo "pre-push: blocked. These commits contain third-party media, which must never be pushed:" >&2
+    echo "$found" | head -20 | sed 's/^/  /' >&2
+    exit 1
+  fi
+done

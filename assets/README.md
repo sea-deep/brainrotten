@@ -20,4 +20,4 @@ assets/
   gameplay/<name>.mp4           muted, cropped background clips
 ```
 
-Running without the private media: everything builds and the tests pass. To render videos, add your own cutouts (`assets/characters/<show>/<id>.png`) and background clips (`assets/gameplay/*.mp4`), using media you have the rights to. A test fails if any of these files is ever committed.
+Running without the private media: everything builds and the tests pass. To render videos, add your own cutouts (`assets/characters/<show>/<id>.png`) and background clips (`assets/gameplay/*.mp4`), using media you have the rights to. A test fails if any of these files is ever committed, and a pre-push check blocks pushing them (install it once with `git config core.hooksPath scripts/git-hooks`).
