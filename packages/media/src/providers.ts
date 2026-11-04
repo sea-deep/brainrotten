@@ -292,5 +292,7 @@ export async function synthesizeDialogue(script:VideoScript,input:ValidatedVideo
   }
   const durationSeconds=await durationOf(audioPath);
   if(durationSeconds>180)throw new GenerationError('The spoken script exceeds three minutes. Audio is cached; shorten the script before rendering.');
-  return{audioPath,durationSeconds,segments:segments.map(s=>({...s,startMs:Math.round(s.startMs/input.speechSpeed),endMs:Math.round(s.endMs/input.speechSpeed)})),words:words.map(w=>({...w,startMs:Math.round(w.startMs/input.speechSpeed),endMs:Math.round(w.endMs/input.speechSpeed)}))};
+  // ElevenLabs alignment can end a few milliseconds after the audio file does; keep every timing inside the audio.
+  const lastMs=Math.floor(durationSeconds*1000),fit=<T extends {startMs:number;endMs:number}>(item:T):T=>{const endMs=Math.min(lastMs,Math.round(item.endMs/input.speechSpeed));return{...item,startMs:Math.min(Math.round(item.startMs/input.speechSpeed),Math.max(0,endMs-1)),endMs};};
+  return{audioPath,durationSeconds,segments:segments.map(fit),words:words.map(fit)};
 }

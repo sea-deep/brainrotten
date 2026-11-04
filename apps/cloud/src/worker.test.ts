@@ -138,6 +138,24 @@ describe('hosted worker speech protection and lifecycle',()=>{
     );
   });
 
+  it('refunds the free video when our own code fails after the voices were made',async()=>{
+    const record=makeRecord();
+    vi.spyOn(store,'findJob').mockResolvedValue(record);
+    vi.spyOn(store,'claim').mockResolvedValue(true);
+    vi.spyOn(S3Client.prototype,'send').mockResolvedValue({} as never);
+    vi.spyOn(mediaModule,'generateVideoArtifact').mockImplementation(async(_input,options)=>{
+      options?.onUpdate?.({stage:'voicing',progress:22});
+      throw new Error('Replay timing must be ordered and within the video');
+    });
+    const refundSpy=vi.spyOn(store,'failAndRefund').mockResolvedValue();
+    const putJobSpy=vi.spyOn(store,'putJob').mockResolvedValue();
+    vi.spyOn(console,'error').mockImplementation(()=>{});
+    const response=await handler(makeSqsEvent(),{} as never,()=>undefined) as{batchItemFailures:unknown[]};
+    expect(response.batchItemFailures).toEqual([]);
+    expect(refundSpy).toHaveBeenCalledWith(record,expect.stringContaining('Your free video was returned'));
+    expect(putJobSpy).not.toHaveBeenCalledWith(record,expect.objectContaining({state:'needs_review'}));
+  });
+
   it('holds reservation in needs_review on uncertain speech failure and never refunds',async()=>{
     const record=makeRecord();
     vi.spyOn(store,'findJob').mockResolvedValue(record);

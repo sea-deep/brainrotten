@@ -31,9 +31,10 @@ export async function insertPauses<S extends Timed,W extends Timed>(voice:VoiceL
   filters.push(`${labels.join('')}concat=n=${labels.length}:v=0:a=1[out]`);
   const audioPath=path.join(outputDir,'paused-audio.mp3');
   await execFileAsync(process.env['FFMPEG_PATH']??'ffmpeg',['-hide_banner','-loglevel','error','-y','-i',voice.audioPath,'-filter_complex',filters.join(';'),'-map','[out]','-c:a','libmp3lame','-b:a','128k',audioPath]);
-  const shift=(ms:number)=>ms+cuts.filter(cut=>ms>=cut.at).reduce((n,cut)=>n+cut.ms,0);
-  // A boundary exactly at a cut belongs to the speech before it; later starts move past the silence.
-  const move=<T extends Timed>(item:T):T=>({...item,startMs:item.startMs>=cuts[0]!.at?shift(item.startMs):item.startMs,endMs:cuts.some(cut=>item.endMs===cut.at)?item.endMs:shift(item.endMs)});
+  // Every silence that starts before a moment pushes it later. A boundary exactly at a cut belongs to the speech
+  // before it: an end there stays before that silence (but after every earlier one), a start there moves past it.
+  const silenceBefore=(ms:number,inclusive:boolean)=>cuts.filter(cut=>inclusive?cut.at<=ms:cut.at<ms).reduce((n,cut)=>n+cut.ms,0);
+  const move=<T extends Timed>(item:T):T=>({...item,startMs:item.startMs+silenceBefore(item.startMs,true),endMs:item.endMs+silenceBefore(item.endMs,false)});
   return{...voice,audioPath,durationSeconds:voice.durationSeconds+cuts.reduce((n,cut)=>n+cut.ms,0)/1000,segments:voice.segments.map(move),words:voice.words.map(move)};
 }
 

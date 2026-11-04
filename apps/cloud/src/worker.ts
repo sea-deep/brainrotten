@@ -50,7 +50,9 @@ export const handler:SQSHandler=async event=>{
       const isUncertain=Boolean(known&&error.uncertain);
       try{await archiveRecovery(directory,`${payload.sub}/${payload.jobId}`);}catch{console.error('Recovery upload unavailable',{jobId:payload.jobId});}
       await pending;
-      try{if(!isUncertain&&(known||current.stage==='scripting'))await failAndRefund(record,known?error.message:'Script generation failed. Your trial slot was returned.');else await putJob(record,{...current,state:'needs_review',stage:'failed',error:known?error.message:'Generation was interrupted. The trial reservation is held for review; it will not automatically synthesize again.'});}catch{console.error('Could not persist worker outcome',{jobId:payload.jobId});}
+      // Only an uncertain speech request (it may have been billed) is held for review. Anything else, including a bug
+      // on our side after the voices were made, fails clearly and returns the free video so the user can retry.
+      try{if(!isUncertain)await failAndRefund(record,known?error.message:'Something went wrong on our side while making this video. Your free video was returned; please try again.');else await putJob(record,{...current,state:'needs_review',stage:'failed',error:known?error.message:'Generation was interrupted. The trial reservation is held for review; it will not automatically synthesize again.'});}catch{console.error('Could not persist worker outcome',{jobId:payload.jobId});}
       console.error(jobTelemetry({jobId:payload.jobId,format:record.job.format??record.input.format??'unknown',ok:false,stage:current.stage,jobSeconds:(Date.now()-started)/1000,queueWaitSeconds,error:known?error.message:`${error instanceof Error?error.name:'UnknownError'}: ${error instanceof Error?error.message:''}`}));
     }finally{await fs.rm(directory,{recursive:true,force:true});}
   }
