@@ -32,6 +32,7 @@
     "deploy:backend": "scripts/deploy-local.sh backend",
     "app:sync": "node scripts/app-sync.mjs",
     "ops:status": "node scripts/ops-status.mjs",
+    "ops:refund": "node scripts/ops-refund.mjs",
     "media:pull": "node scripts/media.mjs pull",
     "media:push": "node scripts/media.mjs push",
     "examples:manifest": "node scripts/examples-media.mjs manifest",
