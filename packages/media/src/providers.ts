@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {z} from 'zod/v4';
-import {maxSecondsFor,targetWordsFor,estimateSpokenSeconds,VideoScriptSchema,QuestionAnswerScriptSchema,NarratedScriptSchema,WhiteboardScriptSchema,PovScriptSchema,GroupChatScriptSchema,PrReviewScriptSchema,SketchScriptSchema,TierListScriptSchema,scriptForFormat,type VideoScript,type ValidatedVideoInput,type CharacterId,fitChatCodeInRawScript} from '@brainrot/contracts';
+import {maxSecondsFor,targetWordsFor,estimateSpokenSeconds,PRE_SPEECH_HEADROOM,MAX_SPEED_UP,VideoScriptSchema,QuestionAnswerScriptSchema,NarratedScriptSchema,WhiteboardScriptSchema,PovScriptSchema,GroupChatScriptSchema,PrReviewScriptSchema,SketchScriptSchema,TierListScriptSchema,scriptForFormat,type VideoScript,type ValidatedVideoInput,type CharacterId,fitChatCodeInRawScript} from '@brainrot/contracts';
 import {providerKeys} from './env.js';
 import {CHARACTERS,clonedVoices,clonedVoiceCandidates,castCharacters,characterGuide} from './characters.js';
 import {GenerationError} from './generationError.js';
@@ -50,7 +50,7 @@ export function dropUnknownIcons(raw:unknown):number{
 /** Free check before any speech is paid for: the script must fit the allowed length for the chosen duration. */
 function checkSpokenLength(script:VideoScript,input:ValidatedVideoInput):void{
   const estimated=estimateSpokenSeconds(script,input.speechSpeed),limit=maxSecondsFor(input.durationSeconds);
-  if(estimated>limit)throw new Error(`dialogue: too long. It would take about ${estimated} seconds to speak, and this video is about ${input.durationSeconds} seconds (at most ${limit}). Use about ${targetWordsFor(input.durationSeconds,input.speechSpeed)} words in total: shorten lines rather than dropping them.`);
+  if(estimated>limit*PRE_SPEECH_HEADROOM)throw new Error(`dialogue: too long. It would take about ${estimated} seconds to speak, and this video is about ${input.durationSeconds} seconds (at most ${limit}). Use about ${targetWordsFor(input.durationSeconds,input.speechSpeed)} words in total: shorten lines rather than dropping them.`);
 }
 export async function createScript(input:ValidatedVideoInput,available?:CharacterId[]):Promise<VideoScript>{
   const allowed=castCharacters(input.cast).filter(id=>!available||available.includes(id));
@@ -284,7 +284,7 @@ async function voiceChunk(dialogue:VideoScript['dialogue'],voiceIds:Record<Chara
  */
 export async function speedUpToFit(dir:string,durationSeconds:number,budgetSeconds:number,speechSpeed:number):Promise<{path:string;speed:number;durationSeconds:number}>{
   const factor=durationSeconds/budgetSeconds;
-  if(factor>1.25)throw new Error(`Speech is ${factor.toFixed(2)}x the allowed length; speeding it up that much would sound rushed.`);
+  if(factor>MAX_SPEED_UP)throw new Error(`Speech is ${factor.toFixed(2)}x the allowed length; speeding it up that much would sound rushed.`);
   const speed=speechSpeed*factor,file=path.join(dir,`audio-${speed.toFixed(3)}.mp3`);
   try{await fs.access(file);}catch{
     await execFileAsync(process.env['FFMPEG_PATH']??'ffmpeg',['-hide_banner','-loglevel','error','-y','-f','concat','-safe','0','-i',path.join(dir,'inputs.txt'),'-af',`atempo=${speed.toFixed(4)}`,'-c:a','libmp3lame','-b:a','128k',file]);

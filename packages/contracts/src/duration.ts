@@ -8,8 +8,15 @@ export const MAX_VIDEO_SECONDS=240;
 export function maxSecondsFor(targetSeconds:number):number{
   return Math.min(MAX_VIDEO_SECONDS,Math.round(Math.max(targetSeconds*1.25,targetSeconds+30)));
 }
-/** How fast the cloned voices speak at speech speed 1.0, in words per second (cautious end of measured videos). */
-export const WORDS_PER_SECOND=2.3;
+/** How fast the cloned voices speak at speech speed 1.0, in words per second (typical of measured videos: 2.3-2.65). */
+export const WORDS_PER_SECOND=2.5;
+/** Spoken audio up to this much over its time budget is sped up to fit instead of failing. */
+export const MAX_SPEED_UP=1.25;
+/**
+ * The free check before speech only stops scripts that are clearly too long: estimates vary by about 10%, and
+ * speech that lands a little over the limit is sped up afterwards (up to MAX_SPEED_UP).
+ */
+export const PRE_SPEECH_HEADROOM=1.2;
 /** Words to ask a script writer for so the spoken video fills about the chosen length. */
 export function targetWordsFor(targetSeconds:number,speechSpeed:number):number{
   return Math.round(targetSeconds*0.92*WORDS_PER_SECOND*speechSpeed);

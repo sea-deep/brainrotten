@@ -1,3 +1,4 @@
+import {MAX_VIDEO_SECONDS} from '@brainrot/contracts';
 import {spawn,spawnSync} from 'node:child_process';
 import {once} from 'node:events';
 import {existsSync,readFileSync} from 'node:fs';
@@ -206,7 +207,7 @@ function storyFrame(input:Pick<RenderVideoInput,'title'|'format'|'script'|'segme
 export async function renderVideo(input: RenderVideoInput): Promise<{ videoPath: string; posterPath: string }> {
   const readiness = getRenderReadiness();
   if (!readiness.ready || !cachedBinaries?.ffmpeg) throw new Error('VIDEO_RENDERER_NOT_CONFIGURED: install FFmpeg and FFprobe to export MP4.');
-  if (!Number.isFinite(input.durationSeconds) || input.durationSeconds <= 0 || input.durationSeconds > 180) throw new Error('VIDEO_DURATION_INVALID: expected a duration between 0 and 180 seconds.');
+  if (!Number.isFinite(input.durationSeconds) || input.durationSeconds <= 0 || input.durationSeconds > MAX_VIDEO_SECONDS) throw new Error(`VIDEO_DURATION_INVALID: expected a duration between 0 and ${MAX_VIDEO_SECONDS} seconds.`);
   if (!input.segments.length) throw new Error('VIDEO_SEGMENTS_MISSING: speech timing is required.');
   if ((await stat(input.audioPath)).size === 0) throw new Error('VIDEO_AUDIO_EMPTY: synthesized audio is empty.');
   if (input.backgroundPath && (await stat(input.backgroundPath)).size === 0) throw new Error('VIDEO_BACKGROUND_EMPTY: the gameplay clip is empty.');
