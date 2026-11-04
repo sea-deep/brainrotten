@@ -9,6 +9,7 @@ import os from 'node:os';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {build} from 'esbuild';
+import {createRequire} from 'node:module';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const arg=name=>{const index=process.argv.indexOf(name);return index>=0?process.argv[index+1]:undefined;};
@@ -25,6 +26,8 @@ try{
     entryPoints:[path.join(root,'apps/companion/dist/standalone/cli.js')],
     outfile:path.join(staging,'cli.mjs'),
     bundle:true,platform:'node',format:'esm',target:'node20',minify:true,legalComments:'eof',
+    // Prefer packages' ES module builds: some UMD builds (jsonc-parser, used by add-mcp) load their own files at runtime.
+    mainFields:['module','main'],
     banner:{js:"#!/usr/bin/env node\nimport{createRequire as __cr}from'node:module';const require=__cr(import.meta.url);"},
     define:{__BRAINROTTEN_API__:JSON.stringify(api),__BRAINROTTEN_VERSION__:JSON.stringify(version)},
     logLevel:'warning',
@@ -32,11 +35,13 @@ try{
   fs.chmodSync(path.join(staging,'cli.mjs'),0o755);
   fs.writeFileSync(path.join(staging,'package.json'),JSON.stringify({
     name:'brainrotten-mcp',version,description:'Connect any coding agent to Brainrotten: one-minute videos that explain what your agent just did.',
-    type:'module',bin:{'brainrotten-mcp':'cli.mjs'},files:['cli.mjs','README.md','LICENSE'],engines:{node:'>=20'},license:'MIT',
+    type:'module',bin:{'brainrotten-mcp':'cli.mjs'},files:['cli.mjs','README.md','LICENSE','THIRD_PARTY_NOTICES.md'],engines:{node:'>=20'},license:'MIT',
     homepage:site,repository:{type:'git',url:'git+https://github.com/sea-deep/brainrotten.git',directory:'apps/companion'},bugs:{url:'https://github.com/sea-deep/brainrotten/issues'},keywords:['mcp','model-context-protocol','claude-code','codex','cursor','kiro','ai-agent','learning','video','education'],
   },null,2)+'\n');
   fs.writeFileSync(path.join(staging,'README.md'),npmReadme());
   fs.copyFileSync(path.join(root,'LICENSE'),path.join(staging,'LICENSE'));
+  // cli.mjs bundles add-mcp (Apache-2.0) and its dependencies; ship their licences with it.
+  fs.writeFileSync(path.join(staging,'THIRD_PARTY_NOTICES.md'),thirdPartyNotices());
   const packed=execFileSync('npm',['pack','--silent','--pack-destination',staging],{cwd:staging,encoding:'utf8'}).trim().split('\n').pop();
   fs.mkdirSync(out,{recursive:true});
   // Versioned file for npx (it caches by URL), plus a stable alias.
@@ -68,7 +73,7 @@ What it does:
 
 1. Copies one file to \`~/.local/share/brainrot/bin/brainrotten-mcp.mjs\`.
 2. Opens the user's browser for Google sign-in and waits until they finish (up to 5 minutes). Tell the user a browser window is opening.
-3. Adds an MCP server named \`brainrotten\` to every coding agent it finds: Claude Code, Codex, Cursor, VS Code, Claude Desktop, Windsurf, Kiro, Gemini CLI and OpenCode. Existing servers are kept; each changed file gets a \`.brainrotten-backup\` copy.
+3. Adds an MCP server named \`brainrotten\` to every coding agent it finds: Claude Code, Codex, Antigravity, Cursor, VS Code, Claude Desktop, Windsurf, Kiro, Gemini CLI, GitHub Copilot CLI, Zed, Cline, OpenCode, Goose and more (20+ agents, on macOS, Windows and Linux). Existing servers are kept; each changed file gets a \`.brainrotten-backup\` copy.
 
 Options:
 
@@ -108,7 +113,7 @@ Connect your coding agent to **Brainrotten**: it turns what your agent just did 
 npx -y brainrotten-mcp@latest setup
 \`\`\`
 
-That one command signs you in with Google in your browser (five free videos per account) and adds the \`brainrotten\` MCP server to every coding agent on your computer: **Claude Code, Codex, Cursor, VS Code, Claude Desktop, Windsurf, Kiro, Gemini CLI and OpenCode**. Existing servers are kept and each changed config gets a \`.brainrotten-backup\` copy. Restart your agent, then ask it to *"explain what we just did as a Brainrotten video"*.
+That one command signs you in with Google in your browser (five free videos per account) and adds the \`brainrotten\` MCP server to every coding agent on your computer: **Claude Code, Codex, Antigravity, Cursor, VS Code, Claude Desktop, Windsurf, Kiro, Gemini CLI, GitHub Copilot CLI, Zed, Cline, OpenCode, Goose and more (20+ agents, on macOS, Windows and Linux)**. Existing servers are kept and each changed config gets a \`.brainrotten-backup\` copy. Restart your agent, then ask it to *"explain what we just did as a Brainrotten video"*.
 
 **Agents:** if the user asks you to install Brainrotten, run the command above and tell them a browser window will open. On a machine without a browser add \`--no-login\`, reload MCP, and call the \`sign_in\` tool: it returns a link for the user.
 
@@ -124,3 +129,13 @@ Requires Node.js 20+. Website and full install guide: ${site}/install.md
 
 Brainrotten is an unofficial, non-commercial fan project; characters and gameplay belong to their owners and voices are AI clones. See ${site}/credits.html.
 `;}
+
+/** Licences of the third-party code bundled into cli.mjs (add-mcp and the packages it uses). */
+function thirdPartyNotices(){
+  const require=createRequire(path.join(root,'apps/companion/package.json'));
+  const addMcp=path.dirname(require.resolve('add-mcp/package.json'));
+  const entry=(dir)=>{const pkg=JSON.parse(fs.readFileSync(path.join(dir,'package.json'),'utf8'));const file=fs.readdirSync(dir).find(name=>/^licen[cs]e/i.test(name));
+    return `## ${pkg.name} ${pkg.version} (${pkg.license})\n\n${pkg.repository?.url??pkg.homepage??''}\n\n${file?fs.readFileSync(path.join(dir,file),'utf8').trim():'License text not included in the package.'}\n`;};
+  const deps=Object.keys(JSON.parse(fs.readFileSync(path.join(addMcp,'package.json'),'utf8')).dependencies??{}).map(name=>fs.realpathSync(path.join(path.dirname(addMcp),...name.split('/'))));
+  return `# Third-party notices\n\ncli.mjs includes the following open-source packages.\n\n${[addMcp,...deps].map(entry).join('\n')}`;
+}

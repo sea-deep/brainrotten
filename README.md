@@ -51,7 +51,7 @@ Paste this into your terminal (needs [Node.js](https://nodejs.org) 20 or newer):
 npx -y brainrotten-mcp@latest setup
 ```
 
-It opens Google sign-in in your browser, then adds Brainrotten to every coding agent on your computer: **Claude Code, Codex, Cursor, VS Code, Claude Desktop, Windsurf, Kiro, Gemini CLI and OpenCode**. Your other settings are kept, with a backup of every file it changes. Restart your agent, then ask:
+It opens Google sign-in in your browser, then adds Brainrotten to every coding agent on your computer: **Claude Code, Codex, Antigravity, Cursor, VS Code, Claude Desktop, Windsurf, Kiro, Gemini CLI, GitHub Copilot CLI, Zed, Cline, OpenCode, Goose and more (20+ agents, on macOS, Windows and Linux)**. Your other settings are kept, with a backup of every file it changes. Restart your agent, then ask:
 
 > Explain what we just did as a Brainrotten video.
 

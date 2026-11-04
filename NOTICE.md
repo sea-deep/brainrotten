@@ -40,6 +40,7 @@ The uploaders describe these clips as free to use. That is their claim, not a li
 | Interface icons | Lucide contributors | ISC |
 | Brand icons | Simple Icons contributors | CC0; the logos themselves are trademarks of their owners |
 | Hand-drawn shapes / graph layout | rough.js, dagre | MIT |
+| MCP installer engine (`add-mcp`, bundled in `brainrotten-mcp`) | Neon | Apache-2.0 ([neon-solutions/add-mcp](https://github.com/neon-solutions/add-mcp)); licences of it and its dependencies ship in the package's `THIRD_PARTY_NOTICES.md` |
 | 3D gummy bear model | Grab3D | CC0 (`apps/web/public/models/GUMMY-LICENSE.txt`) |
 | Soft-body physics | Squishy Lab contributors | MIT (`apps/web/src/vendor/squishy-lab/LICENSE`) |
 

@@ -8,7 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {accountLogin,accountAccessToken,readAccountProfile,removeAccountProfile} from '../mcp/account.js';
-import {CLIENTS,configure,pickClients,systemEnv,type ServerSpec} from './clients.js';
+import {CLIENTS,configure,connectionStatus,pickClients,type ServerSpec} from './clients.js';
 
 declare const __BRAINROTTEN_API__:string|undefined;
 declare const __BRAINROTTEN_VERSION__:string|undefined;
@@ -81,8 +81,10 @@ async function status(){
       if(body.quota)say(`Free videos left: ${body.quota.remaining} of ${body.quota.limit}`);
     }catch{say('Free videos left: unknown (could not reach the API)');}
   }
-  const env=systemEnv();
-  for(const client of CLIENTS)say(`  ${client.detect(env)?'found    ':'not found'}  ${client.name}`);
+  for(const client of await connectionStatus()){
+    if(client.connected)say(`  connected  ${client.name}`);
+    else if(client.found)say(`  found      ${client.name} (run setup to connect it)`);
+  }
 }
 
 function report(results:ReturnType<typeof configure>){
@@ -99,8 +101,7 @@ async function main(){
     return;
   }
   if(command==='setup'){
-    const env=systemEnv();
-    const clients=pickClients(env,option('--client'));
+    const clients=await pickClients(option('--client'));
     installSelf();
     say(`Installed to ${INSTALLED}`);
     if(!flag('--no-login')&&!signedIn())await login();
@@ -110,7 +111,7 @@ async function main(){
       say(JSON.stringify({mcpServers:{brainrotten:spec()}},null,2));
       return;
     }
-    say('\nAdding Brainrotten to:');report(configure(env,clients,spec()));
+    say('\nAdding Brainrotten to:');report(configure(clients,spec()));
     say('\nDone. Restart or reload your agent, then ask it to "explain what we just did as a Brainrotten video".');
     say('If a tool says "Not signed in", the agent can call the sign_in tool.');
     return;
@@ -119,8 +120,7 @@ async function main(){
   if(command==='logout'){removeAccountProfile(DATA_DIR);say('Signed out on this computer.');return;}
   if(command==='status'){await status();return;}
   if(command==='uninstall'){
-    const env=systemEnv();
-    say('Removing Brainrotten from:');report(configure(env,pickClients(env,option('--client')??'all'),undefined));
+    say('Removing Brainrotten from:');report(configure(await pickClients(option('--client')??'all'),undefined).filter(result=>result.status!=='unchanged'));
     if(flag('--logout'))removeAccountProfile(DATA_DIR);
     fs.rmSync(INSTALLED,{force:true});
     say('Done.');return;

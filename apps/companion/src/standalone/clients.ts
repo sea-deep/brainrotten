@@ -1,32 +1,74 @@
-// Adds or removes the Brainrotten MCP server in each coding agent's own config file.
-// Every edit keeps a one-time backup (<file>.brainrotten-backup) and only touches the "brainrotten" entry.
+// Adds or removes the Brainrotten MCP server in every coding agent's own config, on macOS, Windows and Linux.
+// The agent list, config paths and file formats come from add-mcp (Neon, Apache-2.0), the shared open tool for
+// this; it covers 20+ agents. On top of it, every edit keeps a one-time backup (<file>.brainrotten-backup) and
+// only the "brainrotten" entry is touched.
 import fs from 'node:fs';
-import path from 'node:path';
-import {spawnSync} from 'node:child_process';
+import {agents,detectGlobalAgents,getAgentTypes,removeServer,upsertServer} from 'add-mcp';
 
 export type ServerSpec={command:string;args:string[]};
-export type Env={home:string;platform:NodeJS.Platform;appData?:string|undefined;hasCommand:(name:string)=>boolean;run:(command:string,args:string[])=>{status:number|null;stderr:string}};
 export type ClientResult={client:string;name:string;status:'added'|'removed'|'unchanged'|'skipped'|'failed';detail:string};
-type Client={id:string;name:string;detect:(env:Env)=>boolean;add:(env:Env,spec:ServerSpec)=>string;remove:(env:Env)=>string};
+type AgentType=ReturnType<typeof getAgentTypes>[number];
+export type Client={id:AgentType;name:string};
 
 const SERVER='brainrotten';
+// Names this installer accepted before it used add-mcp, plus a few obvious short forms.
+const ALIASES:Record<string,AgentType>={kiro:'kiro-cli',gemini:'gemini-cli','github-copilot':'github-copilot-cli',copilot:'github-copilot-cli',claude:'claude-code',cline_vscode:'cline'};
 
-export function systemEnv():Env{
-  return{
-    home:process.env['HOME']??process.env['USERPROFILE']??'',platform:process.platform,appData:process.env['APPDATA'],
-    hasCommand:name=>spawnSync(process.platform==='win32'?'where':'which',[name],{stdio:'ignore'}).status===0,
-    run:(command,args)=>{const result=spawnSync(command,args,{encoding:'utf8',shell:process.platform==='win32'});return{status:result.status,stderr:String(result.stderr??'')};},
-  };
+export const CLIENTS:Client[]=getAgentTypes().map(id=>({id,name:agents[id].displayName}));
+
+/** Where an agent keeps its global (user-wide) MCP config. */
+export function configPath(id:AgentType):string{
+  const agent=agents[id];
+  return agent.resolveConfigPath?agent.resolveConfigPath(agent,{local:false,cwd:process.cwd()}):agent.configPath;
 }
 
-/** Per-platform folder for desktop apps' user settings (VS Code, Claude Desktop). */
-function appSupport(env:Env,app:string):string{
-  if(env.platform==='darwin')return path.join(env.home,'Library','Application Support',app);
-  if(env.platform==='win32')return path.join(env.appData??path.join(env.home,'AppData','Roaming'),app);
-  return path.join(env.home,'.config',app);
+/** Chooses clients: the named ones (comma list or "all"), otherwise every agent found on this computer. */
+export async function pickClients(wanted?:string):Promise<Client[]>{
+  if(!wanted){const found=new Set(await detectGlobalAgents());return CLIENTS.filter(client=>found.has(client.id));}
+  if(wanted==='all')return CLIENTS;
+  const ids=wanted.split(',').map(id=>id.trim().toLowerCase()).filter(Boolean).map(id=>ALIASES[id]??id);
+  const unknown=ids.filter(id=>!CLIENTS.some(client=>client.id===id));
+  if(unknown.length)throw new Error(`Unknown client: ${unknown.join(', ')}. Use one of: ${CLIENTS.map(client=>client.id).join(', ')}.`);
+  return CLIENTS.filter(client=>ids.includes(client.id));
 }
 
-/** Reads JSON that may contain comments or trailing commas (VS Code and Cursor allow both). */
+function backup(file:string){const copy=file+'.brainrotten-backup';try{if(fs.existsSync(file)&&!fs.existsSync(copy))fs.copyFileSync(file,copy);}catch{/* a missing backup never blocks the edit */}}
+
+/** Adds (spec given) or removes (no spec) the brainrotten entry for each client. Never throws. */
+export function configure(clients:Client[],spec:ServerSpec|undefined):ClientResult[]{
+  return clients.map(client=>{
+    const file=configPath(client.id);
+    try{
+      backup(file);
+      if(spec){
+        const result=upsertServer(client.id,SERVER,{command:spec.command,args:spec.args},{local:false});
+        return result.success?{client:client.id,name:client.name,status:'added',detail:result.path}:{client:client.id,name:client.name,status:'failed',detail:result.error??'could not write the config'};
+      }
+      const result=removeServer(client.id,SERVER,{local:false});
+      if(!result.success)return{client:client.id,name:client.name,status:'failed',detail:result.error??'could not write the config'};
+      return{client:client.id,name:client.name,status:result.removed?'removed':'unchanged',detail:result.path};
+    }catch(error){return{client:client.id,name:client.name,status:'failed',detail:error instanceof Error?error.message:String(error)};}
+  });
+}
+
+/** Whether an agent's global config already has the brainrotten entry (JSON, TOML or YAML). */
+function hasEntry(id:AgentType):boolean{
+  const file=configPath(id);if(!fs.existsSync(file))return false;
+  const agent=agents[id];
+  try{
+    if(agent.format==='json'){let node:unknown=readJsonc(file);for(const key of agent.configKey.split('.'))node=(node as Record<string,unknown>|undefined)?.[key];return Boolean(node&&typeof node==='object'&&SERVER in node);}
+    const text=fs.readFileSync(file,'utf8');
+    return agent.format==='toml'?new RegExp(`^\\s*\\[[\\w.]*\\.?${SERVER}\\]`,'m').test(text):new RegExp(`^\\s+${SERVER}:`,'m').test(text);
+  }catch{return false;}
+}
+
+/** For `status`: which agents are on this computer and which already have Brainrotten. */
+export async function connectionStatus():Promise<Array<Client&{found:boolean;connected:boolean}>>{
+  const found=new Set(await detectGlobalAgents());
+  return CLIENTS.map(client=>({...client,found:found.has(client.id),connected:hasEntry(client.id)}));
+}
+
+/** Reads JSON that may contain comments or trailing commas (used by tests and diagnostics). */
 export function readJsonc(file:string):Record<string,unknown>{
   if(!fs.existsSync(file))return{};
   const text=fs.readFileSync(file,'utf8');
@@ -42,85 +84,4 @@ export function readJsonc(file:string):Record<string,unknown>{
     out+=c;
   }
   return JSON.parse(out.replace(/,(\s*[}\]])/g,'$1')) as Record<string,unknown>;
-}
-
-function backup(file:string){const copy=file+'.brainrotten-backup';if(fs.existsSync(file)&&!fs.existsSync(copy))fs.copyFileSync(file,copy);}
-function writeJson(file:string,data:Record<string,unknown>){fs.mkdirSync(path.dirname(file),{recursive:true});backup(file);fs.writeFileSync(file,JSON.stringify(data,null,2)+'\n');}
-
-/** A client whose config is a JSON object with the server under one key (mcpServers, servers, mcp). */
-function jsonClient(id:string,name:string,folder:(env:Env)=>string,file:(env:Env)=>string,key:string,entry:(spec:ServerSpec)=>unknown):Client{
-  return{
-    id,name,detect:env=>fs.existsSync(folder(env)),
-    add:(env,spec)=>{
-      const target=file(env),data=readJsonc(target),servers={...(data[key] as Record<string,unknown>|undefined)};
-      const next=entry(spec);
-      if(JSON.stringify(servers[SERVER])===JSON.stringify(next))return target;
-      servers[SERVER]=next;writeJson(target,{...data,[key]:servers});return target;
-    },
-    remove:env=>{
-      const target=file(env);if(!fs.existsSync(target))return target;
-      const data=readJsonc(target),servers={...(data[key] as Record<string,unknown>|undefined)};
-      if(!(SERVER in servers))return target;
-      delete servers[SERVER];writeJson(target,{...data,[key]:servers});return target;
-    },
-  };
-}
-const standard=(spec:ServerSpec)=>({command:spec.command,args:spec.args});
-
-const tomlString=(value:string)=>JSON.stringify(value);
-/** Codex keeps MCP servers in ~/.codex/config.toml as [mcp_servers.<name>] tables. */
-function codexToml(text:string,spec?:ServerSpec):string{
-  const lines=text.split('\n'),kept:string[]=[];let skipping=false;
-  for(const line of lines){
-    const header=/^\s*\[([^\]]+)\]\s*$/.exec(line);
-    if(header)skipping=header[1]!.trim()===`mcp_servers.${SERVER}`||header[1]!.trim().startsWith(`mcp_servers.${SERVER}.`);
-    if(!skipping)kept.push(line);
-  }
-  let out=kept.join('\n').replace(/\n+$/,'');
-  if(spec)out+=(out?'\n\n':'')+`[mcp_servers.${SERVER}]\ncommand = ${tomlString(spec.command)}\nargs = [${spec.args.map(tomlString).join(', ')}]\n`;
-  return out.endsWith('\n')||!out?out:out+'\n';
-}
-
-export const CLIENTS:Client[]=[
-  {
-    id:'claude-code',name:'Claude Code',detect:env=>env.hasCommand('claude'),
-    add:(env,spec)=>{
-      env.run('claude',['mcp','remove',SERVER,'--scope','user']);
-      const result=env.run('claude',['mcp','add',SERVER,'--scope','user','--',spec.command,...spec.args]);
-      if(result.status!==0)throw new Error(result.stderr.trim()||'claude mcp add failed');
-      return 'claude mcp add --scope user';
-    },
-    remove:env=>{env.run('claude',['mcp','remove',SERVER,'--scope','user']);return 'claude mcp remove --scope user';},
-  },
-  {
-    id:'codex',name:'Codex',detect:env=>fs.existsSync(path.join(env.home,'.codex')),
-    add:(env,spec)=>{const file=path.join(env.home,'.codex','config.toml'),before=fs.existsSync(file)?fs.readFileSync(file,'utf8'):'',after=codexToml(before,spec);if(after!==before){fs.mkdirSync(path.dirname(file),{recursive:true});backup(file);fs.writeFileSync(file,after);}return file;},
-    remove:env=>{const file=path.join(env.home,'.codex','config.toml');if(fs.existsSync(file)){const before=fs.readFileSync(file,'utf8'),after=codexToml(before);if(after!==before){backup(file);fs.writeFileSync(file,after);}}return file;},
-  },
-  jsonClient('cursor','Cursor',env=>path.join(env.home,'.cursor'),env=>path.join(env.home,'.cursor','mcp.json'),'mcpServers',standard),
-  jsonClient('vscode','VS Code',env=>path.join(appSupport(env,'Code'),'User'),env=>path.join(appSupport(env,'Code'),'User','mcp.json'),'servers',spec=>({type:'stdio',...standard(spec)})),
-  jsonClient('claude-desktop','Claude Desktop',env=>appSupport(env,'Claude'),env=>path.join(appSupport(env,'Claude'),'claude_desktop_config.json'),'mcpServers',standard),
-  jsonClient('windsurf','Windsurf',env=>path.join(env.home,'.codeium','windsurf'),env=>path.join(env.home,'.codeium','windsurf','mcp_config.json'),'mcpServers',standard),
-  jsonClient('kiro','Kiro',env=>path.join(env.home,'.kiro'),env=>path.join(env.home,'.kiro','settings','mcp.json'),'mcpServers',standard),
-  jsonClient('gemini','Gemini CLI',env=>path.join(env.home,'.gemini'),env=>path.join(env.home,'.gemini','settings.json'),'mcpServers',standard),
-  jsonClient('opencode','OpenCode',env=>path.join(env.home,'.config','opencode'),env=>path.join(env.home,'.config','opencode','opencode.json'),'mcp',spec=>({type:'local',command:[spec.command,...spec.args],enabled:true})),
-];
-
-/** Chooses clients: the named ones (comma list or "all"), otherwise every client found on this computer. */
-export function pickClients(env:Env,wanted?:string):Client[]{
-  if(!wanted)return CLIENTS.filter(client=>client.detect(env));
-  if(wanted==='all')return CLIENTS;
-  const ids=wanted.split(',').map(id=>id.trim().toLowerCase()).filter(Boolean);
-  const unknown=ids.filter(id=>!CLIENTS.some(client=>client.id===id));
-  if(unknown.length)throw new Error(`Unknown client: ${unknown.join(', ')}. Use one of: ${CLIENTS.map(client=>client.id).join(', ')}.`);
-  return CLIENTS.filter(client=>ids.includes(client.id));
-}
-
-export function configure(env:Env,clients:Client[],spec:ServerSpec|undefined):ClientResult[]{
-  return clients.map(client=>{
-    try{
-      const where=spec?client.add(env,spec):client.remove(env);
-      return{client:client.id,name:client.name,status:spec?'added':'removed',detail:where};
-    }catch(error){return{client:client.id,name:client.name,status:'failed',detail:error instanceof Error?error.message:String(error)};}
-  });
 }
