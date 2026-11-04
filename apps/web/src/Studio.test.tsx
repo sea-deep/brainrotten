@@ -19,7 +19,9 @@ describe('Studio sign-in entry',()=>{
     const hosted={...config,mode:'hosted' as const,auth:{configured:true,loginUrl:'https://example.auth.ap-south-1.amazoncognito.com/oauth2/authorize',clientId:'publicclient123'}};
     vi.mocked(getStudioConfig).mockResolvedValue(hosted as never);vi.mocked(getAccount).mockResolvedValue(null);
     const assign=vi.fn();vi.stubGlobal('location',{...window.location,assign,origin:window.location.origin,pathname:'/studio',search:''});
-    render(<App/>);await screen.findByText('No videos yet.');
+    render(<App/>);await screen.findByRole('button',{name:'Continue with Google to generate'});
+    // Signed out on the hosted site: no personal video list, only the composer and examples.
+    expect(screen.queryByRole('heading',{name:'Your videos'})).toBeNull();
     expect(screen.queryByLabelText('Settings')).toBeNull();
     const button=screen.getByRole('button',{name:'Continue with Google to generate'});expect(button).toBeDisabled();
     fireEvent.change(screen.getByLabelText('Topic or context'),{target:{value:'Why did the old price come back?'}});
@@ -82,4 +84,17 @@ describe('complete agent script in Studio',()=>{
 
 describe('video links',()=>{
   it('opens a linked existing video after reload without generating anything',async()=>{history.replaceState({},'','/studio?video='+job.jobId);vi.mocked(listVideos).mockResolvedValue([{...job,state:'ready',stage:'ready',progress:100,title:'Linked payment video',videoUrl:`/api/v1/videos/${job.jobId}/video`}]);render(<App/>);expect(await screen.findByRole('heading',{name:'Linked payment video'})).toBeInTheDocument();expect(screen.getByLabelText('Linked payment video')).toHaveAttribute('src',`/api/v1/videos/${job.jobId}/video`);expect(generateVideo).not.toHaveBeenCalled();});
+});
+
+describe('Studio layout',()=>{
+  it('lists your videos (Studio and MCP) right after the composer, before the examples, and keeps agent sessions in the MCP tab',async()=>{
+    render(<App/>);await screen.findByText('No videos yet.');
+    const yours=screen.getByRole('heading',{name:'Your videos'});
+    expect(screen.getByText(/from Studio and your agents \(MCP\)/)).toBeInTheDocument();
+    const composer=screen.getByRole('heading',{name:'Studio',level:1});
+    expect(composer.compareDocumentPosition(yours)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const examples=screen.queryByRole('heading',{name:'Examples'});
+    if(examples)expect(yours.compareDocumentPosition(examples)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.queryByText('Learn from your agent')).toBeNull();
+  });
 });
